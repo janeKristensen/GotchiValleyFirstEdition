@@ -43,9 +43,15 @@ int main()
 
 	player.AddComponent(sf::Texture());
 	player.AddComponent(rect);
-	player.AddComponent(sf::Transform());
+	player.AddComponent(
+		Transform({
+			sf::Vector2f(0,0),
+			sf::Vector2f(0,0),
+			sf::Vector2f(0,0),
+			sf::Transform()
+		}));
 	player.AddComponent(sf::RenderStates());
-	player.AddComponent(PlayerStats({10, 100}));
+	player.AddComponent(PlayerStats({50, 100}));
 	
 	renderSystem.LoadTexture(player, "star.png");
 
@@ -62,17 +68,20 @@ int main()
 				window.close();
 			}
 
-			if (event->is<sf::Event::KeyPressed>()) {
+			else if (event->is<sf::Event::KeyPressed>()) {
 
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
 					window.close();
 				}
 				else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)){
-					auto stats = *player.GetComponentOfType<PlayerStats>();
-					physicsSystem.MoveEntity(player, sf::Vector2f(0, stats.speed));
+					physicsSystem.MoveEntity(player, sf::Vector2f(0,1));
 				}
+				
 			}
+			
 		}
+
+		
 		physicsSystem.Update(player, dt);
 
 		window.clear();

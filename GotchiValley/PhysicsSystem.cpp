@@ -1,4 +1,5 @@
 #include "PhysicsSystem.h"
+#include "Components.h"
 
 
 
@@ -10,12 +11,16 @@ void PhysicsSystem::RotateEntity(Entity entity, float rotation) {
 
 void PhysicsSystem::MoveEntity(Entity entity, sf::Vector2f velocity) 
 {
-	sf::Transform& translation = *entity.GetComponentOfType<sf::Transform>();
-	translation = translation.translate(velocity);
+	Transform& transform = *entity.GetComponentOfType<Transform>();
+	transform.velocity = velocity;
 }
 
 void PhysicsSystem::Update(Entity entity, float dt) {
 
-	sf::Transform& transform = *entity.GetComponentOfType<sf::Transform>();
+	Transform& transform = *entity.GetComponentOfType<Transform>();
+	auto stats = *entity.GetComponentOfType<PlayerStats>();
+	sf::Vector2f movement = transform.velocity * dt * stats.speed;
+
+	transform.transform.translate(movement);
 
 }

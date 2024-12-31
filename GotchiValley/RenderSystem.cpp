@@ -1,11 +1,13 @@
 #include "RenderSystem.h"
+#include "Components.h"
 
 void RenderSystem::Draw(Entity entity, sf::RenderWindow& window) {
 
 	auto vertices = *entity.GetComponentOfType<sf::VertexArray>();
 
 	sf::RenderStates& states = *entity.GetComponentOfType<sf::RenderStates>();
-	states.transform = *entity.GetComponentOfType<sf::Transform>();
+	auto transform = *entity.GetComponentOfType<Transform>();
+	states.transform = transform.transform;
 	states.texture = &*entity.GetComponentOfType<sf::Texture>();
 
 	window.draw(vertices, states);
