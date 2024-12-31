@@ -8,8 +8,14 @@ void PhysicsSystem::RotateEntity(Entity entity, float rotation) {
 	transform.rotate(sf::degrees(rotation));
 }
 
-void PhysicsSystem::MoveEntity(Entity entity, sf::Vector2f transform) 
+void PhysicsSystem::MoveEntity(Entity entity, sf::Vector2f velocity) 
 {
 	sf::Transform& translation = *entity.GetComponentOfType<sf::Transform>();
-	translation = translation.translate(transform);
+	translation = translation.translate(velocity);
+}
+
+void PhysicsSystem::Update(Entity entity, float dt) {
+
+	sf::Transform& transform = *entity.GetComponentOfType<sf::Transform>();
+
 }
