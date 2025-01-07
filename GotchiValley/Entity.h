@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include "GotchiValley.h"
 
-extern const std::size_t MAX_ENTITIES;
+
 
 class Entity {
 public:

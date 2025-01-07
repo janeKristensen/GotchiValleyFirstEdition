@@ -3,6 +3,7 @@
 #include "GotchiValley.h"
 #include <queue>
 
+extern const std::size_t MAX_ENTITIES;
 
 class EntityManager {
 

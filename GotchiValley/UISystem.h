@@ -1,0 +1,14 @@
+#pragma once
+#include "IObserver.h"
+
+class UISystem : public IObserver{
+public:
+	UISystem(std::shared_ptr<sf::RenderWindow> window, ISubject& subject);
+	void OnNotify(Entity& entity, const sf::Event& event);
+	void RemoveFromSubject();
+
+private:
+	std::shared_ptr<sf::RenderWindow> mWindow;
+	ISubject& mSubject;
+};
+
