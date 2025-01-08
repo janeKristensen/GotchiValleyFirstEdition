@@ -1,11 +1,12 @@
 #pragma once
-#include "Entity.h"
+#include "EntityManager.h"
 #include "SFML/Graphics.hpp"
 
 class RenderSystem {
 public:
-	void Draw(Entity entity, sf::RenderWindow& window);
-	void LoadTexture(Entity entity, std::string filename);
+	void Draw(EntityManager& manager, sf::RenderWindow& window);
+	void LoadTexture(Entity& entity, std::string filename);
+	sf::Texture& LoadTexture(std::string filename);
 
 private:
 

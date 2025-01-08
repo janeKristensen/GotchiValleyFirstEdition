@@ -7,23 +7,28 @@ EntityManager::EntityManager() {
 	}
 }
 
-Entity EntityManager::CreateEntity() {
+std::shared_ptr<Entity> EntityManager::CreateEntity() {
 
-	Entity entity = Entity(mEntityId.front());
+	auto entity = std::make_shared<Entity>(Entity(mEntityId.front()));
 	mEntities.insert({ mCurrentIndex, entity });
 	mEntityId.pop();
 	mCurrentIndex++;
 	return entity;
 }
 
-void EntityManager::DestroyEntity(Entity entity) {
+void EntityManager::DestroyEntity(Entity& entity) {
 
 	uint32_t id = entity.GetEntityId();
 	mEntities.erase(id);
 	mEntityId.push(id);
 }
 
-void EntityManager::Update(Entity entity, float dt) {
+
+void EntityManager::Update(Entity& entity, float dt) {
 	
 	
+}
+
+std::shared_ptr<Entity> EntityManager::GetEntity(const uint32_t id) {
+	return mEntities.at(id);
 }

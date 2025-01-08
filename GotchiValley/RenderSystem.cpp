@@ -1,25 +1,38 @@
 #include "RenderSystem.h"
-#include "Components.h"
+#include "SFML/Graphics.hpp"
 
-void RenderSystem::Draw(Entity entity, sf::RenderWindow& window) {
 
-	auto vertices = *entity.GetComponentOfType<sf::VertexArray>();
+void RenderSystem::Draw(EntityManager& manager, sf::RenderWindow& window) {
 
-	sf::RenderStates& states = *entity.GetComponentOfType<sf::RenderStates>();
-	auto transform = *entity.GetComponentOfType<Transform>();
-	states.transform = transform.transform;
-	states.texture = &*entity.GetComponentOfType<sf::Texture>();
+	for (uint32_t i = 0; i < MAX_ENTITIES; i++) {
 
-	window.draw(vertices, states);
+		auto sprite = manager.GetComponent<sf::Sprite>(i);
+		if (!sprite) {
+			continue;
+		}
+		window.draw(*sprite);
+		
+	}
+
 	window.display();
 }
 
-void RenderSystem::LoadTexture(Entity entity, std::string filename) {
+void RenderSystem::LoadTexture(Entity& entity, std::string filename) {
 
 	sf::Texture& texture = *entity.GetComponentOfType<sf::Texture>();
 	if (!texture.loadFromFile(std::filesystem::absolute(filename).string()))
 	{
 		throw std::runtime_error("Could not load image.png");
 	}
+}
+
+sf::Texture& RenderSystem::LoadTexture(std::string filename) {
+
+	sf::Texture texture;
+	if (!texture.loadFromFile(std::filesystem::absolute(filename).string()))
+	{
+		throw std::runtime_error("Could not load image.png");
+	}
+	return texture;
 }
 
