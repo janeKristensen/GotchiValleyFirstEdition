@@ -5,7 +5,7 @@
 class UISystem : public IObserver{
 public:
 	UISystem(std::shared_ptr<sf::RenderWindow> window, ISubject& subject);
-	void OnNotify(EntityManager& manager, const sf::Event& event);
+	void OnNotify(EntityManager& manager, const sf::Event& event, std::string message);
 	void RemoveFromSubject();
 
 private:

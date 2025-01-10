@@ -1,4 +1,5 @@
 #include "GameWorld.h"
+#include "Components.h"
 
 
 
@@ -12,10 +13,10 @@ void GameWorld::RemoveObserver(IObserver* observer) {
 	mObservers.remove(observer);
 }
 
-void GameWorld::NotifyObservers(EntityManager& manager, const sf::Event& event) {
+void GameWorld::NotifyObservers(EntityManager& manager, const sf::Event& event, std::string message) {
 	
 	for (auto observer : mObservers) {
-		observer->OnNotify(manager, event);
+		observer->OnNotify(manager, event, message);
 	}
 }
 
@@ -24,6 +25,7 @@ void GameWorld::PollEvents(EntityManager& manager, std::shared_ptr<sf::RenderWin
 
 	while (const std::optional event = window->pollEvent()) {
 
-		NotifyObservers(manager, event.value());
+		NotifyObservers(manager, event.value(), "");
 	}
 }
+

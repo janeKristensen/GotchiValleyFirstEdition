@@ -2,6 +2,8 @@
 #include "Components.h"
 #include <iostream>
 
+extern const size_t MAX_ENTITIES;
+
 PhysicsSystem::PhysicsSystem(ISubject& subject) : mSubject(subject) 
 {
 	this->mSubject.AddObserver(this);
@@ -13,30 +15,12 @@ void PhysicsSystem::RemoveFromSubject() {
 }
 
 
-void PhysicsSystem::OnNotify(EntityManager& manager, const sf::Event& event) {
+void PhysicsSystem::OnNotify(EntityManager& manager, const sf::Event& event, std::string message) {
 
-	if (event.is<sf::Event::KeyPressed>()) {
-		for (uint32_t i = 0; i < MAX_ENTITIES; i++) {
+	if (message == "collision") {
 
-			auto controlable = manager.HasComponent<Controlable>(i);
-			if (!controlable) continue;
-			auto entity = manager.GetEntity(i);
-
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
-				MoveEntity(entity, DIRECTION::UP);
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-				MoveEntity(entity, DIRECTION::DOWN);
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-				MoveEntity(entity, DIRECTION::RIGHT);
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-				MoveEntity(entity, DIRECTION::LEFT);
-			}
-
-		}
-	}	
+	}
+	
 }
 
 
@@ -50,16 +34,42 @@ void PhysicsSystem::Update(EntityManager& manager, float dt) {
 		float speed = stats ? stats->speed : .0f;
 
 		if (!transform) continue;
-		transform->position += transform->velocity * dt * speed;
+		
+		auto controlable = manager.HasComponent<Controlable>(i);
+		if (controlable) {
+
+			float acceleration = 1.f;
+
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+				transform->velocity.y = -acceleration;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+				transform->velocity.y = acceleration;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+				transform->velocity.x = acceleration;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+				transform->velocity.x = -acceleration;
+			}
+		}
+		
+		this->ResolveCollisions(manager);
+
+		if (stats) {
+			transform->position += transform->velocity * dt * speed;
+		}
+		else {
+			transform->position += transform->velocity * dt;
+		}
 
 		if (sprite) {
 			sprite->setPosition(transform->position);
+			auto collider = manager.GetComponent<Collider>(i);
+			collider->boundingBox.position = transform->position;
 		}
-		
-		std::cout << "x: " + std::to_string(transform->velocity.x) + " y:" + std::to_string(transform->velocity.y) << std::endl;
 
-		transform->velocity = .99f * transform->velocity;
-
+		transform->velocity = .99f * transform->velocity;	
 	}
 }
 
@@ -71,17 +81,36 @@ void PhysicsSystem::RotateEntity(std::shared_ptr<Entity> entity, float rotation)
 }
 
 
-void PhysicsSystem::MoveEntity(std::shared_ptr<Entity> entity, DIRECTION direction) 
-{
-	Transform& transform = *entity->GetComponentOfType<Transform>();
-	float acceleration = 1.f;
+void PhysicsSystem::ResolveCollisions(EntityManager& manager) {
 
-	if(direction == UP) transform.velocity.y = -acceleration;
-	if(direction == DOWN) transform.velocity.y = acceleration;
-	if (direction == LEFT) transform.velocity.x = -acceleration;
-	if (direction == RIGHT) transform.velocity.x = acceleration;
-	
+	std::vector<uint32_t> colliderEntities;
+
+	for (uint32_t i = 0; i < MAX_ENTITIES; i++) {
+
+		auto component = manager.GetComponent<Collider>(i);
+		if (component) {
+
+			colliderEntities.emplace_back(i);
+		}
+	}
+
+	for (uint32_t i = 0; i < colliderEntities.size() - 1; i++) {
+
+		auto collider1 = manager.GetComponent<Collider>(colliderEntities[i]);
+
+		for (uint32_t j = 1; j < colliderEntities.size(); j++) {
+
+			auto collider2 = manager.GetComponent<Collider>(colliderEntities[j]);
+			if (collider1->boundingBox.findIntersection(collider2->boundingBox))
+			{
+				auto transform = manager.GetComponent<Transform>(i);
+				transform->position -= transform->velocity;
+			}
+		}
+	}
 }
+
+
 
 
 

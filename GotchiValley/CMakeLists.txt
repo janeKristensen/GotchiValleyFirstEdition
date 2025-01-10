@@ -9,18 +9,24 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET GotchiValley PROPERTY CXX_STANDARD 20)
 endif()
 
-# Copy the image to the build directory
-message("Image file path: ${CMAKE_SOURCE_DIR}/resources/star.png")
-add_custom_command(
-    TARGET GotchiValley POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-        ${CMAKE_SOURCE_DIR}/resources/star.png
-        ${CMAKE_BINARY_DIR}/GotchiValley/star.png
-)
+
+# Get all image files in the resources directory
+file(GLOB IMAGE_FILES "${CMAKE_SOURCE_DIR}/resources/*.png")
+
+# Add a custom command for each file
+foreach(IMAGE_FILE ${IMAGE_FILES})
+    get_filename_component(FILE_NAME ${IMAGE_FILE} NAME)
+    add_custom_command(
+        TARGET GotchiValley POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${IMAGE_FILE}
+            ${CMAKE_BINARY_DIR}/GotchiValley/${FILE_NAME}
+    )
+endforeach()
+
 
 # Set the SFML path
 set(SFML_DIR ${CMAKE_SOURCE_DIR}/external/SFML-3.0.0)
-
 
 # Add the include directory
 include_directories(${SFML_DIR}/include)

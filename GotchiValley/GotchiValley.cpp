@@ -34,10 +34,24 @@ int main()
 			sf::Vector2f(0,0),
 			sf::Vector2f(0,0),
 			sf::Vector2f(0,0),
-		}));
+		})
+	);
+	entityManager.AddComponent(*player, Collider({ sf::FloatRect({0,0}, {40,40}) }));
 	entityManager.AddComponent(*player, Controlable());
 	entityManager.AddComponent(*player, PlayerStats({100, 100}));
 	
+	auto object = entityManager.CreateEntity();
+	const sf::Texture texture1 = sf::Texture("egg_big.png");
+	entityManager.AddComponent(*object, texture1);
+	entityManager.AddComponent(*object, sf::Sprite(texture1));
+	entityManager.AddComponent(*object,
+		Transform({
+			sf::Vector2f(100,50),
+			sf::Vector2f(0,0),
+			sf::Vector2f(0,0),
+		})
+	);
+	entityManager.AddComponent(*object, Collider({ sf::FloatRect({0,0}, {42,58}) }));
 	
 
 	sf::Clock clock;

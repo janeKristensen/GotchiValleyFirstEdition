@@ -7,12 +7,16 @@ struct PlayerStats {
 };
 
 struct Transform {
-	sf::Vector2f velocity;
 	sf::Vector2f position;
+	sf::Vector2f velocity;
 	sf::Vector2f gravity;
 };
 
 struct Controlable {
 	bool controlable = true;
+};
+
+struct Collider {
+	sf::FloatRect boundingBox;
 };
 
