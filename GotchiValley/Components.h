@@ -20,3 +20,7 @@ struct Collider {
 	sf::FloatRect boundingBox;
 };
 
+struct Moveable {
+	
+};
+

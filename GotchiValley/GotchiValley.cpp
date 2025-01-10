@@ -17,6 +17,7 @@ const std::size_t MAX_ENTITIES{ 1000 };
 int main()
 {
 	auto window = std::make_shared<sf::RenderWindow> ( sf::RenderWindow(sf::VideoMode({ 800,600 }), "Gotchi Valley"));
+	window->setFramerateLimit(60);
 
 	EntityManager entityManager;
 	RenderSystem renderSystem;
@@ -37,6 +38,7 @@ int main()
 		})
 	);
 	entityManager.AddComponent(*player, Collider({ sf::FloatRect({0,0}, {40,40}) }));
+	entityManager.AddComponent(*player, Moveable());
 	entityManager.AddComponent(*player, Controlable());
 	entityManager.AddComponent(*player, PlayerStats({100, 100}));
 	
@@ -55,19 +57,15 @@ int main()
 	
 
 	sf::Clock clock;
-	float dt;
-
+	
 	while (window->isOpen()) {
 
-		dt = clock.restart().asSeconds();
-		gameWorld.PollEvents(entityManager, window);
-		
-		physicsSystem.Update(entityManager, dt);
+		float dt = clock.restart().asSeconds();
 
-		window->clear();
+		gameWorld.PollEvents(entityManager, window);
+		physicsSystem.Update(entityManager, dt);
 		renderSystem.Draw(entityManager, *window);	
 	}
-	
 	
 	return 0;
 }

@@ -11,7 +11,6 @@ public:
 	EntityManager();
 	std::shared_ptr<Entity> CreateEntity();
 	void DestroyEntity(Entity& entity);
-	void Update(Entity& entity, float dt);
 	std::shared_ptr<Entity> GetEntity(const uint32_t id);
 
 	template <typename T>

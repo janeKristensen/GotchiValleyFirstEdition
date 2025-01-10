@@ -17,9 +17,6 @@ void PhysicsSystem::RemoveFromSubject() {
 
 void PhysicsSystem::OnNotify(EntityManager& manager, const sf::Event& event, std::string message) {
 
-	if (message == "collision") {
-
-	}
 	
 }
 
@@ -69,7 +66,7 @@ void PhysicsSystem::Update(EntityManager& manager, float dt) {
 			collider->boundingBox.position = transform->position;
 		}
 
-		transform->velocity = .99f * transform->velocity;	
+		transform->velocity = .95f * transform->velocity;	
 	}
 }
 
@@ -83,28 +80,25 @@ void PhysicsSystem::RotateEntity(std::shared_ptr<Entity> entity, float rotation)
 
 void PhysicsSystem::ResolveCollisions(EntityManager& manager) {
 
-	std::vector<uint32_t> colliderEntities;
+	for (uint32_t i = 0; i < MAX_ENTITIES - 1; i++) {
 
-	for (uint32_t i = 0; i < MAX_ENTITIES; i++) {
+		auto collider1 = manager.GetComponent<Collider>(i);
+		if (!collider1) continue;
+		
+		for (uint32_t j = 1; j < MAX_ENTITIES; j++) {
 
-		auto component = manager.GetComponent<Collider>(i);
-		if (component) {
+			auto collider2 = manager.GetComponent<Collider>(j);
+			if (!collider2) continue;
 
-			colliderEntities.emplace_back(i);
-		}
-	}
-
-	for (uint32_t i = 0; i < colliderEntities.size() - 1; i++) {
-
-		auto collider1 = manager.GetComponent<Collider>(colliderEntities[i]);
-
-		for (uint32_t j = 1; j < colliderEntities.size(); j++) {
-
-			auto collider2 = manager.GetComponent<Collider>(colliderEntities[j]);
 			if (collider1->boundingBox.findIntersection(collider2->boundingBox))
 			{
-				auto transform = manager.GetComponent<Transform>(i);
-				transform->position -= transform->velocity;
+				auto hasComponent = manager.GetComponent<Moveable>(i);
+				if (hasComponent) {
+
+					auto transform = manager.GetComponent<Transform>(i);
+					transform->position -= transform->velocity;
+				}
+				
 			}
 		}
 	}

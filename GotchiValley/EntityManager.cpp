@@ -23,12 +23,6 @@ void EntityManager::DestroyEntity(Entity& entity) {
 	mEntityId.push(id);
 }
 
-
-void EntityManager::Update(Entity& entity, float dt) {
-	
-	
-}
-
 std::shared_ptr<Entity> EntityManager::GetEntity(const uint32_t id) {
 	return mEntities.at(id);
 }

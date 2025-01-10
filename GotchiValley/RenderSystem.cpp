@@ -4,6 +4,8 @@
 
 void RenderSystem::Draw(EntityManager& manager, sf::RenderWindow& window) {
 
+	window.clear();
+
 	for (uint32_t i = 0; i < MAX_ENTITIES; i++) {
 
 		auto sprite = manager.GetComponent<sf::Sprite>(i);
