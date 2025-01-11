@@ -5,16 +5,15 @@ using namespace GotchiValley;
 
 void RenderSystem::Update(ComponentManager<sf::Sprite>& spriteManager, sf::RenderWindow& window) {
 
-	for (uint32_t i = 0; i < MAX_ENTITIES; i++) {
+	auto spriteArray = spriteManager.GetComponentArray();
 
-		if (!spriteManager.HasComponent(i)) continue;
-		auto sprite = spriteManager.GetComponentOfType(i);
-		
-		window.draw(*sprite);	
+	for (auto i = spriteArray.begin(); i != spriteArray.end(); i++) {
+
+		window.draw(*i->second);	
 	}
 }
 
-void RenderSystem::AttachTexture(ComponentManager<sf::Texture>& textureManager, Entity entity, std::string filename) {
+void RenderSystem::AttachTexture(ComponentManager<sf::Texture>& textureManager, Entity& entity, const std::string& filename) {
 
 	auto texture = textureManager.GetComponentOfType(entity);
 	if (!texture->loadFromFile(std::filesystem::absolute(filename).string()))
@@ -23,7 +22,7 @@ void RenderSystem::AttachTexture(ComponentManager<sf::Texture>& textureManager, 
 	}
 }
 
-sf::Texture& RenderSystem::LoadTexture(std::string filename) {
+sf::Texture& RenderSystem::LoadTexture(const std::string& filename) {
 
 	sf::Texture texture;
 	if (!texture.loadFromFile(std::filesystem::absolute(filename).string()))

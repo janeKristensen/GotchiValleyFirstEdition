@@ -17,9 +17,10 @@ namespace GotchiValley {
 		void DestroyEntity(Entity& entity);
 
 	private:
-		std::size_t mCurrentIndex{};
-		std::array<Entity, MAX_ENTITIES> mEntities{};
 		std::queue<uint32_t> mEntityId{};
-		std::unordered_map<Entity, size_t> mEntitiesToIndex;
+
+		/*std::size_t mCurrentIndex{};
+		std::array<Entity, MAX_ENTITIES> mEntities{};
+		std::unordered_map<Entity, size_t> mEntitiesToIndex;*/
 	};
 }

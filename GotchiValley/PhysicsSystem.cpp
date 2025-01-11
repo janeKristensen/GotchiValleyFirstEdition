@@ -3,31 +3,34 @@
 using namespace GotchiValley;
 extern const size_t MAX_ENTITIES;
 
-void PhysicsSystem::Update(ComponentManager<Transform>& transformManager, ComponentManager<sf::Sprite>& spriteManager, ComponentManager<Collider>& colliderManager, float dt) {
+void PhysicsSystem::Update(ComponentManager<Transform>& transformManager, ComponentManager<sf::Sprite>& spriteManager, ComponentManager<Collider>& colliderManager, float& dt) {
 
-	for (uint32_t i = 0; i < MAX_ENTITIES; i++) {
+	auto transformArray = transformManager.GetComponentArray();
 
-		if (!transformManager.HasComponent(i)) continue;
-		auto transform = transformManager.GetComponentOfType(i);
+	for (auto i = transformArray.begin(); i != transformArray.end(); i++) {
+
+		auto transform = i->second;
+
 		transform->position += transform->velocity * dt * transform->speed;
 	
-		if (!spriteManager.HasComponent(i)) continue;
-		auto sprite = spriteManager.GetComponentOfType(i);
+		auto sprite = spriteManager.GetComponentOfType(i->first);
+		if (!sprite) continue;
 		sprite->setPosition(transform->position);
 
-		if (!colliderManager.HasComponent(i)) continue;
-		auto collider = colliderManager.GetComponentOfType(i);
+		auto collider = colliderManager.GetComponentOfType(i->first);
+		if (!collider) continue;
 		collider->boundingBox.position = transform->position;
 
 		transform->velocity = .95f * transform->velocity;	
 	}
 }
 
-void PhysicsSystem::SetPosition(ComponentManager<Transform>& transformManager, Entity entity, sf::Vector2f position) {
+void PhysicsSystem::SetPosition(ComponentManager<Transform>& transformManager, Entity& entity, sf::Vector2f& position) {
 
 	if (transformManager.HasComponent(entity)) {
 
 		auto transform = transformManager.GetComponentOfType(entity);
+		if (!transform) return;
 		transform->position = position;
 	}	
 }

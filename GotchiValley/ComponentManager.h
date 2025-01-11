@@ -24,7 +24,7 @@ namespace GotchiValley {
 			return mComponents.find(entity) != mComponents.end();
 		}
 
-		std::shared_ptr<T> GetComponentOfType(Entity& entity) {
+		std::shared_ptr<T> GetComponentOfType(Entity entity) {
 
 			auto it = mComponents.find(entity);
 			if (it != mComponents.end()) {
@@ -34,7 +34,12 @@ namespace GotchiValley {
 			return nullptr;
 		}
 
+		std::unordered_map<Entity, std::shared_ptr<T>> GetComponentArray() {
+
+			return mComponents;
+		}
+
 	private:
-		std::unordered_map<Entity, std::shared_ptr<void>> mComponents{};
+		std::unordered_map<Entity, std::shared_ptr<T>> mComponents{};
 	};
 }

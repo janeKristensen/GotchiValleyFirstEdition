@@ -3,7 +3,7 @@
 
 namespace GotchiValley {
 
-	constexpr std::size_t MAX_ENTITIES{ 100 };
+	constexpr std::size_t MAX_ENTITIES{ 1000 };
 }
 
 

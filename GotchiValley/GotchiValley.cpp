@@ -41,7 +41,7 @@ using namespace GotchiValley;
 		const sf::Texture texture = sf::Texture("player.png");
 		textureManager.AddComponent(player, texture);
 		spriteManager.AddComponent(player, sf::Sprite(texture));
-		transformManager.AddComponent(player, Transform({ sf::Vector2f(200,100), sf::Vector2f(0,0), 50.f}));
+		transformManager.AddComponent(player, Transform({ sf::Vector2f(200,100), sf::Vector2f(0,0), 80.f}));
 		colliderManager.AddComponent(player, Collider({ sf::FloatRect( {200,100}, {31,50} ) }));
 		moveableManager.AddComponent(player, Moveable());
 		controlableManager.AddComponent(player, Controlable());
@@ -73,8 +73,6 @@ using namespace GotchiValley;
 			collisionSystem.Update(transformManager, colliderManager, moveableManager);
 			physicsSystem.Update(transformManager, spriteManager, colliderManager, dt);
 			
-			
-
 			window->clear();
 			renderSystem.Update(spriteManager, *window);
 			window->display();

@@ -6,7 +6,7 @@ UISystem::UISystem(std::shared_ptr<sf::RenderWindow> window, ISubject& subject) 
 	this->mSubject.AddObserver(this);
 }
 
-void UISystem::OnNotify(const sf::Event& event, std::string message) {
+void UISystem::OnNotify(const sf::Event& event, const std::string& message) {
 
 	if (event.is<sf::Event::Closed>()) {
 		mWindow->close();
