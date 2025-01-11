@@ -1,108 +1,38 @@
 #include "PhysicsSystem.h"
-#include "Components.h"
-#include <iostream>
 
+using namespace GotchiValley;
 extern const size_t MAX_ENTITIES;
 
-PhysicsSystem::PhysicsSystem(ISubject& subject) : mSubject(subject) 
-{
-	this->mSubject.AddObserver(this);
-}
-
-
-void PhysicsSystem::RemoveFromSubject() {
-	mSubject.RemoveObserver(this);
-}
-
-
-void PhysicsSystem::OnNotify(EntityManager& manager, const sf::Event& event, std::string message) {
-
-	
-}
-
-
-void PhysicsSystem::Update(EntityManager& manager, float dt) {
+void PhysicsSystem::Update(ComponentManager<Transform>& transformManager, ComponentManager<sf::Sprite>& spriteManager, ComponentManager<Collider>& colliderManager, float dt) {
 
 	for (uint32_t i = 0; i < MAX_ENTITIES; i++) {
 
-		auto transform = manager.GetComponent<Transform>(i);
-		auto sprite = manager.GetComponent<sf::Sprite>(i);
-		auto stats = manager.GetComponent<PlayerStats>(i);
-		float speed = stats ? stats->speed : .0f;
+		if (!transformManager.HasComponent(i)) continue;
+		auto transform = transformManager.GetComponentOfType(i);
+		transform->position += transform->velocity * dt * transform->speed;
+	
+		if (!spriteManager.HasComponent(i)) continue;
+		auto sprite = spriteManager.GetComponentOfType(i);
+		sprite->setPosition(transform->position);
 
-		if (!transform) continue;
-		
-		auto controlable = manager.HasComponent<Controlable>(i);
-		if (controlable) {
-
-			float acceleration = 1.f;
-
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
-				transform->velocity.y = -acceleration;
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-				transform->velocity.y = acceleration;
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-				transform->velocity.x = acceleration;
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-				transform->velocity.x = -acceleration;
-			}
-		}
-		
-		this->ResolveCollisions(manager);
-
-		if (stats) {
-			transform->position += transform->velocity * dt * speed;
-		}
-		else {
-			transform->position += transform->velocity * dt;
-		}
-
-		if (sprite) {
-			sprite->setPosition(transform->position);
-			auto collider = manager.GetComponent<Collider>(i);
-			collider->boundingBox.position = transform->position;
-		}
+		if (!colliderManager.HasComponent(i)) continue;
+		auto collider = colliderManager.GetComponentOfType(i);
+		collider->boundingBox.position = transform->position;
 
 		transform->velocity = .95f * transform->velocity;	
 	}
 }
 
+void PhysicsSystem::SetPosition(ComponentManager<Transform>& transformManager, Entity entity, sf::Vector2f position) {
 
-void PhysicsSystem::RotateEntity(std::shared_ptr<Entity> entity, float rotation) {
+	if (transformManager.HasComponent(entity)) {
 
-	sf::Transform& transform = *entity->GetComponentOfType<sf::Transform>();
-	transform.rotate(sf::degrees(rotation));
+		auto transform = transformManager.GetComponentOfType(entity);
+		transform->position = position;
+	}	
 }
 
 
-void PhysicsSystem::ResolveCollisions(EntityManager& manager) {
-
-	for (uint32_t i = 0; i < MAX_ENTITIES - 1; i++) {
-
-		auto collider1 = manager.GetComponent<Collider>(i);
-		if (!collider1) continue;
-		
-		for (uint32_t j = 1; j < MAX_ENTITIES; j++) {
-
-			auto collider2 = manager.GetComponent<Collider>(j);
-			if (!collider2) continue;
-
-			if (collider1->boundingBox.findIntersection(collider2->boundingBox))
-			{
-				auto hasComponent = manager.GetComponent<Moveable>(i);
-				if (hasComponent) {
-
-					auto transform = manager.GetComponent<Transform>(i);
-					transform->position -= transform->velocity;
-				}
-				
-			}
-		}
-	}
-}
 
 
 

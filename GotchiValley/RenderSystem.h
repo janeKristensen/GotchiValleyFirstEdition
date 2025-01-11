@@ -1,13 +1,20 @@
 #pragma once
-#include "EntityManager.h"
+#include "ComponentManager.h"
+#include "Components.h"
 #include "SFML/Graphics.hpp"
 
-class RenderSystem {
-public:
-	void Draw(EntityManager& manager, sf::RenderWindow& window);
-	void LoadTexture(Entity& entity, std::string filename);
-	sf::Texture& LoadTexture(std::string filename);
 
-private:
+namespace GotchiValley {
 
-};
+	class RenderSystem {
+	public:
+		void Update(ComponentManager<sf::Sprite>& spriteManager, sf::RenderWindow& window);
+		void AttachTexture(ComponentManager<sf::Texture>& textureManager, Entity entity, std::string filename);
+		sf::Texture& LoadTexture(std::string filename);
+
+	private:
+
+	};
+
+}
+

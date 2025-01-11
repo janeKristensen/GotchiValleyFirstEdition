@@ -1,26 +1,30 @@
 #pragma once
+#include "SFML/Graphics.hpp"
 #include <cstdint>
 
-struct PlayerStats {
-	float speed;
-	std::uint16_t health;
-};
+namespace GotchiValley {
 
-struct Transform {
-	sf::Vector2f position;
-	sf::Vector2f velocity;
-	sf::Vector2f gravity;
-};
+	struct PlayerStats {
+		std::uint16_t health;
+	};
 
-struct Controlable {
-	bool controlable = true;
-};
+	struct Transform {
+		sf::Vector2f position;
+		sf::Vector2f velocity;
+		float speed = 0.f;
+	};
 
-struct Collider {
-	sf::FloatRect boundingBox;
-};
+	struct Controlable {
+		bool controlable = true;
+	};
 
-struct Moveable {
-	
-};
+	struct Collider {
+		sf::FloatRect boundingBox;
+	};
+
+	struct Moveable {};
+}
+
+
+
 

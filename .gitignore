@@ -12,6 +12,7 @@
 
 # Ignore external library folder
 /external/
+/resources/
 # Ignore binaries
 *.exe
 *.dll

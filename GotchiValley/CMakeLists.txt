@@ -3,7 +3,7 @@
 #
 
 # Add source to this project's executable.
-add_executable (GotchiValley "GotchiValley.cpp" "GotchiValley.h"    "Entity.h"    "EntityManager.h"    "EntityManager.cpp" "PhysicsSystem.cpp" "PhysicsSystem.h" "RenderSystem.h" "RenderSystem.cpp" "Components.h" "IObserver.h" "UISystem.h" "GameWorld.h"  "GameWorld.cpp" "UISystem.cpp")
+add_executable (GotchiValley "GotchiValley.cpp" "GotchiValley.h"        "EntityManager.h"    "EntityManager.cpp" "PhysicsSystem.cpp" "PhysicsSystem.h" "RenderSystem.h" "RenderSystem.cpp" "Components.h" "IObserver.h" "UISystem.h" "GameWorld.h"  "GameWorld.cpp" "UISystem.cpp"  "ComponentManager.h" "MovementSystem.h" "MovementSystem.cpp" "CollisionSystem.h" "CollisionSystem.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET GotchiValley PROPERTY CXX_STANDARD 20)

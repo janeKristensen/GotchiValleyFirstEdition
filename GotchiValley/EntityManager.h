@@ -1,47 +1,25 @@
 #pragma once
-#include "Entity.h"
 #include "GotchiValley.h"
+#include <array>
 #include <queue>
+#include <unordered_map>
 
-extern const std::size_t MAX_ENTITIES;
+namespace GotchiValley {
 
-class EntityManager {
+	//extern const std::size_t MAX_ENTITIES;
+	using Entity = uint32_t;
 
-public:
-	EntityManager();
-	std::shared_ptr<Entity> CreateEntity();
-	void DestroyEntity(Entity& entity);
-	std::shared_ptr<Entity> GetEntity(const uint32_t id);
+	class EntityManager {
 
-	template <typename T>
-	void AddComponent(Entity& entity, T component) {
-		entity.AddComponent(component);
-	}
+	public:
+		EntityManager();
+		Entity CreateEntity();
+		void DestroyEntity(Entity& entity);
 
-	template <typename T>
-	void RemoveComponent(Entity& entity) {
-		entity.RemoveComponent();
-	}
-
-	template <typename T>
-	bool HasComponent(const uint32_t id) {
-
-		if (id >= mCurrentIndex) return false;
-		auto& entity = mEntities.at(id);
-		return (entity->GetComponentOfType<T>() != nullptr);
-	}
-
-	template <typename T>
-	std::shared_ptr<T> GetComponent(const uint32_t id) {
-
-		if (id >= mCurrentIndex) return nullptr;
-		auto& entity = mEntities.at(id);
-		return entity->GetComponentOfType<T>();
-	}
-
-private:
-	std::size_t mCurrentIndex{};
-	std::unordered_map<uint32_t, std::shared_ptr<Entity>> mEntities;
-	std::queue<uint32_t> mEntityId{};
-	
-};
+	private:
+		std::size_t mCurrentIndex{};
+		std::array<Entity, MAX_ENTITIES> mEntities{};
+		std::queue<uint32_t> mEntityId{};
+		std::unordered_map<Entity, size_t> mEntitiesToIndex;
+	};
+}
