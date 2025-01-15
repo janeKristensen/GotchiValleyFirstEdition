@@ -1,11 +1,13 @@
+
 #include "RenderSystem.h"
+#include "SharedObjects.h"
 
 
 using namespace GotchiValley;
 
-void RenderSystem::Update(ComponentManager<sf::Sprite>& spriteManager, sf::RenderWindow& window) {
+void RenderSystem::Update(sf::RenderWindow& window) {
 
-	auto spriteArray = spriteManager.GetComponentArray();
+	auto spriteArray = componentRegistry.GetComponentArray<sf::Sprite>();
 
 	for (auto i = spriteArray.begin(); i != spriteArray.end(); i++) {
 
@@ -13,22 +15,22 @@ void RenderSystem::Update(ComponentManager<sf::Sprite>& spriteManager, sf::Rende
 	}
 }
 
-void RenderSystem::AttachTexture(ComponentManager<sf::Texture>& textureManager, Entity& entity, const std::string& filename) {
+void RenderSystem::AttachTexture(Entity& entity, const std::string& filename) {
 
-	auto texture = textureManager.GetComponentOfType(entity);
+	auto texture = componentRegistry.GetComponentOfType<sf::Texture>(entity);
 	if (!texture->loadFromFile(std::filesystem::absolute(filename).string()))
 	{
 		throw std::runtime_error("Could not load image.png");
 	}
 }
 
-sf::Texture& RenderSystem::LoadTexture(const std::string& filename) {
-
-	sf::Texture texture;
-	if (!texture.loadFromFile(std::filesystem::absolute(filename).string()))
-	{
-		throw std::runtime_error("Could not load image.png");
-	}
-	return texture;
-}
+//sf::Texture& RenderSystem::LoadTexture(const std::string& filename) {
+//
+//	sf::Texture texture;
+//	if (!texture.loadFromFile(std::filesystem::absolute(filename).string()))
+//	{
+//		throw std::runtime_error("Could not load image.png");
+//	}
+//	return texture;
+//}
 

@@ -1,14 +1,16 @@
+#include "SharedObjects.h"
+#include "Components.h"
 #include "MovementSystem.h"
 #include "SFML/Graphics.hpp"
 
 using namespace GotchiValley;
 
-void MovementSystem::Update(ComponentManager<Transform>& transformManager, ComponentManager<Controlable>& controlManager) {
+void MovementSystem::Update() {
 	
-	auto controlArray = controlManager.GetComponentArray();
+	auto controlArray = componentRegistry.GetComponentArray<Controlable>();
 	for (auto i : controlArray) {
 
-		auto transform = transformManager.GetComponentOfType(i.first);
+		auto transform = componentRegistry.GetComponentOfType<Transform>(i.first);
 		float acceleration = 1.f;
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {

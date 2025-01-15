@@ -1,11 +1,11 @@
 #include "CollisionSystem.h"
-#include <iostream>
+#include "SharedObjects.h"
 
 using namespace GotchiValley;
 
-void CollisionSystem::Update(ComponentManager<Transform>& transformManager, ComponentManager<Collider>& colliderManager, ComponentManager<Moveable>& movementManager) {
+void CollisionSystem::Update() {
 
-	auto colliderArray = colliderManager.GetComponentArray();
+	auto colliderArray = componentRegistry.GetComponentArray<Collider>();
 	for (auto i = colliderArray.begin(); i != colliderArray.end(); i++) {
 
 		for (auto j = colliderArray.begin(); j != colliderArray.end(); j++) {
@@ -14,9 +14,9 @@ void CollisionSystem::Update(ComponentManager<Transform>& transformManager, Comp
 
 			if (i->second->boundingBox.findIntersection(j->second->boundingBox))
 			{
-				if (movementManager.HasComponent(i->first)) {
+				if (componentRegistry.HasComponent<Moveable>(i->first)) {
 
-					auto transform = transformManager.GetComponentOfType(i->first);
+					auto transform = componentRegistry.GetComponentOfType<Transform>(i->first);
 					transform->velocity *= -1.f;
 				}
 			}

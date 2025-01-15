@@ -1,6 +1,6 @@
 #pragma once
 #include "IObserver.h"
-#include "EntityManager.h"
+
 
 class UISystem : public IObserver{
 public:

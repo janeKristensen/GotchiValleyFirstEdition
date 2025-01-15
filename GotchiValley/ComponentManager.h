@@ -1,14 +1,19 @@
 #pragma once
+#include "GotchiValley.h"
 #include  <memory>
 #include <typeindex>
 #include <unordered_map>
-#include "EntityManager.h"
+
+
 
 namespace GotchiValley {
 
 	template <typename T>
 	class ComponentManager {
 	public:
+		ComponentManager() {
+			mComponents.reserve(MAX_ENTITIES);
+		}
 
 		void AddComponent(Entity& entity, T component) {
 
