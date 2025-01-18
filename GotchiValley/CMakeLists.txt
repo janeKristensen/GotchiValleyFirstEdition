@@ -3,7 +3,7 @@
 #
 
 # Add source to this project's executable.
-add_executable (GotchiValley "GotchiValley.cpp" "GotchiValley.h" "SharedObjects.h" "EntityManager.h" "EntityManager.cpp" "PhysicsSystem.cpp" "PhysicsSystem.h" "RenderSystem.h" "RenderSystem.cpp" "Components.h" "IObserver.h" "UISystem.h" "GameWorld.h"  "GameWorld.cpp" "UISystem.cpp"  "ComponentManager.h" "MovementSystem.h" "MovementSystem.cpp" "CollisionSystem.h" "CollisionSystem.cpp" "ComponentRegistry.h"  "SharedObjects.cpp")
+add_executable (GotchiValley "GotchiValley.cpp" "GotchiValley.h" "SharedObjects.h" "EntityManager.h" "EntityManager.cpp" "PhysicsSystem.cpp" "PhysicsSystem.h" "RenderSystem.h" "RenderSystem.cpp" "Components.h" "IObserver.h" "UISystem.h" "GameWorld.h"  "GameWorld.cpp" "UISystem.cpp"  "ComponentManager.h" "MovementSystem.h" "MovementSystem.cpp" "CollisionSystem.h" "CollisionSystem.cpp" "ComponentRegistry.h"  "SharedObjects.cpp" "AnimationSystem.h" "AnimationSystem.cpp" "GlobalVariables.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET GotchiValley PROPERTY CXX_STANDARD 20)
@@ -11,7 +11,7 @@ endif()
 
 
 # Get all image files in the resources directory
-file(GLOB IMAGE_FILES "${CMAKE_SOURCE_DIR}/resources/*.png")
+file(GLOB IMAGE_FILES ${CMAKE_SOURCE_DIR}/resources/*.png)
 
 # Add a custom command for each file
 foreach(IMAGE_FILE ${IMAGE_FILES})

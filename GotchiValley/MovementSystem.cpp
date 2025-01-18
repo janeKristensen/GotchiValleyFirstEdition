@@ -1,7 +1,5 @@
-#include "SharedObjects.h"
-#include "Components.h"
 #include "MovementSystem.h"
-#include "SFML/Graphics.hpp"
+
 
 using namespace GotchiValley;
 

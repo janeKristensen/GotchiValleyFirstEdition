@@ -1,9 +1,8 @@
 #pragma once
-#include "GotchiValley.h"
+#include "GlobalVariables.h"
 #include  <memory>
 #include <typeindex>
 #include <unordered_map>
-
 
 
 namespace GotchiValley {

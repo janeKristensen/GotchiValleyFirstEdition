@@ -1,10 +1,11 @@
 #pragma once
+#include "GlobalVariables.h"
 #include "ComponentManager.h"
 #include <unordered_map>
 #include <memory>
 #include <typeindex>
 
-using Entity = uint32_t;
+//using Entity = uint32_t;
 
 namespace GotchiValley {
 

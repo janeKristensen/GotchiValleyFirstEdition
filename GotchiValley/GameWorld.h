@@ -1,11 +1,19 @@
 #pragma once
 #include "IObserver.h"
+#include "Components.h"
+#include "GlobalVariables.h"
+#include "ComponentRegistry.h"
+#include "SharedObjects.h"
+#include "EntityManager.h"
+#include "SFML/Graphics.hpp"
+
+
 
 namespace GotchiValley {
 
 	class GameWorld : public ISubject {
 	public:
-
+		void Initialize();
 		void AddObserver(IObserver* observer) override;
 		void RemoveObserver(IObserver* observer) override;
 		void NotifyObservers(const sf::Event& event, const std::string& message) override;

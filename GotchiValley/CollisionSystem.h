@@ -1,5 +1,5 @@
 #pragma once
-
+#include "SharedObjects.h"
 #include "Components.h"
 
 namespace GotchiValley{

@@ -1,5 +1,7 @@
 #pragma once
-#include "GotchiValley.h"
+#include "GlobalVariables.h"
+#include "SharedObjects.h"
+#include "Components.h"
 #include "SFML/Graphics.hpp"
 
 
@@ -9,7 +11,7 @@ namespace GotchiValley {
 	public:
 		void Update(sf::RenderWindow& window);
 		void AttachTexture(Entity& entity, const std::string& filename);
-		sf::Texture& LoadTexture(const std::string& filename);
+		//sf::Texture& LoadTexture(const std::string& filename);
 
 	private:
 

@@ -1,5 +1,7 @@
 #pragma once
-#include "GotchiValley.h"
+#include "Components.h"
+#include "SharedObjects.h"
+#include "GlobalVariables.h"
 #include "SFML/Graphics.hpp"
 
 namespace GotchiValley {

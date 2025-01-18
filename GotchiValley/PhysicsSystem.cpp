@@ -1,9 +1,7 @@
-#include "Components.h"
-#include "SharedObjects.h"
+
 #include "PhysicsSystem.h"
 
 using namespace GotchiValley;
-//extern const size_t MAX_ENTITIES;
 
 void PhysicsSystem::Update(float& dt) {
 
@@ -15,9 +13,9 @@ void PhysicsSystem::Update(float& dt) {
 
 		transform->position += transform->velocity * dt * transform->speed;
 	
-		auto sprite = componentRegistry.GetComponentOfType<sf::Sprite>(i->first);
-		if (!sprite) continue;
-		sprite->setPosition(transform->position);
+		auto spriteComponent = componentRegistry.GetComponentOfType<Sprite>(i->first);
+		if (!spriteComponent) continue;
+		spriteComponent->sprite.setPosition(transform->position);
 
 		auto collider = componentRegistry.GetComponentOfType<Collider>(i->first);
 		if (!collider) continue;
@@ -32,6 +30,10 @@ void PhysicsSystem::SetPosition(Entity& entity, sf::Vector2f& position) {
 	auto transform = componentRegistry.GetComponentOfType<Transform>(entity);
 	if (!transform) return;
 	transform->position = position;
+
+	auto spriteComponent = componentRegistry.GetComponentOfType<Sprite>(entity);
+	if (!spriteComponent) return;
+	spriteComponent->sprite.setPosition(transform->position);
 	
 }
 

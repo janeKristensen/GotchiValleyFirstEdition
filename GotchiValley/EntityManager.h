@@ -1,5 +1,5 @@
 #pragma once
-#include "GotchiValley.h"
+#include "GlobalVariables.h"
 #include <array>
 #include <queue>
 #include <unordered_map>
