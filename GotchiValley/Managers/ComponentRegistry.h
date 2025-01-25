@@ -73,7 +73,7 @@ namespace GotchiValley {
 
 
 	private:
-		inline static std::unordered_map<std::type_index, std::shared_ptr<void>> mManagers;
+		static std::unordered_map<std::type_index, std::shared_ptr<void>> mManagers;
 	};
 
 }

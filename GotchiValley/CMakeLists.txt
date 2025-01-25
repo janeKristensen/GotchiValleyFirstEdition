@@ -3,12 +3,43 @@
 #
 
 # Add source to this project's executable.
-add_executable (GotchiValley "GotchiValley.cpp" "GotchiValley.h" "SharedObjects.h" "EntityManager.h" "EntityManager.cpp" "PhysicsSystem.cpp" "PhysicsSystem.h" "RenderSystem.h" "RenderSystem.cpp" "Components.h" "IObserver.h" "UISystem.h" "GameWorld.h"  "GameWorld.cpp" "UISystem.cpp"  "ComponentManager.h" "MovementSystem.h" "MovementSystem.cpp" "CollisionSystem.h" "CollisionSystem.cpp" "ComponentRegistry.h"  "SharedObjects.cpp" "AnimationSystem.h" "AnimationSystem.cpp" "GlobalVariables.h")
+add_executable (GotchiValley 
+    "Game/GotchiValley.cpp" 
+    "Game/GotchiValley.h"  
+    "Game/GameWorld.h"  
+    "Game/GameWorld.cpp" 
+    "Globals/Components.h"
+    "Globals/GlobalVariables.h"
+    "Globals/SharedObjects.h"
+    "Globals/SharedObjects.cpp"
+    "Globals/IObserver.h"  
+    "Managers/ComponentManager.h"
+    "Managers/ComponentRegistry.h"
+    "Managers/EntityManager.h"
+    "Managers/EntityManager.cpp"
+    "Systems/AnimationSystem.h"
+    "Systems/AnimationSystem.cpp"
+    "Systems/CollisionSystem.h"
+    "Systems/CollisionSystem.cpp"
+    "Systems/MovementSystem.h"
+    "Systems/MovementSystem.cpp"
+    "Systems/PhysicsSystem.h"
+    "Systems/PhysicsSystem.cpp"
+    "Systems/RenderSystem.h"
+    "Systems/RenderSystem.cpp"
+    "Systems/UISystem.h"
+    "Systems/UISystem.cpp"
+)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET GotchiValley PROPERTY CXX_STANDARD 20)
 endif()
 
+# Include sub-projects.
+add_subdirectory ("Systems")
+add_subdirectory ("Managers")
+add_subdirectory ("Globals")
+add_subdirectory ("Game")
 
 # Get all image files in the resources directory
 file(GLOB IMAGE_FILES ${CMAKE_SOURCE_DIR}/resources/*.png)
@@ -29,19 +60,26 @@ endforeach()
 set(SFML_DIR ${CMAKE_SOURCE_DIR}/external/SFML-3.0.0)
 
 # Add the include directory
-include_directories(${SFML_DIR}/include)
+include_directories(
+    ${SFML_DIR}/include
+    ${CMAKE_SOURCE_DIR}/GotchiValley/Globals
+    ${CMAKE_SOURCE_DIR}/GotchiValley/Managers
+    ${CMAKE_SOURCE_DIR}/GotchiValley/Systems
+)
 
 # Link SFML libraries
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_link_libraries(GotchiValley
     ${SFML_DIR}/lib/sfml-system-d.lib
     ${SFML_DIR}/lib/sfml-window-d.lib
-    ${SFML_DIR}/lib/sfml-graphics-d.lib)
+    ${SFML_DIR}/lib/sfml-graphics-d.lib
+    )
 else()
     target_link_libraries(GotchiValley
     ${SFML_DIR}/lib/sfml-system.lib
     ${SFML_DIR}/lib/sfml-window.lib
-    ${SFML_DIR}/lib/sfml-graphics.lib)
+    ${SFML_DIR}/lib/sfml-graphics.lib
+)
 endif()
 
 
