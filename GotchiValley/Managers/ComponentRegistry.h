@@ -5,7 +5,6 @@
 #include <memory>
 #include <typeindex>
 
-//using Entity = uint32_t;
 
 namespace GotchiValley {
 
@@ -73,7 +72,7 @@ namespace GotchiValley {
 
 
 	private:
-		static std::unordered_map<std::type_index, std::shared_ptr<void>> mManagers;
+		inline static std::unordered_map<std::type_index, std::shared_ptr<void>> mManagers;
 	};
 
 }

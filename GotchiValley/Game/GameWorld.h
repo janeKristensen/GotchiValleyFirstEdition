@@ -14,6 +14,7 @@ namespace GotchiValley {
 	class GameWorld : public ISubject {
 	public:
 		void Initialize();
+		~GameWorld() override {} ;
 		void AddObserver(IObserver* observer) override;
 		void RemoveObserver(IObserver* observer) override;
 		void NotifyObservers(const sf::Event& event, const std::string& message) override;

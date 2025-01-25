@@ -10,6 +10,7 @@ void AnimationSystem::Update(float dt) {
 	for (auto i = animArray.begin(); i != animArray.end(); i++) {
 
 		auto animation = i->second;
+		auto spriteComponent = componentRegistry.GetComponentOfType<Sprite>(i->first);
 		animation->frameTime += dt;
 
 		if (animation->frameTime > (1 / animation->frames[animation->animNum].animFPS)) {
@@ -22,10 +23,13 @@ void AnimationSystem::Update(float dt) {
 			}
 
 			uint8_t imageNum = animation->startFrame + animation->frameNum;
-			auto spriteComponent = componentRegistry.GetComponentOfType<Sprite>(i->first);
 			spriteComponent->sprite.setTextureRect(animation->frames[animation->animNum].sprites[imageNum]);
-
 			animation->frameTime = fmod(animation->frameTime, (1 / animation->frames[animation->animNum].animFPS));
+		}
+		else {
+
+			uint8_t imageNum = animation->startFrame + animation->frameNum;
+			spriteComponent->sprite.setTextureRect(animation->frames[animation->animNum].sprites[imageNum]);
 		}
 	}	
 }

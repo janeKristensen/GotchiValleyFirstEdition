@@ -8,23 +8,16 @@ file(GLOB MANAGERS_SRC CMAKE_CONFIGURE_DEPENDS "*.cpp")
 
 add_library(Managers ${MANAGERS_SRC})
 
-target_include_directories(Managers PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-# Link SFML libraries
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_link_libraries(Managers 
-    Globals
-    ${SFML_DIR}/lib/sfml-system-d.lib
-    ${SFML_DIR}/lib/sfml-window-d.lib
-    ${SFML_DIR}/lib/sfml-graphics-d.lib
-    )
-else()
-    target_link_libraries(Managers
-    Globals
-    ${SFML_DIR}/lib/sfml-system.lib
-    ${SFML_DIR}/lib/sfml-window.lib
-    ${SFML_DIR}/lib/sfml-graphics.lib
-)
+if (CMAKE_VERSION VERSION_GREATER 3.12)
+  set_property(TARGET Managers PROPERTY CXX_STANDARD 20)
 endif()
+
+target_include_directories(Managers PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_link_libraries(Managers 
+    Globals)
+
 
 
 

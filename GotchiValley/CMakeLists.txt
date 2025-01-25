@@ -65,6 +65,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/GotchiValley/Globals
     ${CMAKE_SOURCE_DIR}/GotchiValley/Managers
     ${CMAKE_SOURCE_DIR}/GotchiValley/Systems
+    ${CMAKE_SOURCE_DIR}/GotchiValley/Game
 )
 
 # Link SFML libraries
