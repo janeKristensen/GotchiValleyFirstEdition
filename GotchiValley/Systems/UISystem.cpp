@@ -1,26 +1,47 @@
 
 #include "UISystem.h"
 
+using namespace GotchiValley;
 
-UISystem::UISystem(std::shared_ptr<sf::RenderWindow> window, ISubject& subject) : mWindow(window), mSubject(subject) {
+void UISystem::Update() {
 
-	this->mSubject.AddObserver(this);
 }
 
-void UISystem::OnNotify(const sf::Event& event, const std::string& message) {
 
-	if (event.is<sf::Event::Closed>()) {
-		mWindow->close();
-	}
-	else if (event.is<sf::Event::KeyPressed>()) {
+void UISystem::PollEvents(std::shared_ptr<sf::RenderWindow> window) {
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
-			mWindow->close();
+	while (const std::optional event = window->pollEvent()) {
+
+		if (event->is<sf::Event::Closed>()) {
+			window->close();
+		}
+		else if (event->is<sf::Event::KeyPressed>()) {
+
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
+				window->close();
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) {
+
+				NotifyObservers(NULL, EntityEvent::INTERACTION);
+			}
 		}
 	}
-	
 }
 
-void UISystem::RemoveFromSubject() {
-	mSubject.RemoveObserver(this);
+void UISystem::AddObserver(IGameObserver* observer) {
+
+	mObservers.emplace(observer);
 }
+
+void UISystem::RemoveObserver(IGameObserver* observer) {
+
+	mObservers.erase(observer);
+}
+
+void UISystem::NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) {
+
+	for (auto observer : mObservers) {
+		observer->OnNotify(entity, eventMessage);
+	}
+}
+

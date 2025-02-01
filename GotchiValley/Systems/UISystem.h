@@ -1,15 +1,23 @@
 #pragma once
+#include <unordered_set>
 #include "IObserver.h"
+#include "Components.h"
+#include "SharedObjects.h"
+
+namespace GotchiValley {
+
+	class UISystem : public IGameSubject {
+	public:
+		void Update();
+		void PollEvents(std::shared_ptr<sf::RenderWindow> window);
+		void AddObserver(IGameObserver* observer) override;
+		void RemoveObserver(IGameObserver* observer) override;
+		void NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) override;
+	private:
+		std::unordered_set<IGameObserver*> mObservers;
+	};
+
+}
 
 
-class UISystem : public IObserver{
-public:
-	UISystem(std::shared_ptr<sf::RenderWindow> window, ISubject& subject);
-	void OnNotify(const sf::Event& event, const std::string& message);
-	void RemoveFromSubject();
-
-private:
-	std::shared_ptr<sf::RenderWindow> mWindow;
-	ISubject& mSubject;
-};
 

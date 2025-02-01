@@ -6,22 +6,36 @@ using namespace GotchiValley;
 void MovementSystem::Update() {
 	
 	auto controlArray = componentRegistry.GetComponentArray<Controlable>();
-	for (auto i : controlArray) {
+	for (auto i = controlArray.begin(); i != controlArray.end(); i++) {
 
-		auto transform = componentRegistry.GetComponentOfType<Transform>(i.first);
-		float acceleration = 1.f;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) 
+			NotifyObservers(i->first, EntityEvent::MOVE_UP);
+		
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) 
+			NotifyObservers(i->first, EntityEvent::MOVE_DOWN);
+		
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) 
+			NotifyObservers(i->first, EntityEvent::MOVE_RIGHT);
+		
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) 
+			NotifyObservers(i->first, EntityEvent::MOVE_LEFT);
+		
+	}
+}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
-			transform->velocity.y = -acceleration;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
-			transform->velocity.y = acceleration;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-			transform->velocity.x = acceleration;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-			transform->velocity.x = -acceleration;
-		}
+void MovementSystem::AddObserver(IGameObserver* observer) {
+
+	mObservers.emplace(observer);
+}
+
+void MovementSystem::RemoveObserver(IGameObserver* observer) {
+
+	mObservers.erase(observer);
+}
+
+void MovementSystem::NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) {
+
+	for (auto observer : mObservers) {
+		observer->OnNotify(entity, eventMessage);
 	}
 }

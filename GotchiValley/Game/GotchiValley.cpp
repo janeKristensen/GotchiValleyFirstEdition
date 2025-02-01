@@ -10,22 +10,16 @@ using namespace GotchiValley;
 
 		
 		GameWorld gameWorld;
+		UISystem uiSystem;
 		CollisionSystem collisionSystem;
 		MovementSystem movementSystem;
-		AnimationSystem animationSystem;
 		RenderSystem renderSystem;
-		PhysicsSystem physicsSystem;
-		UISystem uiSystem{ window, gameWorld };
-
-		componentRegistry.RegisterComponentManager<Transform>();
-		componentRegistry.RegisterComponentManager<Moveable>();
-		componentRegistry.RegisterComponentManager<Controlable>();
-		componentRegistry.RegisterComponentManager<Sprite>();
-		componentRegistry.RegisterComponentManager<Collider>();
-		componentRegistry.RegisterComponentManager<PlayerStats>();
-		componentRegistry.RegisterComponentManager<Animation>();
+		PhysicsSystem physicsSystem{ &collisionSystem, &movementSystem };
+		AnimationSystem animationSystem(&collisionSystem, &movementSystem);
+		
 
 		gameWorld.Initialize();
+
 
 		sf::Clock clock;
 
@@ -33,7 +27,7 @@ using namespace GotchiValley;
 
 			float dt = clock.restart().asSeconds();
 
-			gameWorld.PollEvents(window);
+			uiSystem.PollEvents(window);
 
 			movementSystem.Update();
 			collisionSystem.Update();

@@ -11,17 +11,17 @@
 
 namespace GotchiValley {
 
-	class GameWorld : public ISubject {
+	class GameWorld : public IWindowSubject {
 	public:
 		void Initialize();
 		~GameWorld() override {} ;
-		void AddObserver(IObserver* observer) override;
-		void RemoveObserver(IObserver* observer) override;
+		void AddObserver(IWindowObserver* observer) override;
+		void RemoveObserver(IWindowObserver* observer) override;
 		void NotifyObservers(const sf::Event& event, const std::string& message) override;
 		void PollEvents(std::shared_ptr<sf::RenderWindow> window);
 
 	private:
-		std::list<IObserver*> mObservers;
+		std::list<IWindowObserver*> mObservers;
 	};
 
 }
