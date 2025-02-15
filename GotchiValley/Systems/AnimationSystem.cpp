@@ -53,12 +53,16 @@ void AnimationSystem::OnNotify(const Entity& entity, const EntityEvent& eventMes
 	}
 	else if (eventMessage == EntityEvent::INTERACTION) {
 
-		auto collider = componentRegistry.GetComponentOfType<Collider>(entity);
-		if (collider->hasCollided) {
+		auto animArray = componentRegistry.GetComponentArray<Animation>();
 
-			animation->frameNum = 0;
-			animation->animName = AnimationName::INTERACTING;
-			collider->hasCollided = false;
+		for (auto i = animArray.begin(); i != animArray.end(); i++) {
+			auto collider = componentRegistry.GetComponentOfType<Collider>(i->first);
+			if (collider->hasCollided) {
+
+				i->second->frameNum = 0;
+				i->second->animName = AnimationName::INTERACTING;
+				collider->hasCollided = false;
+			}
 		}
 		
 	}

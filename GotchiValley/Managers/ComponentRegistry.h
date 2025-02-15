@@ -18,7 +18,7 @@ namespace GotchiValley {
 		}
 
 		template <typename T>
-		void AddComponent(Entity& entity, T component) {
+		void AddComponent(Entity entity, T component) {
 
 			auto it = mManagers.find(std::type_index(typeid(T)));
 			if (it != mManagers.end()) {

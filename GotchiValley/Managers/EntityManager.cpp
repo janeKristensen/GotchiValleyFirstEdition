@@ -7,7 +7,7 @@ using namespace GotchiValley;
 
 EntityManager::EntityManager() {
 
-	for (uint32_t i = 0; i <= MAX_ENTITIES; i++) {
+	for (uint32_t i = 1; i <= MAX_ENTITIES; i++) {
 		mEntityId.push(i);
 	}
 }
