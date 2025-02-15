@@ -22,13 +22,15 @@ void AnimationSystem::Update(float dt) {
 
 				if (animation->animName == AnimationName::COLLIDING) {
 
-					animation->animName = AnimationName::IDLE;
-					animation->frameNum = animation->frameNum % animation->frames[animation->animName].numFrames;	
+					animation->animName = AnimationName::INITIAL;
+					
 				}
-				else {
-
-					animation->frameNum = animation->frameNum % animation->frames[animation->animName].numFrames;
+				else if (animation->animName == AnimationName::INTERACTING) {
+					
+					animation->animName = AnimationName::IDLE; 
 				}
+					
+				animation->frameNum = animation->frameNum % animation->frames[animation->animName].numFrames;	
 			}	
 		}
 
@@ -41,24 +43,27 @@ void AnimationSystem::Update(float dt) {
 
 void AnimationSystem::OnNotify(const Entity& entity, const EntityEvent& eventMessage) {
 
+	auto animation = componentRegistry.GetComponentOfType<Animation>(entity);
+
 	if (eventMessage == EntityEvent::COLLISION) {
 
-		auto animation = componentRegistry.GetComponentOfType<Animation>(entity);
 		animation->frameNum = 0;
+		animation->animName = AnimationName::COLLIDING;
+		
+	}
+	else if (eventMessage == EntityEvent::INTERACTION) {
 
 		auto collider = componentRegistry.GetComponentOfType<Collider>(entity);
 		if (collider->hasCollided) {
 
+			animation->frameNum = 0;
 			animation->animName = AnimationName::INTERACTING;
 			collider->hasCollided = false;
-		}	
-		else
-			animation->animName = AnimationName::COLLIDING;
+		}
 		
 	}
 	else if(eventMessage == EntityEvent::MOVE_RIGHT) {
 
-		auto animation = componentRegistry.GetComponentOfType<Animation>(entity);
 		if (animation->animName != AnimationName::RUNNING) {
 
 			animation->animName = AnimationName::RUNNING;

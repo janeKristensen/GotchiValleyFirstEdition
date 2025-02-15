@@ -40,7 +40,13 @@ void GameWorld::Initialize() {
 			sf::IntRect({ 96,160 }, { 32,32 }),
 
 		}, 2.f);
-	componentRegistry.AddComponent(object, Animation({ {AnimationName::INITIAL, animEgg}, {AnimationName::IDLE, animBird}, {AnimationName::COLLIDING, animCollision}, {AnimationName::INTERACTING, animBird} }, 0, 0, 0, AnimationName::INITIAL));
+	componentRegistry.AddComponent(object, 
+		Animation({ 
+			{AnimationName::INITIAL, animEgg}, 
+			{AnimationName::IDLE, animBird}, 
+			{AnimationName::COLLIDING, animEgg},
+			{AnimationName::INTERACTING, animCollision} },
+		0, 0, 0, AnimationName::INITIAL));
 	componentRegistry.AddComponent(object,
 		Transform(
 			{
@@ -92,7 +98,13 @@ void GameWorld::Initialize() {
 			sf::IntRect({ 96,196 }, { 32,32 }),
 		}, 24.f);
 
-	componentRegistry.AddComponent(player, Animation({ {AnimationName::IDLE,animStanding}, {AnimationName::RUNNING, animRunning}, {AnimationName::COLLIDING, animColliding} }, 0, 0, 0, AnimationName::IDLE));
+	componentRegistry.AddComponent(player, 
+		Animation({ 
+			{AnimationName::INITIAL,animStanding},
+			{AnimationName::IDLE,animStanding}, 
+			{AnimationName::RUNNING, animRunning}, 
+			{AnimationName::COLLIDING, animColliding} }, 
+		0, 0, 0, AnimationName::IDLE));
 	componentRegistry.AddComponent(player, Transform({ sf::Vector2f(200,100), sf::Vector2f(0,0), 80.f }));
 	componentRegistry.AddComponent(player, Collider({ sf::FloatRect({200,100}, {32,32}) }));
 	componentRegistry.AddComponent(player, Moveable());
