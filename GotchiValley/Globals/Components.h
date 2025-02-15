@@ -1,4 +1,5 @@
 #pragma once
+#include "GlobalVariables.h"
 #include "SFML/Graphics.hpp"
 #include <cstdint>
 
@@ -6,6 +7,10 @@ namespace GotchiValley {
 
 	struct PlayerStats {
 		std::uint16_t health;
+	};
+
+	struct EntityState {
+		State state = State::IDLE;
 	};
 
 	struct Transform {
@@ -20,6 +25,7 @@ namespace GotchiValley {
 
 	struct Collider {
 		sf::FloatRect boundingBox;
+		bool hasCollided = false;
 	};
 
 	struct Moveable {};
@@ -37,12 +43,17 @@ namespace GotchiValley {
 	};
 
 	struct Animation {
-		std::vector<AnimationData> frames;
+		std::unordered_map<AnimationName, AnimationData> frames;
 		uint8_t startFrame = 0;
 		uint8_t frameNum = 0;
 		float frameTime = 0.f;
-		uint8_t animNum = 0;
+		AnimationName animName = AnimationName::IDLE;
 	};
+
+	struct Interactable {
+		bool interactionActive = true;
+	};
+
 }
 
 

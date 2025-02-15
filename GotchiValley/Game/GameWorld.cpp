@@ -6,14 +6,64 @@ using namespace GotchiValley;
 
 void GameWorld::Initialize() {
 	
+	componentRegistry.RegisterComponentManager<Transform>();
+	componentRegistry.RegisterComponentManager<Moveable>();
+	componentRegistry.RegisterComponentManager<Controlable>();
+	componentRegistry.RegisterComponentManager<Sprite>();
+	componentRegistry.RegisterComponentManager<Collider>();
+	componentRegistry.RegisterComponentManager<PlayerStats>();
+	componentRegistry.RegisterComponentManager<Animation>();
+	componentRegistry.RegisterComponentManager<Interactable>();
+
 	EntityManager entityManager;
+
+	auto object = entityManager.CreateEntity();
+	auto texture1 = std::make_shared<sf::Texture>(std::move(sf::Texture("egg_sprite_sheet.png")));
+	componentRegistry.AddComponent(object, Sprite(texture1));
+	auto animEgg = AnimationData(1,
+		{
+			sf::IntRect({ 0,0 }, { 32,32 }),
+		});
+	auto animBird = AnimationData(4,
+		{
+			sf::IntRect({ 0,32 }, { 32,32 }),
+			sf::IntRect({ 32,32 }, { 32,32 }),
+			sf::IntRect({ 64,32 }, { 32,32 }),
+			sf::IntRect({ 96,32 }, { 32,32 }),
+
+		}, 2.f);
+	auto animCollision = AnimationData( 4,
+		{
+			sf::IntRect({ 0,160 }, { 32,32 }),
+			sf::IntRect({ 32,160 }, { 32,32 }),
+			sf::IntRect({ 64,160 }, { 32,32 }),
+			sf::IntRect({ 96,160 }, { 32,32 }),
+
+		}, 2.f);
+	componentRegistry.AddComponent(object, 
+		Animation({ 
+			{AnimationName::INITIAL, animEgg}, 
+			{AnimationName::IDLE, animBird}, 
+			{AnimationName::COLLIDING, animEgg},
+			{AnimationName::INTERACTING, animCollision} },
+		0, 0, 0, AnimationName::INITIAL));
+	componentRegistry.AddComponent(object,
+		Transform(
+			{
+				sf::Vector2f(100,50),
+				sf::Vector2f(0,0),
+			}
+		));
+	componentRegistry.AddComponent(object, Collider({ sf::FloatRect({100,50}, {32,32}) }));
+	componentRegistry.AddComponent(object, Interactable());
+
 
 	auto player = entityManager.CreateEntity();
 	auto texture = std::make_shared<sf::Texture>(std::move(sf::Texture("sprite_sheet.png")));
 	componentRegistry.AddComponent(player, Sprite(texture));
-	auto animation1 = AnimationData(8, 
+	auto animStanding = AnimationData( 13,
 		{ 
-			sf::IntRect({ 0,32 }, { 32,32 }),
+			sf::IntRect({ 0,0 }, { 32,32 }),
 			sf::IntRect({ 32,0 }, { 32,32 }),
 			sf::IntRect({ 64,0 }, { 32,32 }),
 			sf::IntRect({ 96,0 }, { 32,32 }),
@@ -26,11 +76,11 @@ void GameWorld::Initialize() {
 			sf::IntRect({ 320,0 }, { 32,32 }),
 			sf::IntRect({ 352,0 }, { 32,32 }),
 			sf::IntRect({ 384,0 }, { 32,32 }),
-		}, 5.f);
+		}, 10.f);
 
-	auto animation2 = AnimationData(8, 
+	auto animRunning = AnimationData( 8,
 		{
-			sf::IntRect({ 0,32 }, { 32,32 }),
+			sf::IntRect({ 0,0 }, { 32,32 }),
 			sf::IntRect({ 32,32 }, { 32,32 }),
 			sf::IntRect({ 64,32 }, { 32,32 }),
 			sf::IntRect({ 96,32 }, { 32,32 }),
@@ -40,32 +90,37 @@ void GameWorld::Initialize() {
 			sf::IntRect({ 224,32 }, { 32,32 }), 
 		}, 16.f);
 
-	componentRegistry.AddComponent(player, Animation({ animation1, animation2 }));
+	auto animColliding = AnimationData( 4,
+		{
+			sf::IntRect({ 0,196}, { 32,32 }),
+			sf::IntRect({ 32,196 }, { 32,32 }),
+			sf::IntRect({ 64,196 }, { 32,32 }),
+			sf::IntRect({ 96,196 }, { 32,32 }),
+		}, 24.f);
+
+	componentRegistry.AddComponent(player, 
+		Animation({ 
+			{AnimationName::INITIAL,animStanding},
+			{AnimationName::IDLE,animStanding}, 
+			{AnimationName::RUNNING, animRunning}, 
+			{AnimationName::COLLIDING, animColliding} }, 
+		0, 0, 0, AnimationName::IDLE));
 	componentRegistry.AddComponent(player, Transform({ sf::Vector2f(200,100), sf::Vector2f(0,0), 80.f }));
-	componentRegistry.AddComponent(player, Collider({ sf::FloatRect({200,100}, {31,50}) }));
+	componentRegistry.AddComponent(player, Collider({ sf::FloatRect({200,100}, {32,32}) }));
 	componentRegistry.AddComponent(player, Moveable());
 	componentRegistry.AddComponent(player, Controlable());
 	componentRegistry.AddComponent(player, PlayerStats(100));
 
 
-	auto object = entityManager.CreateEntity();
-	auto texture1 = std::make_shared<sf::Texture>(std::move(sf::Texture("egg_big.png")));
-	componentRegistry.AddComponent(object, Sprite(texture1));
-	componentRegistry.AddComponent(object,
-		Transform({
-			sf::Vector2f(100,50),
-			sf::Vector2f(0,0),
-			})
-			);
-	componentRegistry.AddComponent(object, Collider({ sf::FloatRect({100,50}, {42,58}) }));
+	
 }
 
-void GameWorld::AddObserver(IObserver* observer){
+void GameWorld::AddObserver(IWindowObserver* observer){
 	
 	mObservers.emplace_back(observer);
 }
 
-void GameWorld::RemoveObserver(IObserver* observer) {
+void GameWorld::RemoveObserver(IWindowObserver* observer) {
 	
 	mObservers.remove(observer);
 }
@@ -77,12 +132,4 @@ void GameWorld::NotifyObservers(const sf::Event& event, const std::string& messa
 	}
 }
 
-
-void GameWorld::PollEvents(std::shared_ptr<sf::RenderWindow> window) {
-
-	while (const std::optional event = window->pollEvent()) {
-
-		NotifyObservers(event.value(), "");
-	}
-}
 

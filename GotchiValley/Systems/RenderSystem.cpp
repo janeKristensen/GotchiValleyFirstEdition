@@ -2,13 +2,12 @@
 #include "RenderSystem.h"
 
 
-
 using namespace GotchiValley;
+
 
 void RenderSystem::Update(sf::RenderWindow& window) {
 
 	auto spriteArray = componentRegistry.GetComponentArray<Sprite>();
-
 	for (auto i = spriteArray.begin(); i != spriteArray.end(); i++) {
 
 		window.draw(i->second->sprite);	

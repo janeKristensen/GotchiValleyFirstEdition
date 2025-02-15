@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "GameWorld.h"
+#include "IObserver.h"
 #include "GlobalVariables.h"
 #include "SharedObjects.h"
 #include "SFML/Graphics.hpp"

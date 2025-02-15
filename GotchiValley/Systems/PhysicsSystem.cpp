@@ -3,6 +3,7 @@
 
 using namespace GotchiValley;
 
+
 void PhysicsSystem::Update(float& dt) {
 
 	auto transformArray = componentRegistry.GetComponentArray<Transform>();
@@ -25,6 +26,7 @@ void PhysicsSystem::Update(float& dt) {
 	}
 }
 
+
 void PhysicsSystem::SetPosition(Entity& entity, sf::Vector2f& position) {
 
 	auto transform = componentRegistry.GetComponentOfType<Transform>(entity);
@@ -36,6 +38,34 @@ void PhysicsSystem::SetPosition(Entity& entity, sf::Vector2f& position) {
 	spriteComponent->sprite.setPosition(transform->position);
 	
 }
+
+
+void PhysicsSystem::OnNotify(const Entity& entity, const EntityEvent& eventMessage) {
+
+	auto transform = componentRegistry.GetComponentOfType<Transform>(entity);
+
+	if (componentRegistry.HasComponent<Moveable>(entity)) {
+
+		if(eventMessage == EntityEvent::COLLISION)
+			transform->velocity *= -1.f;
+
+		else if (eventMessage == EntityEvent::MOVE_UP) 
+			transform->velocity.y = -acceleration;
+		
+		else if (eventMessage == EntityEvent::MOVE_DOWN) 
+			transform->velocity.y = acceleration;
+		
+		else if (eventMessage == EntityEvent::MOVE_RIGHT) 
+			transform->velocity.x = acceleration;
+		
+		else if (eventMessage == EntityEvent::MOVE_LEFT) 
+			transform->velocity.x = -acceleration;
+		
+	}
+	
+}
+
+
 
 
 
