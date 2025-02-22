@@ -46,8 +46,37 @@ void PhysicsSystem::OnNotify(const Entity& entity, const EntityEvent& eventMessa
 
 	if (componentRegistry.HasComponent<Moveable>(entity)) {
 
-		if(eventMessage == EntityEvent::COLLISION)
-			transform->velocity *= -1.f;
+		switch (eventMessage) {
+		case EntityEvent::COLLISION: 
+			transform->velocity *= -1.0f;
+			break;
+
+		case EntityEvent::MOVE_UP:
+			transform->velocity.y = -acceleration;
+			break;
+
+		case EntityEvent::MOVE_DOWN:
+			transform->velocity.y = acceleration;
+			break;
+
+		case EntityEvent::MOVE_RIGHT:
+			transform->velocity.x = acceleration;
+			break;
+
+		case EntityEvent::MOVE_LEFT:
+			transform->velocity.x = -acceleration;
+			break;
+
+		/*case EntityEvent::IDLE:
+			transform->velocity.x = 0;
+			transform->velocity.y = 0;
+			break;*/
+		
+		default:
+			break;
+		}
+		/*if(eventMessage == EntityEvent::COLLISION)
+			transform->velocity *= -1.0f;
 
 		else if (eventMessage == EntityEvent::MOVE_UP) 
 			transform->velocity.y = -acceleration;
@@ -59,7 +88,7 @@ void PhysicsSystem::OnNotify(const Entity& entity, const EntityEvent& eventMessa
 			transform->velocity.x = acceleration;
 		
 		else if (eventMessage == EntityEvent::MOVE_LEFT) 
-			transform->velocity.x = -acceleration;
+			transform->velocity.x = -acceleration;*/
 		
 	}
 	

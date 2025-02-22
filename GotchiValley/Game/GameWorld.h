@@ -19,7 +19,7 @@ namespace GotchiValley {
 		~GameWorld() override {};
 		void AddObserver(IWindowObserver* observer) override;
 		void RemoveObserver(IWindowObserver* observer) override;
-		void NotifyObservers(const sf::Event& event, const std::string& message) override;
+		void NotifyObservers(const sf::Event& event, const std::string& message) const override;
 		void PollEvents(std::shared_ptr<sf::RenderWindow> window);
 
 	private:

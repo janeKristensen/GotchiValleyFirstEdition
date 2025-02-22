@@ -15,6 +15,7 @@ namespace GotchiValley {
 		MOVE_DOWN,
 		COLLISION,
 		INTERACTION,
+		IDLE,
 	};
 
 	enum class State { 

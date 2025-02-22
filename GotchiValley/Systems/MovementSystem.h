@@ -14,7 +14,7 @@ namespace GotchiValley {
 		void Update();
 		void AddObserver(IGameObserver* observer);
 		void RemoveObserver(IGameObserver* observer);
-		void NotifyObservers(const Entity& entity, const EntityEvent& eventMessage);
+		void NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) const override;
 	private:
 		std::unordered_set<IGameObserver*> mObservers;
 	};

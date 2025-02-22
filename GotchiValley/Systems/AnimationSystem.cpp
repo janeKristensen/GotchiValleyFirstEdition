@@ -56,15 +56,18 @@ void AnimationSystem::OnNotify(const Entity& entity, const EntityEvent& eventMes
 		auto animArray = componentRegistry.GetComponentArray<Animation>();
 
 		for (auto i = animArray.begin(); i != animArray.end(); i++) {
-			auto collider = componentRegistry.GetComponentOfType<Collider>(i->first);
-			if (collider->hasCollided) {
+			auto interactable = componentRegistry.GetComponentOfType<Interactable>(i->first);
+			if (!interactable) continue;
+			
+			else if (interactable->interactionActive) {
 
 				i->second->frameNum = 0;
 				i->second->animName = AnimationName::INTERACTING;
-				collider->hasCollided = false;
+				interactable->interactionActive = false;
 			}
+				
+			
 		}
-		
 	}
 	else if(eventMessage == EntityEvent::MOVE_RIGHT) {
 
@@ -74,5 +77,8 @@ void AnimationSystem::OnNotify(const Entity& entity, const EntityEvent& eventMes
 			animation->frameNum = 0;
 		}
 		
+	}
+	else if (eventMessage == EntityEvent::IDLE) {
+		animation->animName = AnimationName::IDLE;
 	}
 }

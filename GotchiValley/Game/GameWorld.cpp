@@ -66,7 +66,7 @@ void GameWorld::RemoveObserver(IWindowObserver* observer) {
 	mObservers.remove(observer);
 }
 
-void GameWorld::NotifyObservers(const sf::Event& event, const std::string& message) {
+void GameWorld::NotifyObservers(const sf::Event& event, const std::string& message) const {
 	
 	for (auto observer : mObservers) {
 		observer->OnNotify(event, message);

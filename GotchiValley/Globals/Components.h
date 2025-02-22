@@ -37,21 +37,21 @@ namespace GotchiValley {
 	};
 
 	struct AnimationData {
-		uint8_t numFrames;
+		uint8_t numFrames = 1;
 		std::vector<sf::IntRect> sprites;
 		float animFPS = 24.0f;
 	};
 
 	struct Animation {
 		std::unordered_map<AnimationName, AnimationData> frames;
-		uint8_t startFrame = 0;
-		uint8_t frameNum = 0;
-		float frameTime = 0.f;
+		uint8_t startFrame	= 0;
+		uint8_t frameNum	= 0;
+		float frameTime		= 0.f;
 		AnimationName animName = AnimationName::IDLE;
 	};
 
 	struct Interactable {
-		bool interactionActive = true;
+		bool interactionActive = false;
 	};
 
 }

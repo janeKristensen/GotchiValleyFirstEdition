@@ -15,7 +15,7 @@ namespace GotchiValley {
 		virtual ~IWindowSubject() {};
 		virtual void AddObserver(IWindowObserver* observer) = 0;
 		virtual void RemoveObserver(IWindowObserver* observer) = 0;
-		virtual void NotifyObservers(const sf::Event& event, const std::string& message) = 0;
+		virtual void NotifyObservers(const sf::Event& event, const std::string& message) const = 0;
 	};
 
 	class IGameObserver {
@@ -29,7 +29,7 @@ namespace GotchiValley {
 		virtual ~IGameSubject() {};
 		virtual void AddObserver(IGameObserver* observer) = 0;
 		virtual void RemoveObserver(IGameObserver* observer) = 0;
-		virtual void NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) = 0;
+		virtual void NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) const = 0;
 	};
 
 }

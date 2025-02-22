@@ -12,7 +12,7 @@ namespace GotchiValley {
 		void PollEvents(std::shared_ptr<sf::RenderWindow> window);
 		void AddObserver(IGameObserver* observer) override;
 		void RemoveObserver(IGameObserver* observer) override;
-		void NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) override;
+		void NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) const override;
 	private:
 		std::unordered_set<IGameObserver*> mObservers;
 	};
