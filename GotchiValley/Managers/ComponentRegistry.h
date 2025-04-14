@@ -34,6 +34,16 @@ namespace GotchiValley {
 		}
 
 		template <typename T>
+		void RemoveComponent(Entity& entity) {
+			auto it = mManagers.find(std::type_index(typeid(T)));
+			if (it != mManagers.end()) {
+				
+				ComponentManager<T>* componentManager = static_cast<ComponentManager<T>*>(it->second.get());
+				componentManager->RemoveComponent(entity);
+			}
+		}
+
+		template <typename T>
 		bool HasComponent(Entity entity) {
 		
 			auto it = mManagers.find(std::type_index(typeid(T)));

@@ -54,6 +54,10 @@ namespace GotchiValley {
 		bool interactionActive = false;
 	};
 
+	struct Level {
+		sf::VertexArray vertices;
+		sf::Texture texture;
+	};
 }
 
 

@@ -21,7 +21,7 @@ namespace GotchiValley {
 
 		void RemoveComponent(Entity& entity) {
 
-			mComponents.erase[entity];
+			mComponents.erase(entity);
 		}
 
 		bool HasComponent(Entity entity) {

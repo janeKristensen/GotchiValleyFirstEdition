@@ -10,20 +10,21 @@ void GameWorld::Initialize() {
 	componentRegistry.RegisterComponentManager<Moveable>();
 	componentRegistry.RegisterComponentManager<Controlable>();
 	componentRegistry.RegisterComponentManager<Sprite>();
+	componentRegistry.RegisterComponentManager<Level>();
 	componentRegistry.RegisterComponentManager<Collider>();
 	componentRegistry.RegisterComponentManager<PlayerStats>();
 	componentRegistry.RegisterComponentManager<Animation>();
 	componentRegistry.RegisterComponentManager<Interactable>();
 
-	EntityManager entityManager;
-	Factory factory;
-
 	auto birdTexture = std::make_shared<sf::Texture>(std::move(sf::Texture("egg_sprite_sheet.png")));
 	auto playerTexture = std::make_shared<sf::Texture>(std::move(sf::Texture("sprite_sheet.png")));
+	//auto BGTexture = std::make_shared<sf::Texture>(std::move(sf::Texture("bg_sprite_small.png")));
 
-	auto bird1 = factory.CreateEntity
+	mCurrentLevel = mFactory.CreateEntity(mEntityManager, Level{mLevelManager.LoadLevel(0)});
+
+	auto bird1 = mFactory.CreateEntity
 	(
-		entityManager,
+		mEntityManager,
 		Sprite(birdTexture),
 		birdAnimation,
 		Transform({ sf::Vector2f(100,50), sf::Vector2f(0,0), }),
@@ -31,9 +32,9 @@ void GameWorld::Initialize() {
 		Interactable()
 	);
 
-	auto bird2 = factory.CreateEntity
+	auto bird2 = mFactory.CreateEntity
 	(
-		entityManager,
+		mEntityManager,
 		birdAnimation,
 		Sprite(birdTexture),
 		Transform({ sf::Vector2f(200,200), sf::Vector2f(0,0) }),
@@ -41,9 +42,9 @@ void GameWorld::Initialize() {
 		Interactable()
 	);
 
-	auto player = factory.CreateEntity
+	auto player = mFactory.CreateEntity
 	(
-		entityManager,
+		mEntityManager,
 		Sprite(playerTexture),
 		playerAnimation,
 		Transform({ sf::Vector2f(200,100), sf::Vector2f(0,0), 80.f }),
@@ -53,6 +54,12 @@ void GameWorld::Initialize() {
 		PlayerStats(100)
 	);
 
+}
+
+void GameWorld::SetLevel(std::uint32_t levelID) {
+
+	componentRegistry.RemoveComponent<Level>(mCurrentLevel);
+	componentRegistry.AddComponent<Level>(mCurrentLevel, Level{ mLevelManager.LoadLevel(levelID) });
 }
 
 

@@ -5,7 +5,7 @@ using namespace GotchiValley;
 
 	int main()
 	{
-		auto window = std::make_shared<sf::RenderWindow>(sf::RenderWindow(sf::VideoMode({ 800,600 }), "Gotchi Valley"));
+		auto window = std::make_shared<sf::RenderWindow>(sf::RenderWindow(sf::VideoMode({ SCREEN_SIZE.x, SCREEN_SIZE.y }), "Gotchi Valley"));
 		window->setFramerateLimit(60);
 
 		

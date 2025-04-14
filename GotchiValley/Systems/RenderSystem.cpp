@@ -7,6 +7,14 @@ using namespace GotchiValley;
 
 void RenderSystem::Update(sf::RenderWindow& window) {
 
+	auto levelVertexArray = componentRegistry.GetComponentArray<Level>();
+	for (auto i = levelVertexArray.begin(); i != levelVertexArray.end(); i++) {
+
+		sf::RenderStates states;
+		states.texture = &i->second->texture;
+		window.draw(i->second->vertices, states);
+	}
+
 	auto spriteArray = componentRegistry.GetComponentArray<Sprite>();
 	for (auto i = spriteArray.begin(); i != spriteArray.end(); i++) {
 

@@ -19,6 +19,8 @@ add_executable (GotchiValley
     "Managers/ComponentRegistry.h"
     "Managers/EntityManager.h"
     "Managers/EntityManager.cpp"
+    "Managers/LevelManager.h"
+    "Managers/LevelManager.cpp"
     "Systems/AnimationSystem.h"
     "Systems/AnimationSystem.cpp"
     "Systems/CollisionSystem.h"
