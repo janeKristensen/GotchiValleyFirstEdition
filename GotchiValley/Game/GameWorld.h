@@ -18,7 +18,7 @@ namespace GotchiValley {
 	public:
 		void Initialize();
 		~GameWorld() override {};
-		void SetLevel(std::uint32_t levelID);
+		void Update();
 		void AddObserver(IWindowObserver* observer) override;
 		void RemoveObserver(IWindowObserver* observer) override;
 		void NotifyObservers(const sf::Event& event, const std::string& message) const override;
@@ -30,6 +30,7 @@ namespace GotchiValley {
 		LevelManager mLevelManager = { sf::Texture("bg_sprite_small.png") };
 		Entity mCurrentLevel;
 		Factory mFactory;
+		void SetLevel(std::uint32_t levelID);
 	};
 
 }

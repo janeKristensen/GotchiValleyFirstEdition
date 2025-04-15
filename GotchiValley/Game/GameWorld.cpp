@@ -18,9 +18,14 @@ void GameWorld::Initialize() {
 
 	auto birdTexture = std::make_shared<sf::Texture>(std::move(sf::Texture("egg_sprite_sheet.png")));
 	auto playerTexture = std::make_shared<sf::Texture>(std::move(sf::Texture("sprite_sheet.png")));
-	//auto BGTexture = std::make_shared<sf::Texture>(std::move(sf::Texture("bg_sprite_small.png")));
+	auto BigEgg = std::make_shared<sf::Texture>(std::move(sf::Texture("egg_big.png")));
 
-	mCurrentLevel = mFactory.CreateEntity(mEntityManager, Level{mLevelManager.LoadLevel(0)});
+	auto newLevel = Level{ mLevelManager.LoadLevel(0) };
+	mCurrentLevel = mFactory.CreateEntity(mEntityManager, newLevel);
+	for (std::uint32_t i = 0; i < newLevel.colliders.size(); i++) {
+
+		componentRegistry.AddComponent(mCurrentLevel, newLevel.colliders[i]);
+	}
 
 	auto bird1 = mFactory.CreateEntity
 	(
@@ -54,6 +59,20 @@ void GameWorld::Initialize() {
 		PlayerStats(100)
 	);
 
+	auto button = mFactory.CreateEntity
+	(
+		mEntityManager,
+		Sprite(BigEgg),
+		Transform({ sf::Vector2f(250,150), sf::Vector2f(0,0), 80.f }),
+		Collider({ sf::FloatRect({250,150}, {32,32}) }),
+		Interactable()
+	);
+}
+
+void GameWorld::Update() {
+
+	// How to implement game logic with entity system?? I want to push an object to change level.
+	// How do i reference the objects created in initialization. 
 }
 
 void GameWorld::SetLevel(std::uint32_t levelID) {

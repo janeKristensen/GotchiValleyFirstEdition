@@ -45,5 +45,6 @@ namespace GotchiValley {
 
 	private:
 		std::unordered_map<Entity, std::shared_ptr<T>> mComponents{};
+
 	};
 }

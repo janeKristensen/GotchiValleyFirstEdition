@@ -7,6 +7,7 @@ using namespace GotchiValley;
 void CollisionSystem::Update() {
 
 	auto colliderArray = componentRegistry.GetComponentArray<Collider>();
+	std::cout << colliderArray.size();
 
 	for (auto i = colliderArray.begin(); i != colliderArray.end(); i++) {
 

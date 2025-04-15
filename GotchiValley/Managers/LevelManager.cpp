@@ -14,6 +14,7 @@ LevelManager::LevelManager(sf::Texture spritesheet) {
 Level LevelManager::LoadLevel(std::uint32_t id) {
 
 	Matrix level = mLevels.at(id);
+	std::vector<Collider> colliders;
 	sf::VertexArray vertices(sf::PrimitiveType::Triangles);
 	vertices.resize(LEVEL_SIZE.x * LEVEL_SIZE.y * 6);
 
@@ -48,10 +49,13 @@ Level LevelManager::LoadLevel(std::uint32_t id) {
 			triangles[4].texCoords = sf::Vector2f((tu + 1) * TILE_SIZE.x, tv * TILE_SIZE.y);
 			triangles[5].texCoords = sf::Vector2f((tu + 1) * TILE_SIZE.x, (tv + 1) * TILE_SIZE.y);
 		
+			sf::Vector2f size = static_cast<sf::Vector2f>(TILE_SIZE);
+			sf::Vector2f position = triangles[0].position;
+			colliders.push_back(Collider{ sf::FloatRect(position, size) });
 		}
 	}
 
-	Level levelMap{ vertices, mSpriteSheet };
+	Level levelMap{ vertices, mSpriteSheet, colliders };
 	return levelMap;
 }
 

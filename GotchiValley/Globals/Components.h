@@ -10,13 +10,13 @@ namespace GotchiValley {
 	};
 
 	struct EntityState {
-		State state = State::IDLE;
+		State state	= State::IDLE;
 	};
 
 	struct Transform {
 		sf::Vector2f position;
 		sf::Vector2f velocity;
-		float speed = 0.f;
+		float speed	= 0.f;
 	};
 
 	struct Controlable {
@@ -44,9 +44,9 @@ namespace GotchiValley {
 
 	struct Animation {
 		std::unordered_map<AnimationName, AnimationData> frames;
-		uint8_t startFrame	= 0;
-		uint8_t frameNum	= 0;
-		float frameTime		= 0.f;
+		uint8_t startFrame = 0;
+		uint8_t frameNum = 0;
+		float frameTime	= 0.f;
 		AnimationName animName = AnimationName::IDLE;
 	};
 
@@ -57,6 +57,7 @@ namespace GotchiValley {
 	struct Level {
 		sf::VertexArray vertices;
 		sf::Texture texture;
+		std::vector<Collider> colliders;
 	};
 }
 

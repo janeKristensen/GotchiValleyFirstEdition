@@ -33,7 +33,8 @@ using namespace GotchiValley;
 			collisionSystem.Update();
 			physicsSystem.Update(dt);
 			animationSystem.Update(dt);
-			
+			gameWorld.Update();
+
 			window->clear();
 			renderSystem.Update(*window);
 			window->display();
