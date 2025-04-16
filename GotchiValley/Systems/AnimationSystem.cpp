@@ -11,6 +11,7 @@ void AnimationSystem::Update(float dt) {
 
 		auto animation = i->second;
 		auto spriteComponent = componentRegistry.GetComponentOfType<Sprite>(i->first);
+		auto entityState = componentRegistry.GetComponentOfType<EntityState>(i->first);
 		
 		animation->frameTime += dt;
 
@@ -22,17 +23,24 @@ void AnimationSystem::Update(float dt) {
 
 				if (animation->animName == AnimationName::COLLIDING) {
 
-					animation->animName = AnimationName::INITIAL;
-					
+					if (entityState && entityState->state == State::INITIAL) {
+
+						animation->animName = AnimationName::INITIAL;
+					}
+					else {
+
+						animation->animName = AnimationName::IDLE;
+					}
 				}
-				else if (animation->animName == AnimationName::INTERACTING) {
-					
-					animation->animName = AnimationName::IDLE; 
+				else if (animation->animName == AnimationName::INTERACTING || animation->animName == AnimationName::EVOLVING) {
+
+					animation->animName = AnimationName::IDLE;
 				}
-					
-				animation->frameNum = animation->frameNum % animation->frames[animation->animName].numFrames;	
-			}	
+
+				animation->frameNum = animation->frameNum % animation->frames[animation->animName].numFrames;
+			}
 		}
+		
 
 		uint8_t imageNum = animation->startFrame + animation->frameNum;
 		spriteComponent->sprite.setTextureRect(animation->frames[animation->animName].sprites[imageNum]);
@@ -44,41 +52,39 @@ void AnimationSystem::Update(float dt) {
 void AnimationSystem::OnNotify(const Entity& entity, const EntityEvent& eventMessage) {
 
 	auto animation = componentRegistry.GetComponentOfType<Animation>(entity);
+	auto entityState = componentRegistry.GetComponentOfType<EntityState>(entity);
+	auto entityInteractable = componentRegistry.GetComponentOfType<Interactable>(entity);
 
-	if (eventMessage == EntityEvent::COLLISION) {
+	if (animation) {
 
-		animation->frameNum = 0;
-		animation->animName = AnimationName::COLLIDING;
-		
-	}
-	else if (eventMessage == EntityEvent::INTERACTION) {
+		if (eventMessage == EntityEvent::COLLISION) {
 
-		auto animArray = componentRegistry.GetComponentArray<Animation>();
-
-		for (auto i = animArray.begin(); i != animArray.end(); i++) {
-			auto interactable = componentRegistry.GetComponentOfType<Interactable>(i->first);
-			if (!interactable) continue;
-			
-			else if (interactable->interactionActive) {
-
-				i->second->frameNum = 0;
-				i->second->animName = AnimationName::INTERACTING;
-				interactable->interactionActive = false;
-			}
-				
-			
-		}
-	}
-	else if(eventMessage == EntityEvent::MOVE_RIGHT) {
-
-		if (animation->animName != AnimationName::RUNNING) {
-
-			animation->animName = AnimationName::RUNNING;
 			animation->frameNum = 0;
+			animation->animName = AnimationName::COLLIDING;
 		}
-		
-	}
-	else if (eventMessage == EntityEvent::IDLE) {
-		animation->animName = AnimationName::IDLE;
+		else if (eventMessage == EntityEvent::INTERACTION) {
+
+			if (entityState && entityState->state == State::EVOLVING) {
+
+				animation->animName = AnimationName::EVOLVING;
+			}
+			else {
+				animation->animName = AnimationName::INTERACTING;
+			}
+				animation->frameNum = 0;
+				entityInteractable->interactionActive = false;	
+				entityState->state = State::IDLE;
+		}
+		else if (eventMessage == EntityEvent::MOVE_RIGHT) {
+
+			if (animation->animName != AnimationName::RUNNING) {
+
+				animation->animName = AnimationName::RUNNING;
+				animation->frameNum = 0;
+			}
+		}
+		else if (eventMessage == EntityEvent::IDLE) {
+			animation->animName = AnimationName::IDLE;
+		}
 	}
 }

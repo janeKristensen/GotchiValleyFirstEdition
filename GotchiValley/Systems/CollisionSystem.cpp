@@ -23,6 +23,16 @@ void CollisionSystem::Update() {
 				if (!player) continue;
 				ResolveInteractions({ i->first, i->second }, { j->first, j->second });
 			}
+
+			auto levelArray = componentRegistry.GetComponentArray<Level>();
+
+			for (auto k = levelArray.begin(); k != levelArray.end(); k++) {
+
+				for (auto l = k->second->colliders.begin(); l != k->second->colliders.end(); l++) {
+
+					ResolveCollision({ i->first, i->second }, { k->first, *l});
+				}
+			}
 		}
 	}
 }

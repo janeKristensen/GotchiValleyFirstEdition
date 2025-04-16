@@ -15,7 +15,10 @@ namespace GotchiValley {
 			return mEntity;
 		}
 
-		template <typename T> 
+	private:
+		Entity mEntity;
+
+		template <typename T>
 		void AddComponent(const T& t) {
 			componentRegistry.AddComponent(mEntity, t);
 		}
@@ -26,9 +29,6 @@ namespace GotchiValley {
 			componentRegistry.AddComponent(mEntity, first);
 			AddComponent(rest...);
 		}
-
-	private:
-		Entity mEntity;
 	};
 	
 }

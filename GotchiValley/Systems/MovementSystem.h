@@ -8,12 +8,12 @@
 
 namespace GotchiValley {
 
-	class MovementSystem : IGameSubject {
+	class MovementSystem : public IGameSubject {
 	public:
 		~MovementSystem() {};
 		void Update();
-		void AddObserver(IGameObserver* observer);
-		void RemoveObserver(IGameObserver* observer);
+		void AddObserver(IGameObserver* observer) override;
+		void RemoveObserver(IGameObserver* observer) override;
 		void NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) const override;
 	private:
 		std::unordered_set<IGameObserver*> mObservers;

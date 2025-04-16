@@ -18,7 +18,7 @@ namespace GotchiValley {
 				it->AddObserver(this);
 			};
 		}
-		void RemoveFromSubject();
+
 		void Update(float& dt);
 		void SetPosition(Entity & entity, sf::Vector2f & position);
 		void OnNotify(const Entity & entity, const EntityEvent & eventMessage) override;
