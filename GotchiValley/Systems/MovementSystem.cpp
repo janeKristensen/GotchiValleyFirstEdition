@@ -5,23 +5,10 @@ using namespace GotchiValley;
 
 void MovementSystem::Update() {
 	
-	auto controlArray = componentRegistry.GetComponentArray<Controlable>();
+	auto controlArray = componentRegistry.GetComponentArray<MovementBehaviour>();
 	for (auto i = controlArray.begin(); i != controlArray.end(); i++) {
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) 
-			NotifyObservers(i->first, EntityEvent::MOVE_UP);
-		
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) 
-			NotifyObservers(i->first, EntityEvent::MOVE_DOWN);
-		
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) 
-			NotifyObservers(i->first, EntityEvent::MOVE_RIGHT);
-		
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) 
-			NotifyObservers(i->first, EntityEvent::MOVE_LEFT);
-		else 
-			NotifyObservers(i->first, EntityEvent::IDLE);
-		
+		i->second->Update();
 	}
 }
 

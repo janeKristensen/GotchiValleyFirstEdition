@@ -19,15 +19,15 @@ Level LevelManager::LoadLevel(uint32_t id) {
 	vertices.resize(LEVEL_SIZE.x * LEVEL_SIZE.y * 6);
 
 
-	for (uint32_t i = 0; i < LEVEL_SIZE.x; i++) {
-		for (uint32_t j = 0; j < LEVEL_SIZE.y; j++)
+	for (int32_t i = 0; i < LEVEL_SIZE.x; i++) {
+		for (int32_t j = 0; j < LEVEL_SIZE.y; j++)
 		{
 			// get the current tile number
-			const uint32_t tileNumber = level[i][j];
+			const int32_t tileNumber = level[i][j];
 
 			// find its position in the tileset texture
-			const int tu = tileNumber % (TILE_SET_SIZE.x * TILE_SIZE.x / TILE_SIZE.x);
-			const int tv = tileNumber / (TILE_SET_SIZE.x * TILE_SIZE.x / TILE_SIZE.x);
+			const int32_t tu = tileNumber % (TILE_SET_SIZE.x * TILE_SIZE.x / TILE_SIZE.x);
+			const int32_t tv = tileNumber / (TILE_SET_SIZE.x * TILE_SIZE.x / TILE_SIZE.x);
 
 			// get a pointer to the triangles' vertices of the current tile
 			sf::Vertex* triangles = &vertices[(i + j * LEVEL_SIZE.x) * 6];
@@ -66,8 +66,8 @@ void LevelManager::LoadLevelFiles(std::filesystem::path filename){
 	Matrix level{};
 	std::fstream levelFile(filename);
 
-	for (uint32_t i = 0; i < LEVEL_SIZE.x; i++) {
-		for (uint32_t j = 0; j < LEVEL_SIZE.x; j++) {
+	for (int32_t i = 0; i < LEVEL_SIZE.x; i++) {
+		for (int32_t j = 0; j < LEVEL_SIZE.x; j++) {
 			
 			char number;
 			levelFile >> number;

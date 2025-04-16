@@ -16,7 +16,7 @@ namespace GotchiValley {
 
 	struct Transform {
 		sf::Vector2f position;
-		sf::Vector2f velocity;
+		sf::Vector2f velocity{0.f, 0.f};
 		float speed	= 0.f;
 	};
 
@@ -64,6 +64,14 @@ namespace GotchiValley {
 		sf::VertexArray vertices;
 		std::shared_ptr<sf::Texture> texture;
 		std::vector<std::shared_ptr<Collider>> colliders;
+	};
+
+	struct Behaviour {
+		std::function<void()>Update;
+	};
+
+	struct MovementBehaviour {
+		std::function<void()>Update;
 	};
 
 	
