@@ -11,7 +11,7 @@ void RenderSystem::Update(sf::RenderWindow& window) {
 	for (auto i = levelVertexArray.begin(); i != levelVertexArray.end(); i++) {
 
 		sf::RenderStates states;
-		states.texture = &i->second->texture;
+		states.texture = i->second->texture.get();
 		window.draw(i->second->vertices, states);
 	}
 
@@ -25,14 +25,14 @@ void RenderSystem::Update(sf::RenderWindow& window) {
 void RenderSystem::AttachTexture(Entity& entity, const std::string& filename) {
 
 	auto spriteComponent = componentRegistry.GetComponentOfType<Sprite>(entity);
-	auto sprite = spriteComponent->sprite;
-	sf::Texture texture;
+	auto texture = std::make_unique<sf::Texture>();
 	
-	if (!texture.loadFromFile(std::filesystem::absolute(filename).string()))
+	if (!texture->loadFromFile(std::filesystem::absolute(filename).string()))
 	{
 		throw std::runtime_error("Could not load image.png");
 	}
-	sprite.setTexture(texture);
+	spriteComponent->sprite.setTexture(*texture);
+	spriteComponent->texture = std::move(texture);
 }
 
 //sf::Texture& RenderSystem::LoadTexture(const std::string& filename) {

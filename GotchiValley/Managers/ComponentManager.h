@@ -11,6 +11,7 @@ namespace GotchiValley {
 	class ComponentManager {
 	public:
 		ComponentManager() {
+
 			mComponents.reserve(MAX_ENTITIES);
 		}
 
@@ -45,6 +46,5 @@ namespace GotchiValley {
 
 	private:
 		std::unordered_map<Entity, std::shared_ptr<T>> mComponents{};
-
 	};
 }

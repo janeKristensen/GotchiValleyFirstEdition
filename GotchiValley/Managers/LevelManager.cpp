@@ -2,7 +2,7 @@
 
 using namespace GotchiValley;
 
-LevelManager::LevelManager(sf::Texture spritesheet) {
+LevelManager::LevelManager(std::shared_ptr<sf::Texture> spritesheet) {
 
 	mSpriteSheet = spritesheet;
 	std::string filepath = "D:\\Visual Studio stuff\\Projekts\\Games\\GotchiValley\\resources\\levels";
@@ -11,20 +11,19 @@ LevelManager::LevelManager(sf::Texture spritesheet) {
 	}
 }
 
-Level LevelManager::LoadLevel(std::uint32_t id) {
+Level LevelManager::LoadLevel(uint32_t id) {
 
 	Matrix level = mLevels.at(id);
-	std::vector<Collider> colliders;
+	std::vector<std::shared_ptr<Collider>> colliders;
 	sf::VertexArray vertices(sf::PrimitiveType::Triangles);
 	vertices.resize(LEVEL_SIZE.x * LEVEL_SIZE.y * 6);
 
 
-	for (std::int32_t i = 0; i < LEVEL_SIZE.x; i++) {
-		for (std::int32_t j = 0; j < LEVEL_SIZE.y; j++)
+	for (uint32_t i = 0; i < LEVEL_SIZE.x; i++) {
+		for (uint32_t j = 0; j < LEVEL_SIZE.y; j++)
 		{
 			// get the current tile number
-			//const std::uint32_t tileNumber = level[i + j * LEVEL_SIZE.x];
-			const std::uint32_t tileNumber = level[i][j];
+			const uint32_t tileNumber = level[i][j];
 
 			// find its position in the tileset texture
 			const int tu = tileNumber % (TILE_SET_SIZE.x * TILE_SIZE.x / TILE_SIZE.x);
@@ -49,13 +48,16 @@ Level LevelManager::LoadLevel(std::uint32_t id) {
 			triangles[4].texCoords = sf::Vector2f((tu + 1) * TILE_SIZE.x, tv * TILE_SIZE.y);
 			triangles[5].texCoords = sf::Vector2f((tu + 1) * TILE_SIZE.x, (tv + 1) * TILE_SIZE.y);
 		
-			sf::Vector2f size = static_cast<sf::Vector2f>(TILE_SIZE);
-			sf::Vector2f position = triangles[0].position;
-			colliders.push_back(Collider{ sf::FloatRect(position, size) });
+			if (tileNumber % 2 != 0) {
+
+				const sf::Vector2f& size = static_cast<sf::Vector2f>(TILE_SIZE);
+				const sf::Vector2f& position = triangles[0].position;
+				colliders.push_back(std::make_shared<Collider>(Collider{ sf::FloatRect(position, size) }));
+			}
 		}
 	}
 
-	Level levelMap{ vertices, mSpriteSheet, colliders };
+	Level levelMap{ id, vertices, mSpriteSheet, colliders };
 	return levelMap;
 }
 
@@ -64,8 +66,8 @@ void LevelManager::LoadLevelFiles(std::filesystem::path filename){
 	Matrix level{};
 	std::fstream levelFile(filename);
 
-	for (std::int32_t i = 0; i < LEVEL_SIZE.x; i++) {
-		for (std::int32_t j = 0; j < LEVEL_SIZE.x; j++) {
+	for (uint32_t i = 0; i < LEVEL_SIZE.x; i++) {
+		for (uint32_t j = 0; j < LEVEL_SIZE.x; j++) {
 			
 			char number;
 			levelFile >> number;
@@ -80,5 +82,10 @@ void LevelManager::LoadLevelFiles(std::filesystem::path filename){
 
 	mLevels[mLevelID] = level;
 	mLevelID++;
+}
+
+uint32_t LevelManager::GetNumberOfLevels() {
+
+	return mLevelID;
 }
 

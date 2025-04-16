@@ -7,7 +7,6 @@ using namespace GotchiValley;
 void CollisionSystem::Update() {
 
 	auto colliderArray = componentRegistry.GetComponentArray<Collider>();
-	std::cout << colliderArray.size();
 
 	for (auto i = colliderArray.begin(); i != colliderArray.end(); i++) {
 
@@ -23,6 +22,16 @@ void CollisionSystem::Update() {
 				auto player = componentRegistry.GetComponentOfType<Controlable>(i->first);
 				if (!player) continue;
 				ResolveInteractions({ i->first, i->second }, { j->first, j->second });
+			}
+
+			auto levelArray = componentRegistry.GetComponentArray<Level>();
+
+			for (auto k = levelArray.begin(); k != levelArray.end(); k++) {
+
+				for (auto l = k->second->colliders.begin(); l != k->second->colliders.end(); l++) {
+
+					ResolveCollision({ i->first, i->second }, { k->first, *l});
+				}
 			}
 		}
 	}

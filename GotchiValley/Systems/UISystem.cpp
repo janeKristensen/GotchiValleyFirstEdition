@@ -1,6 +1,6 @@
 
 #include "UISystem.h"
-
+#include <iostream>
 using namespace GotchiValley;
 
 void UISystem::Update() {
@@ -20,10 +20,31 @@ void UISystem::PollEvents(std::shared_ptr<sf::RenderWindow> window) {
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
 				window->close();
 			}
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E)) {
+		}
+		else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
 
-				NotifyObservers(NULL, EntityEvent::INTERACTION);
+			auto button = componentRegistry.GetComponentArray<Button>();
+
+			for (auto i = button.begin(); i != button.end(); i++) {
+
+				auto collider = componentRegistry.GetComponentOfType<Collider>(i->first);
+				if (collider->boundingBox.contains(static_cast<sf::Vector2f>(sf::Mouse::getPosition(*window)))) {
+
+					auto interactable = componentRegistry.GetComponentOfType<Interactable>(i->first);
+					auto entityState = componentRegistry.GetComponentOfType<EntityState>(i->first);
+					if (interactable->interactionActive) {
+
+						if (entityState && entityState->state == State::INITIAL) {
+							entityState->state = State::EVOLVING;
+						}
+
+						i->second->OnClick();
+						interactable->interactionActive = false;
+						
+					}
+				}
 			}
+			
 		}
 	}
 }

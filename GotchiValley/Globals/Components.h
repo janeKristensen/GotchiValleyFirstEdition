@@ -2,6 +2,7 @@
 #include "GlobalVariables.h"
 #include "SFML/Graphics.hpp"
 #include <cstdint>
+#include <functional>
 
 namespace GotchiValley {
 
@@ -10,7 +11,7 @@ namespace GotchiValley {
 	};
 
 	struct EntityState {
-		State state	= State::IDLE;
+		State state{ State::IDLE };
 	};
 
 	struct Transform {
@@ -18,6 +19,8 @@ namespace GotchiValley {
 		sf::Vector2f velocity;
 		float speed	= 0.f;
 	};
+
+	struct Moveable {};
 
 	struct Controlable {
 		bool controlable = true;
@@ -27,8 +30,6 @@ namespace GotchiValley {
 		sf::FloatRect boundingBox;
 		bool hasCollided = false;
 	};
-
-	struct Moveable {};
 
 	struct Sprite {
 		std::shared_ptr<sf::Texture> texture;
@@ -54,11 +55,18 @@ namespace GotchiValley {
 		bool interactionActive = false;
 	};
 
-	struct Level {
-		sf::VertexArray vertices;
-		sf::Texture texture;
-		std::vector<Collider> colliders;
+	struct Button {
+		std::function<void()>OnClick;
 	};
+
+	struct Level {
+		uint32_t levelId;
+		sf::VertexArray vertices;
+		std::shared_ptr<sf::Texture> texture;
+		std::vector<std::shared_ptr<Collider>> colliders;
+	};
+
+	
 }
 
 

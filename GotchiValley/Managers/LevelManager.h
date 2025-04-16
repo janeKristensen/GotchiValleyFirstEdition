@@ -14,14 +14,15 @@ namespace GotchiValley {
 	class LevelManager {
 
 	public:
-		LevelManager(sf::Texture spritesheet);
-		Level LoadLevel(std::uint32_t id);
+		LevelManager(std::shared_ptr<sf::Texture> spritesheet);
+		Level LoadLevel(uint32_t id);
+		uint32_t GetNumberOfLevels();
 
 	private:
-		using Matrix = std::array<std::array<std::int32_t, LEVEL_SIZE.x>, LEVEL_SIZE.y>;
-		std::uint32_t mLevelID = 0;
-		sf::Texture mSpriteSheet;
-		std::map<std::uint32_t, Matrix> mLevels;
+		using Matrix = std::array<std::array<uint32_t, LEVEL_SIZE.x>, LEVEL_SIZE.y>;
+		uint32_t mLevelID = 1;
+		std::shared_ptr<sf::Texture> mSpriteSheet;
+		std::map<uint32_t, Matrix> mLevels;
 		void LoadLevelFiles(std::filesystem::path filename);
 	};
 

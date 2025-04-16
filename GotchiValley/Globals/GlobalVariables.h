@@ -30,6 +30,7 @@ namespace GotchiValley {
 		COLLIDING,
 		ATTACKING, 
 		INTERACTING,
+		EVOLVING,
 	};
 
 	enum class AnimationName {
@@ -38,5 +39,6 @@ namespace GotchiValley {
 		RUNNING,
 		COLLIDING,
 		INTERACTING,
+		EVOLVING,
 	};
 }

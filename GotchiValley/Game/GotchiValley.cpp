@@ -9,13 +9,14 @@ using namespace GotchiValley;
 		window->setFramerateLimit(60);
 
 		
-		GameWorld gameWorld;
 		UISystem uiSystem;
+		RenderSystem renderSystem;
 		CollisionSystem collisionSystem;
 		MovementSystem movementSystem;
-		RenderSystem renderSystem;
+		GameWorld gameWorld;
+
 		PhysicsSystem physicsSystem{ &collisionSystem, &movementSystem };
-		AnimationSystem animationSystem(&collisionSystem, &movementSystem, &uiSystem);
+		AnimationSystem animationSystem{ &collisionSystem, &movementSystem, &gameWorld };
 		
 
 		gameWorld.Initialize();
@@ -33,7 +34,6 @@ using namespace GotchiValley;
 			collisionSystem.Update();
 			physicsSystem.Update(dt);
 			animationSystem.Update(dt);
-			gameWorld.Update();
 
 			window->clear();
 			renderSystem.Update(*window);

@@ -45,7 +45,8 @@ namespace GotchiValley {
 			{AnimationName::INITIAL, animEgg},
 			{AnimationName::IDLE, animBird},
 			{AnimationName::COLLIDING, animEgg},
-			{AnimationName::INTERACTING, animCollision}
+			{AnimationName::EVOLVING, animCollision},
+			{AnimationName::INTERACTING, animBird},
 		},
 		0, 0, 0, 
 		AnimationName::INITIAL
