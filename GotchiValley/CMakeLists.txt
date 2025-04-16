@@ -8,6 +8,8 @@ add_executable (GotchiValley
     "Game/GotchiValley.h"  
     "Game/GameWorld.h"  
     "Game/GameWorld.cpp" 
+    "Game/BehaviourScripts.h" 
+    "Game/BehaviourScripts.cpp" 
     "Game/Factory.h"
     "Game/Animations.h"
     "Globals/Components.h"

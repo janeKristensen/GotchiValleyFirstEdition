@@ -71,6 +71,7 @@ namespace GotchiValley {
 	};
 
 	struct MovementBehaviour {
+		Entity entity;
 		std::function<void()>Update;
 	};
 
