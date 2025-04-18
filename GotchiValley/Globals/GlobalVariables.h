@@ -41,4 +41,14 @@ namespace GotchiValley {
 		INTERACTING,
 		EVOLVING,
 	};
+
+	struct Node {
+		uint32_t y;
+		uint32_t x;
+		uint32_t parentX;
+		uint32_t parentY;
+		float gCost;
+		float hCost;
+		float fCost;
+	};
 }

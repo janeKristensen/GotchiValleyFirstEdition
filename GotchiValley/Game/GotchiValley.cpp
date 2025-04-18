@@ -30,7 +30,7 @@ using namespace GotchiValley;
 
 			uiSystem.PollEvents(window);
 
-			movementSystem.Update();
+			movementSystem.Update(dt);
 			collisionSystem.Update();
 			physicsSystem.Update(dt);
 			animationSystem.Update(dt);

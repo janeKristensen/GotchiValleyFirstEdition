@@ -33,6 +33,8 @@ add_executable (GotchiValley
     "Systems/RenderSystem.cpp"
     "Systems/UISystem.h"
     "Systems/UISystem.cpp"
+    "Systems/Pathfinder.h"
+    "Systems/Pathfinder.cpp"
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

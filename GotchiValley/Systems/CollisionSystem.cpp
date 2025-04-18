@@ -12,15 +12,20 @@ void CollisionSystem::Update() {
 
 	for (auto i = colliderArray.begin(); i != colliderArray.end(); i++) {
 
-		if (componentRegistry.HasComponent<Moveable>(i->first)) {
+		auto entityState = componentRegistry.GetComponentOfType<EntityState>(i->first);
 
+		if (componentRegistry.HasComponent<Moveable>(i->first)) {
+			
 			for (auto j = colliderArray.begin(); j != colliderArray.end(); j++) {
 
 				if (i == j) continue;
-				
-				if (i->second->boundingBox.findIntersection(j->second->boundingBox))
-				{
-					collisions.push_back(CollisionData{i->first, i->second, j->first, j->second});
+
+				if (entityState && entityState->state != State::COLLIDING) {
+					if (i->second->boundingBox.findIntersection(j->second->boundingBox))
+					{
+						collisions.push_back(CollisionData{ i->first, i->second, j->first, j->second });
+						entityState->state = State::COLLIDING;
+					}
 				}
 			}
 
@@ -30,9 +35,17 @@ void CollisionSystem::Update() {
 
 				for (auto l = k->second->colliders.begin(); l != k->second->colliders.end(); l++) {
 
-					collisions.push_back(CollisionData{ i->first, i->second, k->first, *l });
+					Collider* collider = l->get();
+
+					if (entityState && entityState->state != State::COLLIDING) {
+						if (i->second->boundingBox.findIntersection(collider->boundingBox)) {
+
+							collisions.push_back(CollisionData{ i->first, i->second, k->first, *l });
+							entityState->state = State::COLLIDING;
+						}
+					}
 				}
-			}
+			}	
 		}
 	}
 
@@ -45,11 +58,12 @@ void CollisionSystem::ResolveCollision(const std::vector<CollisionData>& collisi
 
 		ResolveInteractions(i->entity, i->entityCollider, i->other, i->otherCollider);
 
-		if (i->entityCollider->boundingBox.findIntersection(i->otherCollider->boundingBox))
-		{
-			NotifyObservers(i->entity, EntityEvent::COLLISION);
-			NotifyObservers(i->other, EntityEvent::COLLISION);
-		}
+		NotifyObservers(i->entity, EntityEvent::COLLISION);
+		//NotifyObservers(i->other, EntityEvent::COLLISION);
+
+		auto entityState = componentRegistry.GetComponentOfType<EntityState>(i->entity);
+		entityState->state = State::IDLE;
+		
 	}		
 }
 

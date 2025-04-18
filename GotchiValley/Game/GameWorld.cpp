@@ -17,6 +17,8 @@ void GameWorld::Initialize() {
 	componentRegistry.RegisterComponentManager<Interactable>();
 	componentRegistry.RegisterComponentManager<Button>();
 	componentRegistry.RegisterComponentManager<Level>();
+	componentRegistry.RegisterComponentManager<PlayerEntity>();
+	componentRegistry.RegisterComponentManager<FollowBehaviour>();
 
 	auto birdTexture = std::make_shared<sf::Texture>(std::move(sf::Texture("egg_sprite_sheet.png")));
 	auto playerTexture = std::make_shared<sf::Texture>(std::move(sf::Texture("sprite_sheet.png")));
@@ -26,17 +28,18 @@ void GameWorld::Initialize() {
 	mCurrentLevelId = newLevel.levelId;
 	mLevelEntity = mFactory.CreateEntity(mEntityManager, newLevel);
 
-	CreateBird(birdTexture, { 400.f, 500.f });
-	CreateBird(birdTexture, { 200.f, 200.f });
-
 	mPlayer = CreatePlayer(playerTexture, { 300.f, 300.f }, 80.f);
+	CreateBird(birdTexture, { 400.f, 500.f }, mPlayer);
+	CreateBird(birdTexture, { 200.f, 200.f }, mPlayer);
+
+	
 
 	auto button = mFactory.CreateEntity
 	(
 		mEntityManager,
 		Sprite(BigEgg),
 		Transform({ sf::Vector2f(250,150), sf::Vector2f(0,0), 80.f }),
-		Collider({ sf::FloatRect({250,150}, {32,32}) }),
+		Collider({ sf::FloatRect({250,150}, {32,32}), sf::RectangleShape{{(float)TILE_SIZE.x , (float)TILE_SIZE.y } } }),
 		Interactable()
 	);
 	componentRegistry.AddComponent(button,
@@ -56,17 +59,18 @@ void GameWorld::SetLevel(const std::uint32_t levelID) {
 	mCurrentLevelId = levelID;
 }
 
-void GameWorld::CreateBird(std::shared_ptr<sf::Texture> texture, sf::Vector2f position) {
+void GameWorld::CreateBird(std::shared_ptr<sf::Texture> texture, sf::Vector2f position, Entity& player) {
 
 	auto bird = mFactory.CreateEntity
 	(
 		mEntityManager,
 		Sprite(texture),
 		birdAnimation,
-		Transform({ position }),
-		Collider({ sf::FloatRect({position.x - 5, position.y - 5 }, { TILE_SIZE.x + 5, TILE_SIZE.y + 5 }) }),
+		Transform({ position, {0.f, 0.f}, 30.f }),
+		Collider({ sf::FloatRect({position.x , position.y }, { TILE_SIZE.x , TILE_SIZE.y }), sf::RectangleShape{{(float)TILE_SIZE.x, (float)TILE_SIZE.y} } }),
 		Interactable(),
-		EntityState{ State::INITIAL }
+		EntityState{ State::INITIAL },
+		FollowBehaviour{ player }
 	);
 	componentRegistry.AddComponent(bird,
 		Button(
@@ -93,11 +97,12 @@ Entity GameWorld::CreatePlayer(std::shared_ptr<sf::Texture> texture, sf::Vector2
 		Sprite(texture),
 		playerAnimation,
 		Transform({ position, sf::Vector2f(0,0), speed }),
-		Collider({ sf::FloatRect({position.x - 5, position.y - 5 }, { TILE_SIZE.x + 5, TILE_SIZE.y + 5 })}),
+		Collider({ sf::FloatRect({position.x , position.y  }, { TILE_SIZE.x , TILE_SIZE.y  }), sf::RectangleShape{{(float)TILE_SIZE.x, (float)TILE_SIZE.y} } }),
 		Moveable(),
 		Controlable(),
 		PlayerStats(100),
-		EntityState()
+		EntityState(),
+		PlayerEntity()
 	);
 
 	return player;

@@ -10,15 +10,34 @@ void RenderSystem::Update(sf::RenderWindow& window) {
 	auto levelVertexArray = componentRegistry.GetComponentArray<Level>();
 	for (auto i = levelVertexArray.begin(); i != levelVertexArray.end(); i++) {
 
+		// Draw bounding boxes for the colliders of the level objects
+#ifndef NDEBUG
+		for (auto j = i->second->colliders.begin(); j != i->second->colliders.end(); j++) {
+
+			Collider* collider = j->get();
+			collider->box.setPosition(collider->boundingBox.position);
+			window.draw(collider->box);
+		}
+#endif
 		sf::RenderStates states;
 		states.texture = i->second->texture.get();
-		window.draw(i->second->vertices, states);
+		window.draw(i->second->vertices, states);	
 	}
+
+	// Draws the bounding boxes for the game objects
+#ifndef NDEBUG
+	auto colliderArray = componentRegistry.GetComponentArray<Collider>();
+	for (auto i = colliderArray.begin(); i != colliderArray.end(); i++) {
+
+		i->second->box.setPosition(i->second->boundingBox.position);
+		window.draw(i->second->box);
+	}
+#endif
 
 	auto spriteArray = componentRegistry.GetComponentArray<Sprite>();
 	for (auto i = spriteArray.begin(); i != spriteArray.end(); i++) {
 
-		window.draw(i->second->sprite);	
+		window.draw(i->second->sprite);
 	}
 }
 

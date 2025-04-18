@@ -32,7 +32,7 @@ namespace GotchiValley {
 		Entity mLevelEntity = NULL;
 		Entity mPlayer = NULL;
 		Factory mFactory;
-		void CreateBird(std::shared_ptr<sf::Texture> texture, sf::Vector2f position);
+		void CreateBird(std::shared_ptr<sf::Texture> texture, sf::Vector2f position, Entity& player);
 		Entity CreatePlayer(std::shared_ptr<sf::Texture> texture, sf::Vector2f position, float speed);
 		
 	};

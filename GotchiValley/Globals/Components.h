@@ -28,6 +28,7 @@ namespace GotchiValley {
 
 	struct Collider {
 		sf::FloatRect boundingBox;
+		sf::RectangleShape box;
 		bool hasCollided = false;
 	};
 
@@ -64,6 +65,17 @@ namespace GotchiValley {
 		sf::VertexArray vertices;
 		std::shared_ptr<sf::Texture> texture;
 		std::vector<std::shared_ptr<Collider>> colliders;
+	};
+
+	struct PlayerEntity {
+
+	};
+
+	struct FollowBehaviour {
+		Entity entity;
+		std::vector<Node> path;
+		size_t currentStep = 0;
+		bool hasPath = false;
 	};
 
 	
