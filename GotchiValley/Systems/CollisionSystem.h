@@ -6,12 +6,19 @@
 
 namespace GotchiValley{
 
+	struct CollisionData {
+		const Entity& entity;
+		std::shared_ptr<Collider>& entityCollider;
+		const Entity& other;
+		std::shared_ptr<Collider>& otherCollider;
+	};
+
 	class CollisionSystem : public IGameSubject {
 	public:
 		~CollisionSystem() override {};
 		void Update();
-		void ResolveCollision(const std::pair<const Entity, const std::shared_ptr<Collider>>& entity, const std::pair<const Entity, const std::shared_ptr<Collider>>& other) const;
-		void ResolveInteractions(const std::pair<const Entity, const std::shared_ptr<Collider>>& entity, const std::pair<const Entity, const std::shared_ptr<Collider>>& other) const;
+		void ResolveCollision(const std::vector<CollisionData>& collisions) const;
+		void ResolveInteractions(const Entity& entity, const std::shared_ptr<Collider>& entityCollider, const Entity& other, const std::shared_ptr<Collider>& otherCollider) const;
 		void AddObserver(IGameObserver* observer) override;
 		void RemoveObserver(IGameObserver* observer) override;
 		void NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) const override;

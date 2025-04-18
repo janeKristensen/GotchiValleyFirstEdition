@@ -16,7 +16,7 @@ using namespace GotchiValley;
 		GameWorld gameWorld;
 
 		PhysicsSystem physicsSystem{ &collisionSystem, &movementSystem };
-		AnimationSystem animationSystem{ &collisionSystem, &movementSystem, &gameWorld };
+		AnimationSystem animationSystem{ &collisionSystem, &movementSystem, &uiSystem, &gameWorld };
 		
 
 		gameWorld.Initialize();

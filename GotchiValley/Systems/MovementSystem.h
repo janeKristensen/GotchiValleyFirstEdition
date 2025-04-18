@@ -17,5 +17,6 @@ namespace GotchiValley {
 		void NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) const override;
 	private:
 		std::unordered_set<IGameObserver*> mObservers;
+		const float mAcceleration = 1.f;
 	};
 }

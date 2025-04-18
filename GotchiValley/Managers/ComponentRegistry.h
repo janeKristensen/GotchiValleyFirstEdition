@@ -43,6 +43,15 @@ namespace GotchiValley {
 			}
 		}
 
+		void RemoveEntity(Entity& entity) {
+			
+			for (auto it = mManagers.begin(); it != mManagers.end(); it++) {
+
+				ComponentManager<void*>* componentManager = static_cast<ComponentManager<void*>*>(it->second.get());
+				componentManager->RemoveComponent(entity);
+			}
+		}
+
 		template <typename T>
 		bool HasComponent(Entity entity) {
 		

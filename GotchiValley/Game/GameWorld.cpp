@@ -24,70 +24,12 @@ void GameWorld::Initialize() {
 
 	auto newLevel = Level{ mLevelManager.LoadLevel(1) };
 	mCurrentLevelId = newLevel.levelId;
-	mCurrentLevel = mFactory.CreateEntity(mEntityManager, newLevel);
+	mLevelEntity = mFactory.CreateEntity(mEntityManager, newLevel);
 
-	auto bird1 = mFactory.CreateEntity
-	(
-		mEntityManager,
-		Sprite(birdTexture),
-		birdAnimation,
-		Transform({ sf::Vector2f(100,50), sf::Vector2f(0,0), }),
-		Collider({ sf::FloatRect({100,50}, {32,32}) }),
-		Interactable(),
-		EntityState{ State::INITIAL }
-	);
-	componentRegistry.AddComponent(bird1, 
-		Button(
-			[bird1, this]() {
-				auto entityState = componentRegistry.GetComponentOfType<EntityState>(bird1);
-				auto entityAnimation = componentRegistry.GetComponentOfType<Animation>(bird1);
-				if (entityState->state == State::EVOLVING) {
+	CreateBird(birdTexture, { 400.f, 500.f });
+	CreateBird(birdTexture, { 200.f, 200.f });
 
-					entityAnimation->frames[AnimationName::COLLIDING] = birdAnimation.frames[AnimationName::IDLE];
-				}
-
-				this->NotifyObservers(bird1, EntityEvent::INTERACTION);
-			}
-		)
-	);
-
-	auto bird2 = mFactory.CreateEntity
-	(
-		mEntityManager,
-		birdAnimation,
-		Sprite(birdTexture),
-		Transform({ sf::Vector2f(200,200), sf::Vector2f(0,0) }),
-		Collider({ sf::FloatRect({200,200}, {32,32}) }),
-		Interactable(),
-		EntityState{ State::INITIAL }
-	);
-	componentRegistry.AddComponent(bird2,
-		Button(
-			[bird2, this]() {
-	
-				auto entityState = componentRegistry.GetComponentOfType<EntityState>(bird2);
-				auto entityAnimation = componentRegistry.GetComponentOfType<Animation>(bird2);
-				if (entityState->state == State::EVOLVING) {
-
-					entityAnimation->frames[AnimationName::COLLIDING] = birdAnimation.frames[AnimationName::IDLE];
-				}
-
-				this->NotifyObservers(bird2, EntityEvent::INTERACTION);
-			}
-		)
-	);
-
-	auto player = mFactory.CreateEntity
-	(
-		mEntityManager,
-		Sprite(playerTexture),
-		playerAnimation,
-		Transform({ sf::Vector2f(200,100), sf::Vector2f(0,0), 80.f }),
-		Collider({ sf::FloatRect({200,100}, {32,32}) }),
-		Moveable(),
-		Controlable(),
-		PlayerStats(100)
-	);
+	mPlayer = CreatePlayer(playerTexture, { 300.f, 300.f }, 80.f);
 
 	auto button = mFactory.CreateEntity
 	(
@@ -109,10 +51,57 @@ void GameWorld::Initialize() {
 
 void GameWorld::SetLevel(const std::uint32_t levelID) {
 
-	componentRegistry.RemoveComponent<Level>(mCurrentLevel);
-	componentRegistry.AddComponent<Level>(mCurrentLevelId, Level{ mLevelManager.LoadLevel(levelID) });
+	componentRegistry.RemoveEntity(mLevelEntity);
+	componentRegistry.AddComponent<Level>(levelID, Level{ mLevelManager.LoadLevel(levelID) });
+	mCurrentLevelId = levelID;
 }
 
+void GameWorld::CreateBird(std::shared_ptr<sf::Texture> texture, sf::Vector2f position) {
+
+	auto bird = mFactory.CreateEntity
+	(
+		mEntityManager,
+		Sprite(texture),
+		birdAnimation,
+		Transform({ position }),
+		Collider({ sf::FloatRect({position.x - 5, position.y - 5 }, { TILE_SIZE.x + 5, TILE_SIZE.y + 5 }) }),
+		Interactable(),
+		EntityState{ State::INITIAL }
+	);
+	componentRegistry.AddComponent(bird,
+		Button(
+			[bird, this]() {
+				auto entityState = componentRegistry.GetComponentOfType<EntityState>(bird);
+				auto entityAnimation = componentRegistry.GetComponentOfType<Animation>(bird);
+				if (entityState && entityState->state == State::INITIAL) {
+
+					entityState->state = State::EVOLVING;
+					entityAnimation->frames[AnimationName::COLLIDING] = birdAnimation.frames[AnimationName::IDLE];
+				}
+
+				this->NotifyObservers(bird, EntityEvent::INTERACTION);
+			}
+		)
+	);
+}
+
+Entity GameWorld::CreatePlayer(std::shared_ptr<sf::Texture> texture, sf::Vector2f position, float speed) {
+
+	auto player = mFactory.CreateEntity
+	(
+		mEntityManager,
+		Sprite(texture),
+		playerAnimation,
+		Transform({ position, sf::Vector2f(0,0), speed }),
+		Collider({ sf::FloatRect({position.x - 5, position.y - 5 }, { TILE_SIZE.x + 5, TILE_SIZE.y + 5 })}),
+		Moveable(),
+		Controlable(),
+		PlayerStats(100),
+		EntityState()
+	);
+
+	return player;
+}
 
 void GameWorld::AddObserver(IGameObserver* observer) {
 

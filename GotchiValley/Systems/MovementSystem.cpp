@@ -6,22 +6,39 @@ using namespace GotchiValley;
 void MovementSystem::Update() {
 	
 	auto controlArray = componentRegistry.GetComponentArray<Controlable>();
+	
 	for (auto i = controlArray.begin(); i != controlArray.end(); i++) {
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) 
+		auto entityTransform = componentRegistry.GetComponentOfType<Transform>(i->first);
+		auto entityState = componentRegistry.GetComponentOfType<EntityState>(i->first);
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+
+			entityTransform->velocity.y = -mAcceleration;
+			entityState->state == State::RUNNING;
 			NotifyObservers(i->first, EntityEvent::MOVE_UP);
-		
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) 
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+
+			entityTransform->velocity.y = mAcceleration;
+			entityState->state == State::RUNNING;
 			NotifyObservers(i->first, EntityEvent::MOVE_DOWN);
-		
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) 
-			NotifyObservers(i->first, EntityEvent::MOVE_RIGHT);
-		
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) 
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+
+			entityTransform->velocity.x = mAcceleration;
+			entityState->state == State::RUNNING;
 			NotifyObservers(i->first, EntityEvent::MOVE_LEFT);
-		else 
-			NotifyObservers(i->first, EntityEvent::IDLE);
-		
+		}
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+
+			entityTransform->velocity.x = -mAcceleration;
+			entityState->state == State::RUNNING;
+			NotifyObservers(i->first, EntityEvent::MOVE_RIGHT);
+		}
+		else {
+			entityState->state == State::IDLE;
+		}
 	}
 }
 

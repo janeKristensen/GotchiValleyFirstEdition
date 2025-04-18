@@ -28,9 +28,12 @@ namespace GotchiValley {
 		std::list<IGameObserver*> mObservers;
 		EntityManager mEntityManager;
 		LevelManager mLevelManager{ std::make_shared<sf::Texture>(std::move<sf::Texture>(sf::Texture{"bg_sprite_small.png"})) };
-		uint32_t mCurrentLevelId = 0;
-		Entity mCurrentLevel = NULL;
+		uint32_t mCurrentLevelId = NULL;
+		Entity mLevelEntity = NULL;
+		Entity mPlayer = NULL;
 		Factory mFactory;
+		void CreateBird(std::shared_ptr<sf::Texture> texture, sf::Vector2f position);
+		Entity CreatePlayer(std::shared_ptr<sf::Texture> texture, sf::Vector2f position, float speed);
 		
 	};
 
