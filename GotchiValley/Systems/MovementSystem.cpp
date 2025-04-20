@@ -6,6 +6,7 @@ using namespace GotchiValley;
 void MovementSystem::Update(float& dt) {
 	
 	auto controlArray = componentRegistry.GetComponentArray<Controlable>();
+	auto followArray = componentRegistry.GetComponentArray<FollowBehaviour>();
 	
 	for (auto i = controlArray.begin(); i != controlArray.end(); i++) {
 
@@ -36,38 +37,41 @@ void MovementSystem::Update(float& dt) {
 			entityState->state = State::RUNNING;
 			NotifyObservers(i->first, EntityEvent::MOVE_RIGHT);
 		}
-		else {
-			entityState->state = State::IDLE;
-		}
 	}
 
-	auto followArray = componentRegistry.GetComponentArray<FollowBehaviour>();
+	SetNodePath(followArray);
+	MoveToNode(followArray, dt);
+}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F)) {
-
-		for (auto i = followArray.begin(); i != followArray.end(); i++) {
-
-			auto entityActor = componentRegistry.GetComponentOfType<Transform>(i->first);
-			auto entityDest = componentRegistry.GetComponentOfType<Transform>(i->second->entity);
-
-			Node actor;
-			actor.x = entityActor->position.x / TILE_SIZE.x;
-			actor.y = entityActor->position.y / TILE_SIZE.y;
-
-			Node destination;
-			destination.x = entityDest->position.x / TILE_SIZE.x;
-			destination.y = entityDest->position.y / TILE_SIZE.y;
-
-			i->second->path = Pathfinder::FindPath(actor, destination);
-			i->second->hasPath = true;
-		}
-	}
+void MovementSystem::SetNodePath(const std::unordered_map<Entity, std::shared_ptr<FollowBehaviour>>& followArray) {
 
 	for (auto i = followArray.begin(); i != followArray.end(); i++) {
-	
-		if (!i->second->hasPath || i->second->path.empty()) continue;
 
-		if (i->second->currentStep < i->second->path.size()) {
+		if (!i->second->isFollowActive) continue;
+
+		auto entityActor = componentRegistry.GetComponentOfType<Transform>(i->first);
+		auto entityDest = componentRegistry.GetComponentOfType<Transform>(i->second->entity);
+
+		Node actor;
+		actor.x = (entityActor->position.x + TILE_SIZE.x / 2) / TILE_SIZE.x;
+		actor.y = (entityActor->position.y + TILE_SIZE.y / 2) / TILE_SIZE.y;
+
+		Node destination;
+		destination.x = (entityDest->position.x + TILE_SIZE.x / 2) / TILE_SIZE.x;
+		destination.y = (entityDest->position.y + TILE_SIZE.y / 2) / TILE_SIZE.y;
+
+		i->second->path = Pathfinder::FindPath(actor, destination);
+		i->second->hasPath = true;
+	}
+}
+
+void MovementSystem::MoveToNode(const std::unordered_map<Entity, std::shared_ptr<FollowBehaviour>>& followArray, float dt) {
+
+	for (auto i = followArray.begin(); i != followArray.end(); i++) {
+
+		if (!i->second->isFollowActive || !i->second->hasPath || i->second->path.empty()) continue;
+
+		if (i->second->currentStep < i->second->path.size() - 1) {
 
 			auto entityActor = componentRegistry.GetComponentOfType<Transform>(i->first);
 			auto entityDest = componentRegistry.GetComponentOfType<Transform>(i->second->entity);
@@ -80,8 +84,10 @@ void MovementSystem::Update(float& dt) {
 			float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
 
 			if (distance > 0.1f) { // Still moving toward node
-				sf::Vector2f normalized = direction / distance;
-				entityActor->position += normalized * entityActor->speed * dt;
+				entityActor->velocity = direction / distance;
+				entityActor->position += entityActor->velocity * dt * entityActor->speed;
+				/*sf::Vector2f normalize = direction / distance;
+				entityActor->position += normalize * dt * entityActor->speed; */
 
 				// Optional: clamp to prevent overshoot
 				if (std::abs(entityActor->position.x - targetPos.x) < 1.0f &&
@@ -100,11 +106,6 @@ void MovementSystem::Update(float& dt) {
 			i->second->hasPath = false;
 		}
 	}
-}
-
-void MovementSystem::MoveToNode(Node actor, Node destination) {
-
-	
 }
 
 void MovementSystem::AddObserver(IGameObserver* observer) {

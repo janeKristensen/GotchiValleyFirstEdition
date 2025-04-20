@@ -21,23 +21,7 @@ void AnimationSystem::Update(float dt) {
 
 			if (animation->frameNum >= animation->frames[animation->animName].numFrames) {
 
-				if (animation->animName == AnimationName::COLLIDING) {
-
-					if (entityState && entityState->state == State::INITIAL) {
-
-						animation->animName = AnimationName::INITIAL;
-					}
-					else {
-
-						animation->animName = AnimationName::IDLE;
-					}
-				}
-				else if (animation->animName == AnimationName::INTERACTING ||  
-						animation->animName == AnimationName::EVOLVING) {
-
-							animation->animName = AnimationName::IDLE;
-					}
-
+				animation->animName = AnimationName::IDLE;
 				animation->frameNum = animation->frameNum % animation->frames[animation->animName].numFrames;
 			}
 		}

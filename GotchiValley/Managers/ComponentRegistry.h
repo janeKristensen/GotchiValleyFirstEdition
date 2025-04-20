@@ -34,7 +34,7 @@ namespace GotchiValley {
 		}
 
 		template <typename T>
-		void RemoveComponent(Entity& entity) {
+		void RemoveComponent(const Entity& entity) {
 			auto it = mManagers.find(std::type_index(typeid(T)));
 			if (it != mManagers.end()) {
 				

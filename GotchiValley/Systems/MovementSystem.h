@@ -19,6 +19,7 @@ namespace GotchiValley {
 	private:
 		std::unordered_set<IGameObserver*> mObservers;
 		const float mAcceleration = 1.f;
-		void MoveToNode(Node actor, Node destination);
+		void SetNodePath(const std::unordered_map<Entity, std::shared_ptr<FollowBehaviour>>& followArray);
+		void MoveToNode(const std::unordered_map<Entity, std::shared_ptr<FollowBehaviour>>& followArray, float dt);
 	};
 }

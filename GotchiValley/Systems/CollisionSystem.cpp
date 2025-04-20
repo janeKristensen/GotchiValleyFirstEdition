@@ -14,38 +14,47 @@ void CollisionSystem::Update() {
 
 		auto entityState = componentRegistry.GetComponentOfType<EntityState>(i->first);
 
-		if (componentRegistry.HasComponent<Moveable>(i->first)) {
-			
-			for (auto j = colliderArray.begin(); j != colliderArray.end(); j++) {
+		if (entityState && entityState->state != State::COLLIDING) {
+			if (componentRegistry.HasComponent<Moveable>(i->first)) {
 
-				if (i == j) continue;
+				if (i->second->boundingBox.position.x < 0 ||
+					i->second->boundingBox.position.y < 0 ||
+					i->second->boundingBox.position.x > SCREEN_SIZE.x ||
+					i->second->boundingBox.position.y > SCREEN_SIZE.y) {
 
-				if (entityState && entityState->state != State::COLLIDING) {
+					NotifyObservers(i->first, EntityEvent::COLLISION);
+					entityState->state = State::IDLE;
+				}
+
+				for (auto j = colliderArray.begin(); j != colliderArray.end(); j++) {
+
+					if (i == j) continue;
+
 					if (i->second->boundingBox.findIntersection(j->second->boundingBox))
 					{
 						collisions.push_back(CollisionData{ i->first, i->second, j->first, j->second });
 						entityState->state = State::COLLIDING;
 					}
 				}
-			}
 
-			auto levelArray = componentRegistry.GetComponentArray<Level>();
+				auto levelArray = componentRegistry.GetComponentArray<Level>();
 
-			for (auto k = levelArray.begin(); k != levelArray.end(); k++) {
+				for (auto k = levelArray.begin(); k != levelArray.end(); k++) {
 
-				for (auto l = k->second->colliders.begin(); l != k->second->colliders.end(); l++) {
+					for (auto l = k->second->colliders.begin(); l != k->second->colliders.end(); l++) {
 
-					Collider* collider = l->get();
+						Collider* collider = l->get();
 
-					if (entityState && entityState->state != State::COLLIDING) {
-						if (i->second->boundingBox.findIntersection(collider->boundingBox)) {
+						
+							if (i->second->boundingBox.findIntersection(collider->boundingBox)) {
 
-							collisions.push_back(CollisionData{ i->first, i->second, k->first, *l });
-							entityState->state = State::COLLIDING;
-						}
+								collisions.push_back(CollisionData{ i->first, i->second, k->first, *l });
+								entityState->state = State::COLLIDING;
+							}
+						
 					}
 				}
-			}	
+			}
 		}
 	}
 

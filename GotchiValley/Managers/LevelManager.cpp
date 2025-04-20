@@ -52,7 +52,7 @@ Level LevelManager::LoadLevel(uint32_t id) {
 
 				const sf::Vector2f& size = static_cast<sf::Vector2f>(TILE_SIZE);
 				const sf::Vector2f& position = triangles[0].position;
-				colliders.push_back(std::make_shared<Collider>(Collider{ sf::FloatRect(position, size), sf::RectangleShape{{(float)TILE_SIZE.x, (float)TILE_SIZE.y} } }));
+				colliders.push_back(std::make_shared<Collider>(Collider{ sf::FloatRect(position, size) }));
 			}
 		}
 	}

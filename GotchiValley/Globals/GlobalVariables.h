@@ -31,6 +31,8 @@ namespace GotchiValley {
 		ATTACKING, 
 		INTERACTING,
 		EVOLVING,
+		UNEVOLVED,
+		EVOLVED,
 	};
 
 	enum class AnimationName {
@@ -43,12 +45,19 @@ namespace GotchiValley {
 	};
 
 	struct Node {
-		uint32_t y;
-		uint32_t x;
-		uint32_t parentX;
-		uint32_t parentY;
+		int32_t y;
+		int32_t x;
+		int32_t parentX;
+		int32_t parentY;
 		float gCost;
 		float hCost;
 		float fCost;
+		bool walkable = true;
+	};
+
+	struct TileNode {
+		int32_t y;
+		int32_t x;
+		int32_t count = 0;
 	};
 }

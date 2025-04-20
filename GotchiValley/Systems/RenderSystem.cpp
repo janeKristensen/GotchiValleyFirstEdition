@@ -15,8 +15,9 @@ void RenderSystem::Update(sf::RenderWindow& window) {
 		for (auto j = i->second->colliders.begin(); j != i->second->colliders.end(); j++) {
 
 			Collider* collider = j->get();
-			collider->box.setPosition(collider->boundingBox.position);
-			window.draw(collider->box);
+			sf::RectangleShape box{ {(float)TILE_SIZE.x, (float)TILE_SIZE.y} };
+			box.setPosition(collider->boundingBox.position);
+			window.draw(box);
 		}
 #endif
 		sf::RenderStates states;
@@ -29,10 +30,30 @@ void RenderSystem::Update(sf::RenderWindow& window) {
 	auto colliderArray = componentRegistry.GetComponentArray<Collider>();
 	for (auto i = colliderArray.begin(); i != colliderArray.end(); i++) {
 
-		i->second->box.setPosition(i->second->boundingBox.position);
-		window.draw(i->second->box);
+		sf::RectangleShape box{ {(float)TILE_SIZE.x, (float)TILE_SIZE.y} };
+		box.setPosition(i->second->boundingBox.position);
+		window.draw(box);
 	}
 #endif
+
+	// Draw pathfinder paths
+#ifndef NDEBUG
+	auto followArray = componentRegistry.GetComponentArray<FollowBehaviour>();
+	for (auto i = followArray.begin(); i != followArray.end(); i++) {
+
+		auto path = i->second->path;
+		for (const Node& node : path) {
+
+			sf::CircleShape nodeShape{5.f};
+			sf::Vector2f position = { (float)node.x * TILE_SIZE.x, (float)node.y * TILE_SIZE.y};
+			nodeShape.setPosition(position);
+			nodeShape.setFillColor(sf::Color::Red);
+			window.draw(nodeShape);
+		}
+		
+	}
+#endif
+
 
 	auto spriteArray = componentRegistry.GetComponentArray<Sprite>();
 	for (auto i = spriteArray.begin(); i != spriteArray.end(); i++) {

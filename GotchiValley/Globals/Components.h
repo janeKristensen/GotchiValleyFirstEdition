@@ -28,7 +28,6 @@ namespace GotchiValley {
 
 	struct Collider {
 		sf::FloatRect boundingBox;
-		sf::RectangleShape box;
 		bool hasCollided = false;
 	};
 
@@ -76,6 +75,11 @@ namespace GotchiValley {
 		std::vector<Node> path;
 		size_t currentStep = 0;
 		bool hasPath = false;
+		bool isFollowActive = false;
+	};
+
+	struct EvolutionState {
+		State state{ State::UNEVOLVED };
 	};
 
 	
