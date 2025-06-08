@@ -19,7 +19,7 @@ using namespace GotchiValley;
 			evolutionState->state = State::EVOLVED;
 			entityRoam->isRoamActive = true;
 			componentRegistry.RemoveComponent<Animation>(entity);
-			componentRegistry.AddComponent<Animation>(entity, Animations::birdAnimation);
+			componentRegistry.AddComponent<Animation>(entity, birdAnimation);
 		}
 		else if (evolutionState && evolutionState->state == State::EVOLVED) {
 

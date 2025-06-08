@@ -69,7 +69,7 @@ void GameWorld::CreateBird(std::shared_ptr<sf::Texture> texture, const sf::Vecto
 	(
 		mEntityManager,
 		Sprite(texture),
-		Animations::eggAnimation,
+		eggAnimation,
 		Transform({ position, {0.f, 0.f}, 30.f }),
 		Collider({ sf::FloatRect({position.x , position.y }, { TILE_SIZE.x - 5, TILE_SIZE.y - 5}) }),
 		Interactable(),
@@ -123,7 +123,7 @@ Entity GameWorld::CreatePlayer(std::shared_ptr<sf::Texture> texture, const sf::V
 	(
 		mEntityManager,
 		Sprite(texture),
-		Animations::playerAnimation,
+		playerAnimation,
 		Transform({ position, sf::Vector2f(0,0), speed }),
 		Collider({ sf::FloatRect({position.x , position.y  }, { TILE_SIZE.x , TILE_SIZE.y  }) }),
 		Moveable(),

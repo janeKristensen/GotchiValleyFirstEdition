@@ -1,4 +1,5 @@
 #include "AnimationSystem.h"
+#include <iostream>
 
 using namespace GotchiValley;
 
@@ -27,6 +28,11 @@ void AnimationSystem::Update(float dt) {
 		}
 		
 		uint8_t imageNum = animation->startFrame + animation->frameNum;
+		
+#ifndef NDEBUG
+		std::cout << animation->frames[animation->animName].sprites.size();
+#endif // DEBUG
+
 		spriteComponent->sprite.setTextureRect(animation->frames[animation->animName].sprites[imageNum]);
 		animation->frameTime = fmod(animation->frameTime, (1 / animation->frames[animation->animName].animFPS));
 	}	
