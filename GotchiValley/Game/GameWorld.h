@@ -8,9 +8,13 @@
 #include "LevelManager.h"
 #include "SFML/Graphics.hpp"
 #include "Factory.h"
+#include "Animations.h"
+#include "BehaviourScripts.h"
 
 
 namespace GotchiValley {
+
+	
 
 	class GameWorld : public IGameSubject {
 	public:

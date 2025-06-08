@@ -1,7 +1,6 @@
 
 #include "GameWorld.h"
-#include "Animations.h"
-
+#include "BehaviourScripts.h"
 
 using namespace GotchiValley;
 
@@ -70,7 +69,7 @@ void GameWorld::CreateBird(std::shared_ptr<sf::Texture> texture, const sf::Vecto
 	(
 		mEntityManager,
 		Sprite(texture),
-		eggAnimation,
+		Animations::eggAnimation,
 		Transform({ position, {0.f, 0.f}, 30.f }),
 		Collider({ sf::FloatRect({position.x , position.y }, { TILE_SIZE.x - 5, TILE_SIZE.y - 5}) }),
 		Interactable(),
@@ -83,7 +82,9 @@ void GameWorld::CreateBird(std::shared_ptr<sf::Texture> texture, const sf::Vecto
 	componentRegistry.AddComponent(bird,
 		Button(
 			[bird, this]() {
-				auto evolutionState = componentRegistry.GetComponentOfType<EvolutionState>(bird);
+
+				Behaviours::BirdBehaviour(bird);
+				/*auto evolutionState = componentRegistry.GetComponentOfType<EvolutionState>(bird);
 				auto entityState = componentRegistry.GetComponentOfType<EntityState>(bird);
 				auto entityAnimation = componentRegistry.GetComponentOfType<Animation>(bird);
 				auto entityFollow = componentRegistry.GetComponentOfType<FollowBehaviour>(bird);
@@ -108,7 +109,7 @@ void GameWorld::CreateBird(std::shared_ptr<sf::Texture> texture, const sf::Vecto
 						entityFollow->isFollowActive = true;
 						entityRoam->isRoamActive = false;
 					}	
-				};
+				};*/
 
 				this->NotifyObservers(bird, EntityEvent::INTERACTION);
 			}
@@ -122,7 +123,7 @@ Entity GameWorld::CreatePlayer(std::shared_ptr<sf::Texture> texture, const sf::V
 	(
 		mEntityManager,
 		Sprite(texture),
-		playerAnimation,
+		Animations::playerAnimation,
 		Transform({ position, sf::Vector2f(0,0), speed }),
 		Collider({ sf::FloatRect({position.x , position.y  }, { TILE_SIZE.x , TILE_SIZE.y  }) }),
 		Moveable(),
