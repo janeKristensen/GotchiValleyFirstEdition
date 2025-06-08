@@ -10,8 +10,6 @@
 #include "Factory.h"
 
 
-
-
 namespace GotchiValley {
 
 	class GameWorld : public IGameSubject {
@@ -21,16 +19,21 @@ namespace GotchiValley {
 		void AddObserver(IGameObserver* observer) override;
 		void RemoveObserver(IGameObserver* observer) override;
 		void NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) const override;
-		void PollEvents(std::shared_ptr<sf::RenderWindow> window);
 		void SetLevel(const std::uint32_t levelID);
+
 
 	private:
 		std::list<IGameObserver*> mObservers;
 		EntityManager mEntityManager;
 		LevelManager mLevelManager{ std::make_shared<sf::Texture>(std::move<sf::Texture>(sf::Texture{"bg_sprite_small.png"})) };
-		uint32_t mCurrentLevelId = 0;
-		Entity mCurrentLevel = NULL;
+		uint32_t mCurrentLevelId = NULL;
+		Entity mLevelEntity = NULL;
+		Entity mPlayer = NULL;
 		Factory mFactory;
+		
+
+		void CreateBird(std::shared_ptr<sf::Texture> texture, const sf::Vector2f& position, Entity& player);
+		Entity CreatePlayer(std::shared_ptr<sf::Texture> texture, const sf::Vector2f& position, const float& speed);
 		
 	};
 

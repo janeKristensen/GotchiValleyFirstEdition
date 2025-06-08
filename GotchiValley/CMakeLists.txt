@@ -12,6 +12,7 @@ add_executable (GotchiValley
     "Game/Animations.h"
     "Globals/Components.h"
     "Globals/GlobalVariables.h"
+    "Globals/GlobalVariables.cpp"
     "Globals/SharedObjects.h"
     "Globals/SharedObjects.cpp"
     "Globals/IObserver.h"  
@@ -33,6 +34,8 @@ add_executable (GotchiValley
     "Systems/RenderSystem.cpp"
     "Systems/UISystem.h"
     "Systems/UISystem.cpp"
+    "Systems/Pathfinder.h"
+    "Systems/Pathfinder.cpp"
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

@@ -2,6 +2,7 @@
 #include "GameWorld.h"
 #include "Animations.h"
 
+
 using namespace GotchiValley;
 
 void GameWorld::Initialize() {
@@ -17,6 +18,11 @@ void GameWorld::Initialize() {
 	componentRegistry.RegisterComponentManager<Interactable>();
 	componentRegistry.RegisterComponentManager<Button>();
 	componentRegistry.RegisterComponentManager<Level>();
+	componentRegistry.RegisterComponentManager<PlayerEntity>();
+	componentRegistry.RegisterComponentManager<FollowBehaviour>();
+	componentRegistry.RegisterComponentManager<RoamBehaviour>();
+	componentRegistry.RegisterComponentManager<EvolutionState>();
+
 
 	auto birdTexture = std::make_shared<sf::Texture>(std::move(sf::Texture("egg_sprite_sheet.png")));
 	auto playerTexture = std::make_shared<sf::Texture>(std::move(sf::Texture("sprite_sheet.png")));
@@ -24,70 +30,11 @@ void GameWorld::Initialize() {
 
 	auto newLevel = Level{ mLevelManager.LoadLevel(1) };
 	mCurrentLevelId = newLevel.levelId;
-	mCurrentLevel = mFactory.CreateEntity(mEntityManager, newLevel);
+	mLevelEntity = mFactory.CreateEntity(mEntityManager, newLevel);
 
-	auto bird1 = mFactory.CreateEntity
-	(
-		mEntityManager,
-		Sprite(birdTexture),
-		birdAnimation,
-		Transform({ sf::Vector2f(100,50), sf::Vector2f(0,0), }),
-		Collider({ sf::FloatRect({100,50}, {32,32}) }),
-		Interactable(),
-		EntityState{ State::INITIAL }
-	);
-	componentRegistry.AddComponent(bird1, 
-		Button(
-			[bird1, this]() {
-				auto entityState = componentRegistry.GetComponentOfType<EntityState>(bird1);
-				auto entityAnimation = componentRegistry.GetComponentOfType<Animation>(bird1);
-				if (entityState->state == State::EVOLVING) {
-
-					entityAnimation->frames[AnimationName::COLLIDING] = birdAnimation.frames[AnimationName::IDLE];
-				}
-
-				this->NotifyObservers(bird1, EntityEvent::INTERACTION);
-			}
-		)
-	);
-
-	auto bird2 = mFactory.CreateEntity
-	(
-		mEntityManager,
-		birdAnimation,
-		Sprite(birdTexture),
-		Transform({ sf::Vector2f(200,200), sf::Vector2f(0,0) }),
-		Collider({ sf::FloatRect({200,200}, {32,32}) }),
-		Interactable(),
-		EntityState{ State::INITIAL }
-	);
-	componentRegistry.AddComponent(bird2,
-		Button(
-			[bird2, this]() {
-	
-				auto entityState = componentRegistry.GetComponentOfType<EntityState>(bird2);
-				auto entityAnimation = componentRegistry.GetComponentOfType<Animation>(bird2);
-				if (entityState->state == State::EVOLVING) {
-
-					entityAnimation->frames[AnimationName::COLLIDING] = birdAnimation.frames[AnimationName::IDLE];
-				}
-
-				this->NotifyObservers(bird2, EntityEvent::INTERACTION);
-			}
-		)
-	);
-
-	auto player = mFactory.CreateEntity
-	(
-		mEntityManager,
-		Sprite(playerTexture),
-		playerAnimation,
-		Transform({ sf::Vector2f(200,100), sf::Vector2f(0,0), 80.f }),
-		Collider({ sf::FloatRect({200,100}, {32,32}) }),
-		Moveable(),
-		Controlable(),
-		PlayerStats(100)
-	);
+	mPlayer = CreatePlayer(playerTexture, { 300.f, 300.f }, 80.f);
+	CreateBird(birdTexture, { 400.f, 500.f }, mPlayer);
+	CreateBird(birdTexture, { 200.f, 200.f }, mPlayer);
 
 	auto button = mFactory.CreateEntity
 	(
@@ -100,17 +47,92 @@ void GameWorld::Initialize() {
 	componentRegistry.AddComponent(button,
 		Button(
 			[button, this]() {
-				this->SetLevel(mCurrentLevelId + 1);
+				uint32_t nextLevel = mCurrentLevelId + 1;
+				if(nextLevel < mLevelManager.GetNumberOfLevels()) this->SetLevel(nextLevel);
 			}
 		)
 	);
+
 }
 
 
 void GameWorld::SetLevel(const std::uint32_t levelID) {
 
-	componentRegistry.RemoveComponent<Level>(mCurrentLevel);
-	componentRegistry.AddComponent<Level>(mCurrentLevelId, Level{ mLevelManager.LoadLevel(levelID) });
+	componentRegistry.RemoveEntity(mLevelEntity);
+	auto level { mLevelManager.LoadLevel(levelID) };
+	mLevelEntity = mFactory.CreateEntity(mEntityManager, level);
+	mCurrentLevelId = levelID;
+}
+
+void GameWorld::CreateBird(std::shared_ptr<sf::Texture> texture, const sf::Vector2f& position, Entity& player) {
+
+	auto bird = mFactory.CreateEntity
+	(
+		mEntityManager,
+		Sprite(texture),
+		eggAnimation,
+		Transform({ position, {0.f, 0.f}, 30.f }),
+		Collider({ sf::FloatRect({position.x , position.y }, { TILE_SIZE.x - 5, TILE_SIZE.y - 5}) }),
+		Interactable(),
+		Moveable(),
+		EntityState{ State::INITIAL },
+		EvolutionState(),
+		FollowBehaviour{ player },
+		RoamBehaviour()
+	);
+	componentRegistry.AddComponent(bird,
+		Button(
+			[bird, this]() {
+				auto evolutionState = componentRegistry.GetComponentOfType<EvolutionState>(bird);
+				auto entityState = componentRegistry.GetComponentOfType<EntityState>(bird);
+				auto entityAnimation = componentRegistry.GetComponentOfType<Animation>(bird);
+				auto entityFollow = componentRegistry.GetComponentOfType<FollowBehaviour>(bird);
+				auto entityRoam = componentRegistry.GetComponentOfType<RoamBehaviour>(bird);
+
+				if (evolutionState && evolutionState->state == State::UNEVOLVED) {
+
+					entityState->state = State::EVOLVING;
+					evolutionState->state = State::EVOLVED;
+					entityRoam->isRoamActive = true;
+					componentRegistry.RemoveComponent<Animation>(bird);
+					componentRegistry.AddComponent<Animation>(bird, birdAnimation);
+				}
+				else if (evolutionState && evolutionState->state == State::EVOLVED) {
+					
+					if (entityFollow->isFollowActive) {
+
+						entityFollow->isFollowActive = false;
+						entityRoam->isRoamActive = true;
+					}
+					else {
+						entityFollow->isFollowActive = true;
+						entityRoam->isRoamActive = false;
+					}	
+				};
+
+				this->NotifyObservers(bird, EntityEvent::INTERACTION);
+			}
+		)
+	);
+}
+
+Entity GameWorld::CreatePlayer(std::shared_ptr<sf::Texture> texture, const sf::Vector2f& position, const float& speed) {
+
+	auto player = mFactory.CreateEntity
+	(
+		mEntityManager,
+		Sprite(texture),
+		playerAnimation,
+		Transform({ position, sf::Vector2f(0,0), speed }),
+		Collider({ sf::FloatRect({position.x , position.y  }, { TILE_SIZE.x , TILE_SIZE.y  }) }),
+		Moveable(),
+		Controlable(),
+		PlayerStats(100),
+		EntityState(),
+		PlayerEntity()
+	);
+
+	return player;
 }
 
 

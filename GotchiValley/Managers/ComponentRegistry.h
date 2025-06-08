@@ -34,11 +34,20 @@ namespace GotchiValley {
 		}
 
 		template <typename T>
-		void RemoveComponent(Entity& entity) {
+		void RemoveComponent(const Entity& entity) {
 			auto it = mManagers.find(std::type_index(typeid(T)));
 			if (it != mManagers.end()) {
 				
 				ComponentManager<T>* componentManager = static_cast<ComponentManager<T>*>(it->second.get());
+				componentManager->RemoveComponent(entity);
+			}
+		}
+
+		void RemoveEntity(Entity& entity) {
+			
+			for (auto it = mManagers.begin(); it != mManagers.end(); it++) {
+
+				ComponentManager<void*>* componentManager = static_cast<ComponentManager<void*>*>(it->second.get());
 				componentManager->RemoveComponent(entity);
 			}
 		}

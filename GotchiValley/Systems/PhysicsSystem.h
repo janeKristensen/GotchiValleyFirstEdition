@@ -24,8 +24,5 @@ namespace GotchiValley {
 		void OnNotify(const Entity & entity, const EntityEvent & eventMessage) override;
 	private:
 		std::unordered_set<void*> mGameSubjects;
-		const float acceleration = 1.f;
-
-
 	};
 }

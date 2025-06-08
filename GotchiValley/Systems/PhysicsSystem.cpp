@@ -13,7 +13,7 @@ void PhysicsSystem::Update(float& dt) {
 		auto transform = i->second;
 
 		transform->position += transform->velocity * dt * transform->speed;
-	
+
 		auto spriteComponent = componentRegistry.GetComponentOfType<Sprite>(i->first);
 		if (!spriteComponent) continue;
 		spriteComponent->sprite.setPosition(transform->position);
@@ -32,6 +32,7 @@ void PhysicsSystem::SetPosition(Entity& entity, sf::Vector2f& position) {
 	auto transform = componentRegistry.GetComponentOfType<Transform>(entity);
 	if (!transform) return;
 	transform->position = position;
+	
 
 	auto spriteComponent = componentRegistry.GetComponentOfType<Sprite>(entity);
 	if (!spriteComponent) return;
@@ -42,56 +43,12 @@ void PhysicsSystem::SetPosition(Entity& entity, sf::Vector2f& position) {
 
 void PhysicsSystem::OnNotify(const Entity& entity, const EntityEvent& eventMessage) {
 
-	auto transform = componentRegistry.GetComponentOfType<Transform>(entity);
-
-	if (componentRegistry.HasComponent<Moveable>(entity)) {
-
-		switch (eventMessage) {
-		case EntityEvent::COLLISION: 
-			transform->velocity *= -1.0f;
-			break;
-
-		case EntityEvent::MOVE_UP:
-			transform->velocity.y = -acceleration;
-			break;
-
-		case EntityEvent::MOVE_DOWN:
-			transform->velocity.y = acceleration;
-			break;
-
-		case EntityEvent::MOVE_RIGHT:
-			transform->velocity.x = acceleration;
-			break;
-
-		case EntityEvent::MOVE_LEFT:
-			transform->velocity.x = -acceleration;
-			break;
-
-		/*case EntityEvent::IDLE:
-			transform->velocity.x = 0;
-			transform->velocity.y = 0;
-			break;*/
+	if (eventMessage == EntityEvent::COLLISION &&
+		componentRegistry.HasComponent<Moveable>(entity)) {
 		
-		default:
-			break;
-		}
-		/*if(eventMessage == EntityEvent::COLLISION)
-			transform->velocity *= -1.0f;
-
-		else if (eventMessage == EntityEvent::MOVE_UP) 
-			transform->velocity.y = -acceleration;
-		
-		else if (eventMessage == EntityEvent::MOVE_DOWN) 
-			transform->velocity.y = acceleration;
-		
-		else if (eventMessage == EntityEvent::MOVE_RIGHT) 
-			transform->velocity.x = acceleration;
-		
-		else if (eventMessage == EntityEvent::MOVE_LEFT) 
-			transform->velocity.x = -acceleration;*/
-		
+		auto transform = componentRegistry.GetComponentOfType<Transform>(entity);
+		transform->velocity *= -1.f;
 	}
-	
 }
 
 

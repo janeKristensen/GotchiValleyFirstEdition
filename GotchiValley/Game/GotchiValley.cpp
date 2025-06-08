@@ -14,13 +14,10 @@ using namespace GotchiValley;
 		CollisionSystem collisionSystem;
 		MovementSystem movementSystem;
 		GameWorld gameWorld;
-
 		PhysicsSystem physicsSystem{ &collisionSystem, &movementSystem };
-		AnimationSystem animationSystem{ &collisionSystem, &movementSystem, &gameWorld };
+		AnimationSystem animationSystem{ &collisionSystem, &movementSystem, &uiSystem, &gameWorld };
 		
-
 		gameWorld.Initialize();
-
 
 		sf::Clock clock;
 
@@ -30,7 +27,7 @@ using namespace GotchiValley;
 
 			uiSystem.PollEvents(window);
 
-			movementSystem.Update();
+			movementSystem.Update(dt);
 			collisionSystem.Update();
 			physicsSystem.Update(dt);
 			animationSystem.Update(dt);

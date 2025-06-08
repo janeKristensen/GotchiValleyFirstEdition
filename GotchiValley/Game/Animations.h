@@ -39,18 +39,30 @@ namespace GotchiValley {
 		2.f
 	);
 
+	auto eggAnimation = Animation
+	(
+		{
+			//{AnimationName::INITIAL, animEgg},
+			{AnimationName::IDLE, animEgg},
+			{AnimationName::COLLIDING, animEgg},
+			{AnimationName::INTERACTING, animEgg},
+		},
+		0, 0, 0, 
+		AnimationName::IDLE
+	);
+
 	auto birdAnimation = Animation
 	(
 		{
-			{AnimationName::INITIAL, animEgg},
+			//{AnimationName::INITIAL, animEgg},
 			{AnimationName::IDLE, animBird},
-			{AnimationName::COLLIDING, animEgg},
+			{AnimationName::COLLIDING, animBird},
 			{AnimationName::EVOLVING, animCollision},
 			{AnimationName::INTERACTING, animBird},
 		},
-		0, 0, 0, 
-		AnimationName::INITIAL
-	);
+		0, 0, 0,
+		AnimationName::IDLE
+		);
 
 
 	auto animStanding = AnimationData

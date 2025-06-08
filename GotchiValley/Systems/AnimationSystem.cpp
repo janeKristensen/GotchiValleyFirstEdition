@@ -21,27 +21,11 @@ void AnimationSystem::Update(float dt) {
 
 			if (animation->frameNum >= animation->frames[animation->animName].numFrames) {
 
-				if (animation->animName == AnimationName::COLLIDING) {
-
-					if (entityState && entityState->state == State::INITIAL) {
-
-						animation->animName = AnimationName::INITIAL;
-					}
-					else {
-
-						animation->animName = AnimationName::IDLE;
-					}
-				}
-				else if (animation->animName == AnimationName::INTERACTING || animation->animName == AnimationName::EVOLVING) {
-
-					animation->animName = AnimationName::IDLE;
-				}
-
+				animation->animName = AnimationName::IDLE;
 				animation->frameNum = animation->frameNum % animation->frames[animation->animName].numFrames;
 			}
 		}
 		
-
 		uint8_t imageNum = animation->startFrame + animation->frameNum;
 		spriteComponent->sprite.setTextureRect(animation->frames[animation->animName].sprites[imageNum]);
 		animation->frameTime = fmod(animation->frameTime, (1 / animation->frames[animation->animName].animFPS));
@@ -52,8 +36,6 @@ void AnimationSystem::Update(float dt) {
 void AnimationSystem::OnNotify(const Entity& entity, const EntityEvent& eventMessage) {
 
 	auto animation = componentRegistry.GetComponentOfType<Animation>(entity);
-	auto entityState = componentRegistry.GetComponentOfType<EntityState>(entity);
-	auto entityInteractable = componentRegistry.GetComponentOfType<Interactable>(entity);
 
 	if (animation) {
 
@@ -63,6 +45,9 @@ void AnimationSystem::OnNotify(const Entity& entity, const EntityEvent& eventMes
 			animation->animName = AnimationName::COLLIDING;
 		}
 		else if (eventMessage == EntityEvent::INTERACTION) {
+
+			auto entityState = componentRegistry.GetComponentOfType<EntityState>(entity);
+			auto entityInteractable = componentRegistry.GetComponentOfType<Interactable>(entity);
 
 			if (entityState && entityState->state == State::EVOLVING) {
 
@@ -75,7 +60,7 @@ void AnimationSystem::OnNotify(const Entity& entity, const EntityEvent& eventMes
 				entityInteractable->interactionActive = false;	
 				entityState->state = State::IDLE;
 		}
-		else if (eventMessage == EntityEvent::MOVE_RIGHT) {
+		else if (eventMessage == EntityEvent::MOVE_LEFT) {
 
 			if (animation->animName != AnimationName::RUNNING) {
 

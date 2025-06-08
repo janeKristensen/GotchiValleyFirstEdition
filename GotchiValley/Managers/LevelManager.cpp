@@ -1,4 +1,5 @@
 #include "LevelManager.h"
+#include "GlobalVariables.h"
 
 using namespace GotchiValley;
 
@@ -19,11 +20,11 @@ Level LevelManager::LoadLevel(uint32_t id) {
 	vertices.resize(LEVEL_SIZE.x * LEVEL_SIZE.y * 6);
 
 
-	for (uint32_t i = 0; i < LEVEL_SIZE.x; i++) {
-		for (uint32_t j = 0; j < LEVEL_SIZE.y; j++)
+	for (int32_t i = 0; i < LEVEL_SIZE.x; i++) {
+		for (int32_t j = 0; j < LEVEL_SIZE.y; j++)
 		{
 			// get the current tile number
-			const uint32_t tileNumber = level[i][j];
+			const int32_t tileNumber = level[i][j];
 
 			// find its position in the tileset texture
 			const int tu = tileNumber % (TILE_SET_SIZE.x * TILE_SIZE.x / TILE_SIZE.x);
@@ -57,6 +58,50 @@ Level LevelManager::LoadLevel(uint32_t id) {
 		}
 	}
 
+	for (auto x = 0; x < (SCREEN_SIZE.x / TILE_SIZE.x); x++) {
+		for (auto y = 0; y < (SCREEN_SIZE.y / TILE_SIZE.y); y++) {
+
+			mColliderMap[x][y].count = 0;
+		}
+	}
+
+	for (auto i = colliders.begin(); i != colliders.end(); i++) {
+
+		int32_t tempX = i->get()->boundingBox.position.x / TILE_SIZE.x;
+		int32_t tempY = i->get()->boundingBox.position.y / TILE_SIZE.y;
+
+		mColliderMap[tempX][tempY].count += 1;
+		mColliderMap[tempX - 1][tempY].count += 1;
+		mColliderMap[tempX + 1][tempY].count += 1;
+		mColliderMap[tempX][tempY - 1].count += 1;
+		mColliderMap[tempX][tempY + 1].count += 1;
+		mColliderMap[tempX - 1][tempY - 1].count += 1;
+		mColliderMap[tempX + 1][tempY + 1].count += 1;
+		mColliderMap[tempX + 1][tempY - 1].count += 1;
+		mColliderMap[tempX - 1][tempY + 1].count += 1;
+
+	}
+	
+	for (auto x = 0; x < (SCREEN_SIZE.x / TILE_SIZE.x); x++) {
+		for (auto y = 0; y < (SCREEN_SIZE.y / TILE_SIZE.y); y++) {
+
+			allMap[x][y] = std::make_shared<Node>();
+
+			allMap[x][y]->fCost = FLT_MAX;
+			allMap[x][y]->gCost = FLT_MAX;
+			allMap[x][y]->hCost = FLT_MAX;
+			allMap[x][y]->parentX = -1;
+			allMap[x][y]->parentY = -1;
+			allMap[x][y]->x = x;
+			allMap[x][y]->y = y;
+
+			if (mColliderMap[x][y].count != 0) {
+				allMap[x][y]->walkable = false;
+				//std::cout << "tile x:" << allMap[x][y]->x << " y: " << allMap[x][y]->y << " not walkable" << std::endl;
+			}
+		}
+	}
+
 	Level levelMap{ id, vertices, mSpriteSheet, colliders };
 	return levelMap;
 }
@@ -66,8 +111,8 @@ void LevelManager::LoadLevelFiles(std::filesystem::path filename){
 	Matrix level{};
 	std::fstream levelFile(filename);
 
-	for (uint32_t i = 0; i < LEVEL_SIZE.x; i++) {
-		for (uint32_t j = 0; j < LEVEL_SIZE.x; j++) {
+	for (int32_t i = 0; i < LEVEL_SIZE.x; i++) {
+		for (int32_t j = 0; j < LEVEL_SIZE.x; j++) {
 			
 			char number;
 			levelFile >> number;

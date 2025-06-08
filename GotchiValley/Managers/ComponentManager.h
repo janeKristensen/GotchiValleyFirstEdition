@@ -20,7 +20,7 @@ namespace GotchiValley {
 			mComponents[entity] = std::make_shared<T>(std::move(component));
 		}
 
-		void RemoveComponent(Entity& entity) {
+		void RemoveComponent(const Entity& entity) {
 
 			mComponents.erase(entity);
 		}
