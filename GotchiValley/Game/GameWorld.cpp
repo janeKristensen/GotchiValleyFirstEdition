@@ -83,35 +83,7 @@ void GameWorld::CreateBird(std::shared_ptr<sf::Texture> texture, const sf::Vecto
 		Button(
 			[bird, this]() {
 
-				Behaviours::BirdBehaviour(bird);
-				/*auto evolutionState = componentRegistry.GetComponentOfType<EvolutionState>(bird);
-				auto entityState = componentRegistry.GetComponentOfType<EntityState>(bird);
-				auto entityAnimation = componentRegistry.GetComponentOfType<Animation>(bird);
-				auto entityFollow = componentRegistry.GetComponentOfType<FollowBehaviour>(bird);
-				auto entityRoam = componentRegistry.GetComponentOfType<RoamBehaviour>(bird);
-
-				if (evolutionState && evolutionState->state == State::UNEVOLVED) {
-
-					entityState->state = State::EVOLVING;
-					evolutionState->state = State::EVOLVED;
-					entityRoam->isRoamActive = true;
-					componentRegistry.RemoveComponent<Animation>(bird);
-					componentRegistry.AddComponent<Animation>(bird, birdAnimation);
-				}
-				else if (evolutionState && evolutionState->state == State::EVOLVED) {
-					
-					if (entityFollow->isFollowActive) {
-
-						entityFollow->isFollowActive = false;
-						entityRoam->isRoamActive = true;
-					}
-					else {
-						entityFollow->isFollowActive = true;
-						entityRoam->isRoamActive = false;
-					}	
-				};*/
-
-				this->NotifyObservers(bird, EntityEvent::INTERACTION);
+				Behaviours::EggBehaviour(bird, birdAnimation);
 			}
 		)
 	);

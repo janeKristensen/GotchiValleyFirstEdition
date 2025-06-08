@@ -30,7 +30,7 @@ void AnimationSystem::Update(float dt) {
 		uint8_t imageNum = animation->startFrame + animation->frameNum;
 		
 #ifndef NDEBUG
-		std::cout << animation->frames[animation->animName].sprites.size();
+		//std::cout << animation->frames[animation->animName].sprites.size();
 #endif // DEBUG
 
 		spriteComponent->sprite.setTextureRect(animation->frames[animation->animName].sprites[imageNum]);

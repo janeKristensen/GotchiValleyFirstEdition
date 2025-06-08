@@ -36,6 +36,7 @@ void UISystem::PollEvents(std::shared_ptr<sf::RenderWindow> window) {
 					if (interactable->interactionActive) {
 
 						i->second->OnClick();
+						this->NotifyObservers(i->first, EntityEvent::INTERACTION);
 						interactable->interactionActive = false;
 					}
 				}
