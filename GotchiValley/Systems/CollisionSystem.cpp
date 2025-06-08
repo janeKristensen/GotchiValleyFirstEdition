@@ -17,15 +17,18 @@ void CollisionSystem::Update() {
 		if (entityState && entityState->state != State::COLLIDING) {
 			if (componentRegistry.HasComponent<Moveable>(i->first)) {
 
+				// Chack if entity is colliding with the walls.
 				if (i->second->boundingBox.position.x < 0 ||
 					i->second->boundingBox.position.y < 0 ||
-					i->second->boundingBox.position.x > SCREEN_SIZE.x ||
-					i->second->boundingBox.position.y > SCREEN_SIZE.y) {
+					i->second->boundingBox.position.x > SCREEN_SIZE.x - i->second->boundingBox.size.x ||
+					i->second->boundingBox.position.y > SCREEN_SIZE.y - i->second->boundingBox.size.y) {
 
 					NotifyObservers(i->first, EntityEvent::COLLISION);
-					entityState->state = State::IDLE;
+					//entityState->state = State::IDLE;
+					entityState->state = State::COLLIDING;
 				}
 
+				// Check for collision with other entities.
 				for (auto j = colliderArray.begin(); j != colliderArray.end(); j++) {
 
 					if (i == j) continue;
@@ -37,6 +40,10 @@ void CollisionSystem::Update() {
 					}
 				}
 
+				/* Check for collision with map components. 
+				
+					TODO: this should only check for collisions with currently loaded map!
+				*/
 				auto levelArray = componentRegistry.GetComponentArray<Level>();
 
 				for (auto k = levelArray.begin(); k != levelArray.end(); k++) {
@@ -45,13 +52,14 @@ void CollisionSystem::Update() {
 
 						Collider* collider = l->get();
 
-						
-							if (i->second->boundingBox.findIntersection(collider->boundingBox)) {
 
-								collisions.push_back(CollisionData{ i->first, i->second, k->first, *l });
-								entityState->state = State::COLLIDING;
-							}
-						
+						if (i->second->boundingBox.findIntersection(collider->boundingBox)) {
+
+							collisions.push_back(CollisionData{ i->first, i->second, k->first, *l });
+							entityState->state = State::COLLIDING;
+							break;
+						}
+
 					}
 				}
 			}
@@ -68,15 +76,14 @@ void CollisionSystem::ResolveCollision(const std::vector<CollisionData>& collisi
 		ResolveInteractions(i->entity, i->entityCollider, i->other, i->otherCollider);
 
 		NotifyObservers(i->entity, EntityEvent::COLLISION);
-		//NotifyObservers(i->other, EntityEvent::COLLISION);
 
 		auto entityState = componentRegistry.GetComponentOfType<EntityState>(i->entity);
 		entityState->state = State::IDLE;
-		
-	}		
+
+	}
 }
 
-void CollisionSystem::ResolveInteractions(const Entity &entity, const std::shared_ptr<Collider> &entityCollider, const Entity &other, const std::shared_ptr<Collider> &otherCollider) const {
+void CollisionSystem::ResolveInteractions(const Entity& entity, const std::shared_ptr<Collider>& entityCollider, const Entity& other, const std::shared_ptr<Collider>& otherCollider) const {
 
 	// only player can interact with objects
 	auto player = componentRegistry.GetComponentOfType<Controlable>(entity);

@@ -41,16 +41,27 @@ void RenderSystem::Update(sf::RenderWindow& window) {
 	auto followArray = componentRegistry.GetComponentArray<FollowBehaviour>();
 	for (auto i = followArray.begin(); i != followArray.end(); i++) {
 
-		auto path = i->second->path;
-		for (const Node& node : path) {
+		for (const std::shared_ptr<Node>& node : i->second->path) {
 
 			sf::CircleShape nodeShape{5.f};
-			sf::Vector2f position = { (float)node.x * TILE_SIZE.x, (float)node.y * TILE_SIZE.y};
+			sf::Vector2f position = { (float)node->x * TILE_SIZE.x, (float)node->y * TILE_SIZE.y};
 			nodeShape.setPosition(position);
 			nodeShape.setFillColor(sf::Color::Red);
 			window.draw(nodeShape);
 		}
-		
+	}
+
+	auto roamArray = componentRegistry.GetComponentArray<RoamBehaviour>();
+	for (auto i = roamArray.begin(); i != roamArray.end(); i++) {
+
+		for (const std::shared_ptr<Node>& node : i->second->path) {
+
+			sf::CircleShape nodeShape{ 5.f };
+			sf::Vector2f position = { (float)node->x * TILE_SIZE.x, (float)node->y * TILE_SIZE.y };
+			nodeShape.setPosition(position);
+			nodeShape.setFillColor(sf::Color::Blue);
+			window.draw(nodeShape);
+		}
 	}
 #endif
 

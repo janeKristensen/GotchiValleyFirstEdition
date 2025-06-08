@@ -12,6 +12,7 @@ add_executable (GotchiValley
     "Game/Animations.h"
     "Globals/Components.h"
     "Globals/GlobalVariables.h"
+    "Globals/GlobalVariables.cpp"
     "Globals/SharedObjects.h"
     "Globals/SharedObjects.cpp"
     "Globals/IObserver.h"  

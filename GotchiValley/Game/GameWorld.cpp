@@ -20,6 +20,7 @@ void GameWorld::Initialize() {
 	componentRegistry.RegisterComponentManager<Level>();
 	componentRegistry.RegisterComponentManager<PlayerEntity>();
 	componentRegistry.RegisterComponentManager<FollowBehaviour>();
+	componentRegistry.RegisterComponentManager<RoamBehaviour>();
 	componentRegistry.RegisterComponentManager<EvolutionState>();
 
 
@@ -46,39 +47,14 @@ void GameWorld::Initialize() {
 	componentRegistry.AddComponent(button,
 		Button(
 			[button, this]() {
-				this->SetLevel(mCurrentLevelId + 1);
+				uint32_t nextLevel = mCurrentLevelId + 1;
+				if(nextLevel < mLevelManager.GetNumberOfLevels()) this->SetLevel(nextLevel);
 			}
 		)
 	);
 
 }
 
-void GameWorld::Update() {
-
-	for (auto x = 0; x < (SCREEN_SIZE.x / TILE_SIZE.x); x++) {
-		for (auto y = 0; y < (SCREEN_SIZE.y / TILE_SIZE.y); y++) {
-
-			mColliderMap[x][y].count = 0;
-		}
-	}
-	auto colliderArray = componentRegistry.GetComponentArray<Collider>();
-
-	auto entityLevel = componentRegistry.GetComponentOfType<Level>(mLevelEntity);
-	for (auto i = entityLevel->colliders.begin(); i != entityLevel->colliders.end(); i++) {
-
-		int32_t tempX = i->get()->boundingBox.position.x / TILE_SIZE.x;
-		int32_t tempY = i->get()->boundingBox.position.y / TILE_SIZE.y;
-
-		mColliderMap[tempX][tempY].count += 1;
-		mColliderMap[tempX - 1][tempY].count += 1;
-		mColliderMap[tempX + 1][tempY].count += 1;
-		mColliderMap[tempX][tempY - 1].count += 1;
-		mColliderMap[tempX][tempY + 1].count += 1;
-		mColliderMap[tempX -1 ][tempY - 1].count += 1;
-		mColliderMap[tempX + 1][tempY + 1].count += 1;
-
-	}
-}
 
 void GameWorld::SetLevel(const std::uint32_t levelID) {
 
@@ -88,7 +64,7 @@ void GameWorld::SetLevel(const std::uint32_t levelID) {
 	mCurrentLevelId = levelID;
 }
 
-void GameWorld::CreateBird(std::shared_ptr<sf::Texture> texture, sf::Vector2f position, Entity& player) {
+void GameWorld::CreateBird(std::shared_ptr<sf::Texture> texture, const sf::Vector2f& position, Entity& player) {
 
 	auto bird = mFactory.CreateEntity
 	(
@@ -101,7 +77,8 @@ void GameWorld::CreateBird(std::shared_ptr<sf::Texture> texture, sf::Vector2f po
 		Moveable(),
 		EntityState{ State::INITIAL },
 		EvolutionState(),
-		FollowBehaviour{ player }
+		FollowBehaviour{ player },
+		RoamBehaviour()
 	);
 	componentRegistry.AddComponent(bird,
 		Button(
@@ -110,14 +87,28 @@ void GameWorld::CreateBird(std::shared_ptr<sf::Texture> texture, sf::Vector2f po
 				auto entityState = componentRegistry.GetComponentOfType<EntityState>(bird);
 				auto entityAnimation = componentRegistry.GetComponentOfType<Animation>(bird);
 				auto entityFollow = componentRegistry.GetComponentOfType<FollowBehaviour>(bird);
+				auto entityRoam = componentRegistry.GetComponentOfType<RoamBehaviour>(bird);
 
 				if (evolutionState && evolutionState->state == State::UNEVOLVED) {
 
 					entityState->state = State::EVOLVING;
-					entityFollow->isFollowActive = true;
+					evolutionState->state = State::EVOLVED;
+					entityRoam->isRoamActive = true;
 					componentRegistry.RemoveComponent<Animation>(bird);
 					componentRegistry.AddComponent<Animation>(bird, birdAnimation);
 				}
+				else if (evolutionState && evolutionState->state == State::EVOLVED) {
+					
+					if (entityFollow->isFollowActive) {
+
+						entityFollow->isFollowActive = false;
+						entityRoam->isRoamActive = true;
+					}
+					else {
+						entityFollow->isFollowActive = true;
+						entityRoam->isRoamActive = false;
+					}	
+				};
 
 				this->NotifyObservers(bird, EntityEvent::INTERACTION);
 			}
@@ -125,7 +116,7 @@ void GameWorld::CreateBird(std::shared_ptr<sf::Texture> texture, sf::Vector2f po
 	);
 }
 
-Entity GameWorld::CreatePlayer(std::shared_ptr<sf::Texture> texture, sf::Vector2f position, float speed) {
+Entity GameWorld::CreatePlayer(std::shared_ptr<sf::Texture> texture, const sf::Vector2f& position, const float& speed) {
 
 	auto player = mFactory.CreateEntity
 	(
@@ -144,10 +135,6 @@ Entity GameWorld::CreatePlayer(std::shared_ptr<sf::Texture> texture, sf::Vector2
 	return player;
 }
 
-uint8_t GameWorld::GetColliderCount(uint32_t x, uint32_t y) {
-
-	return mColliderMap[x][y].count;
-}
 
 void GameWorld::AddObserver(IGameObserver* observer) {
 

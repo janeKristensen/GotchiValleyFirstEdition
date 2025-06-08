@@ -72,10 +72,17 @@ namespace GotchiValley {
 
 	struct FollowBehaviour {
 		Entity entity;
-		std::vector<Node> path;
+		std::vector<std::shared_ptr<Node>> path;
 		size_t currentStep = 0;
 		bool hasPath = false;
 		bool isFollowActive = false;
+	};
+
+	struct RoamBehaviour {
+		std::vector<std::shared_ptr<Node>> path;
+		size_t currentStep = 0;
+		bool hasPath = false;
+		bool isRoamActive = false;
 	};
 
 	struct EvolutionState {

@@ -14,18 +14,13 @@ namespace GotchiValley {
 
 	class GameWorld : public IGameSubject {
 	public:
-		static GameWorld& Get() {
-			static GameWorld instance;
-			return instance;
-		}
 		void Initialize();
-		void Update();
 		~GameWorld() override {};
 		void AddObserver(IGameObserver* observer) override;
 		void RemoveObserver(IGameObserver* observer) override;
 		void NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) const override;
 		void SetLevel(const std::uint32_t levelID);
-		uint8_t GetColliderCount(uint32_t x, uint32_t y);
+
 
 	private:
 		std::list<IGameObserver*> mObservers;
@@ -35,10 +30,10 @@ namespace GotchiValley {
 		Entity mLevelEntity = NULL;
 		Entity mPlayer = NULL;
 		Factory mFactory;
-		std::array<std::array<TileNode, (SCREEN_SIZE.y / TILE_SIZE.y)>, (SCREEN_SIZE.x / TILE_SIZE.x)> mColliderMap;
+		
 
-		void CreateBird(std::shared_ptr<sf::Texture> texture, sf::Vector2f position, Entity& player);
-		Entity CreatePlayer(std::shared_ptr<sf::Texture> texture, sf::Vector2f position, float speed);
+		void CreateBird(std::shared_ptr<sf::Texture> texture, const sf::Vector2f& position, Entity& player);
+		Entity CreatePlayer(std::shared_ptr<sf::Texture> texture, const sf::Vector2f& position, const float& speed);
 		
 	};
 

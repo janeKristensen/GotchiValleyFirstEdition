@@ -13,7 +13,7 @@ void PhysicsSystem::Update(float& dt) {
 		auto transform = i->second;
 
 		transform->position += transform->velocity * dt * transform->speed;
-	
+
 		auto spriteComponent = componentRegistry.GetComponentOfType<Sprite>(i->first);
 		if (!spriteComponent) continue;
 		spriteComponent->sprite.setPosition(transform->position);
@@ -32,6 +32,7 @@ void PhysicsSystem::SetPosition(Entity& entity, sf::Vector2f& position) {
 	auto transform = componentRegistry.GetComponentOfType<Transform>(entity);
 	if (!transform) return;
 	transform->position = position;
+	
 
 	auto spriteComponent = componentRegistry.GetComponentOfType<Sprite>(entity);
 	if (!spriteComponent) return;
