@@ -6,24 +6,10 @@
 
 namespace GotchiValley {
 
-	struct PlayerStats {
-		std::uint16_t health;
-	};
-
-	struct EntityState {
-		State state{ State::IDLE };
-	};
-
 	struct Transform {
 		sf::Vector2f position;
 		sf::Vector2f velocity;
 		float speed	= 0.f;
-	};
-
-	struct Moveable {};
-
-	struct Controlable {
-		bool controlable = true;
 	};
 
 	struct Collider {
@@ -51,31 +37,11 @@ namespace GotchiValley {
 		AnimationName animName = AnimationName::IDLE;
 	};
 
-	struct Interactable {
-		bool interactionActive = false;
-	};
-
-	struct Button {
-		std::function<void()>OnClick;
-	};
-
 	struct Level {
 		uint32_t levelId;
 		sf::VertexArray vertices;
 		std::shared_ptr<sf::Texture> texture;
 		std::vector<std::shared_ptr<Collider>> colliders;
-	};
-
-	struct PlayerEntity {
-
-	};
-
-	struct FollowBehaviour {
-		Entity entity;
-		std::vector<std::shared_ptr<Node>> path;
-		size_t currentStep = 0;
-		bool hasPath = false;
-		bool isFollowActive = false;
 	};
 
 	struct RoamBehaviour {
@@ -85,11 +51,15 @@ namespace GotchiValley {
 		bool isRoamActive = false;
 	};
 
-	struct EvolutionState {
-		State state{ State::UNEVOLVED };
-	};
+	class Entity;
 
-	
+	struct FollowBehaviour {
+		std::shared_ptr<Entity> entity;
+		std::vector<std::shared_ptr<Node>> path;
+		size_t currentStep = 0;
+		bool hasPath = false;
+		bool isFollowActive = false;
+	};
 }
 
 

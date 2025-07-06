@@ -3,73 +3,73 @@
 using namespace GotchiValley;
 
 
-void AnimationSystem::Update(float dt) {
+void AnimationSystem::update(float dt) {
 
-	auto animArray = componentRegistry.GetComponentArray<Animation>();
+	auto entityArray = mGameWorld.getEntities();
 
-	for (auto i = animArray.begin(); i != animArray.end(); i++) {
+	for (auto i = 0; i < entityArray.size(); i++) {
 
-		auto animation = i->second;
-		auto spriteComponent = componentRegistry.GetComponentOfType<Sprite>(i->first);
-		auto entityState = componentRegistry.GetComponentOfType<EntityState>(i->first);
+		if (entityArray[i] == nullptr) break;
+		auto animation = std::dynamic_pointer_cast<Drawable>(entityArray[i])->getAnimation();
+		auto spriteComponent = std::dynamic_pointer_cast<Drawable>(entityArray[i])->getSprite();
+		auto entityState = entityArray[i]->getState();
 		
-		animation->frameTime += dt;
+		animation.frameTime += dt;
 
-		if (animation->frameTime > (1 / animation->frames[animation->animName].animFPS)) {
+		if (animation.frameTime > (1 / animation.frames[animation.animName].animFPS)) {
 
-			animation->frameNum += std::uint8_t(animation->frameTime * animation->frames[animation->animName].animFPS);
+			animation.frameNum += std::uint8_t(animation.frameTime * animation.frames[animation.animName].animFPS);
 
-			if (animation->frameNum >= animation->frames[animation->animName].numFrames) {
+			if (animation.frameNum >= animation.frames[animation.animName].numFrames) {
 
-				animation->animName = AnimationName::IDLE;
-				animation->frameNum = animation->frameNum % animation->frames[animation->animName].numFrames;
+				animation.animName = AnimationName::IDLE;
+				animation.frameNum = animation.frameNum % animation.frames[animation.animName].numFrames;
 			}
 		}
 		
-		uint8_t imageNum = animation->startFrame + animation->frameNum;
-		spriteComponent->sprite.setTextureRect(animation->frames[animation->animName].sprites[imageNum]);
-		animation->frameTime = fmod(animation->frameTime, (1 / animation->frames[animation->animName].animFPS));
+		uint8_t imageNum = animation.startFrame + animation.frameNum;
+		spriteComponent.sprite.setTextureRect(animation.frames[animation.animName].sprites[imageNum]);
+		animation.frameTime = fmod(animation.frameTime, (1 / animation.frames[animation.animName].animFPS));
 	}	
 }
 
 
-void AnimationSystem::OnNotify(const Entity& entity, const EntityEvent& eventMessage) {
+void AnimationSystem::onNotify(std::shared_ptr<Entity>& entity, const EntityEvent& eventMessage) {
 
-	auto animation = componentRegistry.GetComponentOfType<Animation>(entity);
+	auto drawable = std::dynamic_pointer_cast<Drawable>(entity);
 
-	if (animation) {
+	if (drawable) {
+
+		auto animation = drawable->getAnimation();
 
 		if (eventMessage == EntityEvent::COLLISION) {
 
-			animation->frameNum = 0;
-			animation->animName = AnimationName::COLLIDING;
+			animation.frameNum = 0;
+			animation.animName = AnimationName::COLLIDING;
 		}
 		else if (eventMessage == EntityEvent::INTERACTION) {
 
-			auto entityState = componentRegistry.GetComponentOfType<EntityState>(entity);
-			auto entityInteractable = componentRegistry.GetComponentOfType<Interactable>(entity);
+			if (entity->getState() == State::EVOLVING) {
 
-			if (entityState && entityState->state == State::EVOLVING) {
-
-				animation->animName = AnimationName::EVOLVING;
+				animation.animName = AnimationName::EVOLVING;
 			}
 			else {
-				animation->animName = AnimationName::INTERACTING;
+				animation.animName = AnimationName::INTERACTING;
 			}
-				animation->frameNum = 0;
-				entityInteractable->interactionActive = false;	
-				entityState->state = State::IDLE;
+				animation.frameNum = 0;
+				entity->setInteractive(false);
+				entity->setState(State::IDLE);
 		}
 		else if (eventMessage == EntityEvent::MOVE_LEFT) {
 
-			if (animation->animName != AnimationName::RUNNING) {
+			if (animation.animName != AnimationName::RUNNING) {
 
-				animation->animName = AnimationName::RUNNING;
-				animation->frameNum = 0;
+				animation.animName = AnimationName::RUNNING;
+				animation.frameNum = 0;
 			}
 		}
 		else if (eventMessage == EntityEvent::IDLE) {
-			animation->animName = AnimationName::IDLE;
+			animation.animName = AnimationName::IDLE;
 		}
 	}
 }

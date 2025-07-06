@@ -4,50 +4,52 @@
 using namespace GotchiValley;
 
 
-void PhysicsSystem::Update(float& dt) {
+void PhysicsSystem::update(float& dt) {
 
-	auto transformArray = componentRegistry.GetComponentArray<Transform>();
+	auto entityArray = mGameWorld.getEntities();
 
-	for (auto i = transformArray.begin(); i != transformArray.end(); i++) {
+	for (int i = 0; i < entityArray.size(); i++) {
 
-		auto transform = i->second;
+		if (entityArray[i] && entityArray[i]->isEntityAlive()) {
 
-		transform->position += transform->velocity * dt * transform->speed;
+			Transform transform = entityArray[i]->getTransform();
+			transform.position += transform.velocity * dt * transform.speed;
 
-		auto spriteComponent = componentRegistry.GetComponentOfType<Sprite>(i->first);
-		if (!spriteComponent) continue;
-		spriteComponent->sprite.setPosition(transform->position);
+			setPosition(entityArray[i], transform.position);
+			
+			auto collider = std::dynamic_pointer_cast<Collidable>(entityArray[i]);
+			if (!collider) continue;
+			collider->getCollider().boundingBox.position = transform.position;
 
-		auto collider = componentRegistry.GetComponentOfType<Collider>(i->first);
-		if (!collider) continue;
-		collider->boundingBox.position = transform->position;
-
-		transform->velocity = .95f * transform->velocity;	
+			transform.velocity = .95f * transform.velocity;
+		}	
 	}
 }
 
 
-void PhysicsSystem::SetPosition(Entity& entity, sf::Vector2f& position) {
+void PhysicsSystem::setPosition(std::shared_ptr<Entity>& entity, sf::Vector2f& position) {
 
-	auto transform = componentRegistry.GetComponentOfType<Transform>(entity);
-	if (!transform) return;
-	transform->position = position;
+	Transform transform = entity->getTransform();
+	transform.position = position;
+	entity->setTransform(transform);
 	
+	auto drawable = std::dynamic_pointer_cast<Drawable>(entity);
+	if (drawable) {
 
-	auto spriteComponent = componentRegistry.GetComponentOfType<Sprite>(entity);
-	if (!spriteComponent) return;
-	spriteComponent->sprite.setPosition(transform->position);
-	
+		Sprite& spriteComponent = drawable->getSprite();
+		spriteComponent.sprite.setPosition(transform.position);
+	}
 }
 
 
-void PhysicsSystem::OnNotify(const Entity& entity, const EntityEvent& eventMessage) {
+void PhysicsSystem::onNotify(std::shared_ptr<Entity>& entity, const EntityEvent& eventMessage) {
 
 	if (eventMessage == EntityEvent::COLLISION &&
-		componentRegistry.HasComponent<Moveable>(entity)) {
+		entity->isEntityAlive()) {
 		
-		auto transform = componentRegistry.GetComponentOfType<Transform>(entity);
-		transform->velocity *= -1.f;
+		
+		Transform transform = entity->getTransform();
+		transform.velocity *= -1.f;
 	}
 }
 

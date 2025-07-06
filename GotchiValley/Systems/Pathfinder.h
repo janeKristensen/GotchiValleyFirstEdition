@@ -10,12 +10,12 @@ namespace GotchiValley {
 
 	class Pathfinder {
 	public:
-		static std::vector<std::shared_ptr<Node>> FindPath(const Node& actor, const Node& dest);
+		static std::vector<std::shared_ptr<Node>> findPath(const Node& actor, const Node& dest);
 
 	private:
-		static bool IsDestination(const int32_t& x, const int32_t& y, const Node& dest);
-		static double CalculateH(const int32_t& x, const int32_t& y, const Node& dest);
-		static std::vector<std::shared_ptr<Node>> MakePath(const Node& dest);
+		static bool isDestination(const int32_t& x, const int32_t& y, const Node& dest);
+		static double calculateH(const int32_t& x, const int32_t& y, const Node& dest);
+		static std::vector<std::shared_ptr<Node>> makePath(const Node& dest);
 	};
 
 

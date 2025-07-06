@@ -20,9 +20,9 @@ set(SFML_DIR ${CMAKE_SOURCE_DIR}/external/SFML-3.0.0)
 include_directories(
     ${SFML_DIR}/include
     ${CMAKE_SOURCE_DIR}/GotchiValley/Globals
-    ${CMAKE_SOURCE_DIR}/GotchiValley/Managers
     ${CMAKE_SOURCE_DIR}/GotchiValley/Systems
     ${CMAKE_SOURCE_DIR}/GotchiValley/Game
+    ${CMAKE_SOURCE_DIR}/GotchiValley/Entities
 )
 
 # Link SFML libraries
@@ -30,6 +30,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_link_libraries(Game
     Globals
     Systems
+    Entities
     ${SFML_DIR}/lib/sfml-system-d.lib
     ${SFML_DIR}/lib/sfml-window-d.lib
     ${SFML_DIR}/lib/sfml-graphics-d.lib
@@ -38,6 +39,7 @@ else()
     target_link_libraries(Game
     Globals
     Systems
+    Entities
     ${SFML_DIR}/lib/sfml-system.lib
     ${SFML_DIR}/lib/sfml-window.lib
     ${SFML_DIR}/lib/sfml-graphics.lib

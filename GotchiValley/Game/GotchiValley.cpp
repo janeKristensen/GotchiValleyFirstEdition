@@ -7,17 +7,17 @@ using namespace GotchiValley;
 	{
 		auto window = std::make_shared<sf::RenderWindow>(sf::RenderWindow(sf::VideoMode({ SCREEN_SIZE.x, SCREEN_SIZE.y }), "Gotchi Valley"));
 		window->setFramerateLimit(60);
-
+		
+		GameWorld gameWorld;
 		
 		UISystem uiSystem;
-		RenderSystem renderSystem;
-		CollisionSystem collisionSystem;
-		MovementSystem movementSystem;
-		GameWorld gameWorld;
-		PhysicsSystem physicsSystem{ &collisionSystem, &movementSystem };
-		AnimationSystem animationSystem{ &collisionSystem, &movementSystem, &uiSystem, &gameWorld };
+		RenderSystem renderSystem(gameWorld);
+		CollisionSystem collisionSystem(gameWorld);
+		MovementSystem movementSystem(gameWorld);
+		PhysicsSystem physicsSystem{gameWorld, &collisionSystem, &movementSystem };
+		AnimationSystem animationSystem{gameWorld, &collisionSystem, &movementSystem, &uiSystem, &gameWorld };
 		
-		gameWorld.Initialize();
+		gameWorld.initialize();
 
 		sf::Clock clock;
 
@@ -25,15 +25,15 @@ using namespace GotchiValley;
 
 			float dt = clock.restart().asSeconds();
 
-			uiSystem.PollEvents(window);
+			uiSystem.update(window);
 
-			movementSystem.Update(dt);
-			collisionSystem.Update();
-			physicsSystem.Update(dt);
-			animationSystem.Update(dt);
+			movementSystem.update(dt);
+			collisionSystem.update();
+			physicsSystem.update(dt);
+			animationSystem.update(dt);
 
 			window->clear();
-			renderSystem.Update(*window);
+			renderSystem.update(*window);
 			window->display();
 
 		}

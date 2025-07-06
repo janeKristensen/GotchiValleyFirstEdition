@@ -22,6 +22,8 @@ set(SFML_DIR ${CMAKE_SOURCE_DIR}/external/SFML-3.0.0)
 include_directories(
     ${SFML_DIR}/include
     ${CMAKE_SOURCE_DIR}/GotchiValley/Globals
+    ${CMAKE_SOURCE_DIR}/GotchiValley/Entities
+    ${CMAKE_SOURCE_DIR}/GotchiValley/Game
 )
 
 # Link SFML libraries

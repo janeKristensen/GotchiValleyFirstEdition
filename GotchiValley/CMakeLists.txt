@@ -4,6 +4,12 @@
 
 # Add source to this project's executable.
 add_executable (GotchiValley 
+    "Entities/Creature.cpp"
+    "Entities/Creature.h"
+    "Entities/Entity.cpp"
+    "Entities/Entity.h"
+    "Entities/Interfaces.h"
+    "Entities/Player.h"
     "Game/GotchiValley.cpp" 
     "Game/GotchiValley.h"  
     "Game/GameWorld.h"  
@@ -13,15 +19,9 @@ add_executable (GotchiValley
     "Globals/Components.h"
     "Globals/GlobalVariables.h"
     "Globals/GlobalVariables.cpp"
-    "Globals/SharedObjects.h"
-    "Globals/SharedObjects.cpp"
     "Globals/IObserver.h"  
-    "Managers/ComponentManager.h"
-    "Managers/ComponentRegistry.h"
-    "Managers/EntityManager.h"
-    "Managers/EntityManager.cpp"
-    "Managers/LevelManager.h"
-    "Managers/LevelManager.cpp"
+    "Game/LevelManager.h"
+    "Game/LevelManager.cpp"
     "Systems/AnimationSystem.h"
     "Systems/AnimationSystem.cpp"
     "Systems/CollisionSystem.h"
@@ -43,8 +43,8 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
 endif()
 
 # Include sub-projects.
+add_subdirectory ("Entities")
 add_subdirectory ("Systems")
-add_subdirectory ("Managers")
 add_subdirectory ("Globals")
 add_subdirectory ("Game")
 
@@ -69,8 +69,8 @@ set(SFML_DIR ${CMAKE_SOURCE_DIR}/external/SFML-3.0.0)
 # Add the include directory
 include_directories(
     ${SFML_DIR}/include
+    ${CMAKE_SOURCE_DIR}/GotchiValley/Entities
     ${CMAKE_SOURCE_DIR}/GotchiValley/Globals
-    ${CMAKE_SOURCE_DIR}/GotchiValley/Managers
     ${CMAKE_SOURCE_DIR}/GotchiValley/Systems
     ${CMAKE_SOURCE_DIR}/GotchiValley/Game
 )

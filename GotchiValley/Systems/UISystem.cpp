@@ -1,14 +1,10 @@
 
 #include "UISystem.h"
-#include <iostream>
+
 using namespace GotchiValley;
 
-void UISystem::Update() {
 
-}
-
-
-void UISystem::PollEvents(std::shared_ptr<sf::RenderWindow> window) {
+void UISystem::update(std::shared_ptr<sf::RenderWindow> window) {
 
 	while (const std::optional event = window->pollEvent()) {
 
@@ -23,7 +19,7 @@ void UISystem::PollEvents(std::shared_ptr<sf::RenderWindow> window) {
 		}
 		else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
 
-			auto button = componentRegistry.GetComponentArray<Button>();
+			/*auto button = componentRegistry.GetComponentArray<Button>();
 
 			for (auto i = button.begin(); i != button.end(); i++) {
 
@@ -39,25 +35,25 @@ void UISystem::PollEvents(std::shared_ptr<sf::RenderWindow> window) {
 						interactable->interactionActive = false;
 					}
 				}
-			}
+			}*/
 		}
 	}
 }
 
-void UISystem::AddObserver(IGameObserver* observer) {
+void UISystem::addObserver(IGameObserver* observer) {
 
 	mObservers.emplace(observer);
 }
 
-void UISystem::RemoveObserver(IGameObserver* observer) {
+void UISystem::removeObserver(IGameObserver* observer) {
 
 	mObservers.erase(observer);
 }
 
-void UISystem::NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) const {
+void UISystem::notifyObservers(std::shared_ptr<Entity>& entity, const EntityEvent& eventMessage) const {
 
 	for (auto observer : mObservers) {
-		observer->OnNotify(entity, eventMessage);
+		observer->onNotify(entity, eventMessage);
 	}
 }
 

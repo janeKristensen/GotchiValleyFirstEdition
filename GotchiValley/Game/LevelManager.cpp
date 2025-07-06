@@ -1,5 +1,4 @@
 #include "LevelManager.h"
-#include "GlobalVariables.h"
 
 using namespace GotchiValley;
 
@@ -8,11 +7,11 @@ LevelManager::LevelManager(std::shared_ptr<sf::Texture> spritesheet) {
 	mSpriteSheet = spritesheet;
 	std::string filepath = "D:\\Visual Studio stuff\\Projekts\\Games\\GotchiValley\\resources\\levels";
 	for (auto const& file : std::filesystem::directory_iterator(filepath)) {
-		LoadLevelFiles(file.path());
+		loadLevelFiles(file.path());
 	}
 }
 
-Level LevelManager::LoadLevel(uint32_t id) {
+Level LevelManager::loadLevel(uint32_t id) {
 
 	Matrix level = mLevels.at(id);
 	std::vector<std::shared_ptr<Collider>> colliders;
@@ -106,7 +105,7 @@ Level LevelManager::LoadLevel(uint32_t id) {
 	return levelMap;
 }
 
-void LevelManager::LoadLevelFiles(std::filesystem::path filename){
+void LevelManager::loadLevelFiles(std::filesystem::path filename){
 
 	Matrix level{};
 	std::fstream levelFile(filename);
@@ -129,7 +128,7 @@ void LevelManager::LoadLevelFiles(std::filesystem::path filename){
 	mLevelID++;
 }
 
-uint32_t LevelManager::GetNumberOfLevels() {
+uint32_t LevelManager::getNumberOfLevels() {
 
 	return mLevelID;
 }

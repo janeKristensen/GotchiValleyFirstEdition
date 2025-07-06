@@ -1,5 +1,6 @@
 #pragma once
 #include "Components.h"
+#include "Entity.h"
 #include "SFML/Graphics.hpp"
 
 namespace GotchiValley {
@@ -21,15 +22,15 @@ namespace GotchiValley {
 	class IGameObserver {
 	public:
 		virtual ~IGameObserver() {};
-		virtual void OnNotify(const Entity& entity, const EntityEvent& eventMessage) = 0;
+		virtual void onNotify(std::shared_ptr<Entity>& entity, const EntityEvent& eventMessage) = 0;
 	};
 
 	class IGameSubject {
 	public:
 		virtual ~IGameSubject() {};
-		virtual void AddObserver(IGameObserver* observer) = 0;
-		virtual void RemoveObserver(IGameObserver* observer) = 0;
-		virtual void NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) const = 0;
+		virtual void addObserver(IGameObserver* observer) = 0;
+		virtual void removeObserver(IGameObserver* observer) = 0;
+		virtual void notifyObservers(std::shared_ptr<Entity>& entity, const EntityEvent& eventMessage) const = 0;
 	};
 
 }

@@ -6,7 +6,6 @@
 
 namespace GotchiValley {
 
-	using Entity = uint32_t;
 	constexpr sf::Vector2i SCREEN_SIZE{ 750, 750 };
 	constexpr std::size_t MAX_ENTITIES{ 1000 };
 	constexpr sf::Vector2i TILE_SET_SIZE{ 3, 3 };
@@ -63,4 +62,5 @@ namespace GotchiValley {
 
 	extern std::array<std::array<std::shared_ptr<Node>, (SCREEN_SIZE.y / TILE_SIZE.y)>, (SCREEN_SIZE.x / TILE_SIZE.x)> allMap;
 
+	
 }
