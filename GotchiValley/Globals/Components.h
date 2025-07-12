@@ -38,6 +38,23 @@ namespace GotchiValley {
 	};
 
 	struct Level {
+		Level() {};
+		Level(uint32_t levelId, sf::VertexArray vertices,
+		std::shared_ptr<sf::Texture> texture,
+		std::vector<std::shared_ptr<Collider>> colliders) {
+			this->levelId = levelId;
+			this->vertices = vertices;
+			this->texture = texture;
+			this->colliders = colliders;
+		};
+
+		Level(const Level& level) {
+			this->levelId = level.levelId;
+			this->vertices = level.vertices;
+			this->texture = level.texture;
+			this->colliders = level.colliders;
+		};
+
 		uint32_t levelId;
 		sf::VertexArray vertices;
 		std::shared_ptr<sf::Texture> texture;

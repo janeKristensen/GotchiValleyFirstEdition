@@ -1,5 +1,5 @@
 #include "Pathfinder.h"
-#include "GlobalVariables.h"
+
 
 
 /* Implementation stolen from https://dev.to/jansonsa/a-star-a-path-finding-c-4a4h

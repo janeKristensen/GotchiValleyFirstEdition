@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_set>
+#include <random>
 #include "IObserver.h"
 #include "GameWorld.h"
 #include "Entity.h"

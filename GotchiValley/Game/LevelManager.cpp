@@ -101,8 +101,8 @@ Level LevelManager::loadLevel(uint32_t id) {
 		}
 	}
 
-	Level levelMap{ id, vertices, mSpriteSheet, colliders };
-	return levelMap;
+	
+	return Level{ id, vertices, mSpriteSheet, colliders };
 }
 
 void LevelManager::loadLevelFiles(std::filesystem::path filename){

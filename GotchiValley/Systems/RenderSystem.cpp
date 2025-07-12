@@ -7,12 +7,12 @@ using namespace GotchiValley;
 
 void RenderSystem::update(sf::RenderWindow& window) {
 
-	Level level = mGameWorld.getCurrentLevel();
+	std::shared_ptr<Level> level = mGameWorld.getCurrentLevel();
 	auto entityArray = mGameWorld.getEntities();
 	
 	// Draw bounding boxes for the colliders of the level objects
 #ifndef NDEBUG
-	for (auto i = level.colliders.begin(); i != level.colliders.end(); i++) {
+	for (auto i = level->colliders.begin(); i != level->colliders.end(); i++) {
 
 		sf::RectangleShape box{ {(float)TILE_SIZE.x, (float)TILE_SIZE.y} };
 		box.setPosition(i->get()->boundingBox.position);
@@ -21,8 +21,8 @@ void RenderSystem::update(sf::RenderWindow& window) {
 #endif
 
 	sf::RenderStates states;
-	states.texture = level.texture.get();
-	window.draw(level.vertices, states);	
+	states.texture = level->texture.get();
+	window.draw(level->vertices, states);	
 	
 	for (auto i = 0; i < entityArray.size(); i++) {
 	

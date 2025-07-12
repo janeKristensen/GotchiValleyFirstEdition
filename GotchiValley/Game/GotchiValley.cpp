@@ -17,7 +17,6 @@ using namespace GotchiValley;
 		PhysicsSystem physicsSystem{gameWorld, &collisionSystem, &movementSystem };
 		AnimationSystem animationSystem{gameWorld, &collisionSystem, &movementSystem, &uiSystem, &gameWorld };
 		
-		gameWorld.initialize();
 
 		sf::Clock clock;
 

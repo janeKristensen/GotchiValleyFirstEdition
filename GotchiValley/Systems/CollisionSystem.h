@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_set>
+#include <iostream>
 #include "GameWorld.h"
 #include "IObserver.h"
 #include "Components.h"

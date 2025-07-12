@@ -1,5 +1,5 @@
 #include "CollisionSystem.h"
-#include <iostream>
+
 
 
 using namespace GotchiValley;
@@ -50,9 +50,9 @@ void CollisionSystem::update() {
 
 					// Check for collision with map components.
 
-					Level level = mGameWorld.getCurrentLevel();
+					std::shared_ptr<Level> level = mGameWorld.getCurrentLevel();
 
-					for (auto l = level.colliders.begin(); l != level.colliders.end(); l++) {
+					for (auto l = level->colliders.begin(); l != level->colliders.end(); l++) {
 
 						if (collider.boundingBox.findIntersection(l->get()->boundingBox)) {
 

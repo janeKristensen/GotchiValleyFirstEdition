@@ -4,7 +4,7 @@
 
 using namespace GotchiValley;
 
-void GameWorld::initialize() {
+GameWorld::GameWorld() {
 
 	auto birdTexture = std::make_shared<sf::Texture>(std::move(sf::Texture("egg_sprite_sheet.png")));
 	auto playerTexture = std::make_shared<sf::Texture>(std::move(sf::Texture("sprite_sheet.png")));
@@ -27,10 +27,10 @@ uint32_t GameWorld::addEntity(std::shared_ptr<Entity>& entity) {
 
 void GameWorld::setLevel(const std::uint32_t levelID) {
 
-	mCurrentLevel = Level{ mLevelManager.loadLevel(levelID) };
+	mCurrentLevel = std::make_shared<Level>(Level{ mLevelManager.loadLevel(levelID) });
 }
 
-Level& GameWorld::getCurrentLevel() {
+std::shared_ptr<Level> GameWorld::getCurrentLevel() {
 
 	return mCurrentLevel;
 }
