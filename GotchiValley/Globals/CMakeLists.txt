@@ -13,6 +13,7 @@ endif()
 
 target_include_directories(Globals PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/GotchiValley/Entities
 )
 
 # Set the SFML path
@@ -21,7 +22,6 @@ set(SFML_DIR ${CMAKE_SOURCE_DIR}/external/SFML-3.0.0)
 # Add the include directory
 include_directories(
     ${SFML_DIR}/include
-    ${CMAKE_SOURCE_DIR}/GotchiValley/Entities
 )
 
 # Link SFML libraries

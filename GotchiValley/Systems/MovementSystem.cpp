@@ -12,7 +12,7 @@ void MovementSystem::update(float& dt) {
 
 		if (entityArray[i] == nullptr) break;
 
-		if (entityArray[i] != nullptr && entityArray[i]->isEntityAlive()) {
+		if (entityArray[i]->isEntityAlive()) {
 
 			std::shared_ptr<Player> player = std::dynamic_pointer_cast<Player>(entityArray[i]);
 			if (player && player->isMoveable()) {
@@ -23,38 +23,35 @@ void MovementSystem::update(float& dt) {
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
 
 					transform.velocity.y = -mAcceleration;
-					entityArray[i]->setTransform(transform);
 					entityState = State::RUNNING;
 					notifyObservers(entityArray[i], EntityEvent::MOVE_UP);
 				}
 				else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
 
 					transform.velocity.y = mAcceleration;
-					entityArray[i]->setTransform(transform);
 					entityState = State::RUNNING;
 					notifyObservers(entityArray[i], EntityEvent::MOVE_DOWN);
 				}
 				else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
 
 					transform.velocity.x = mAcceleration;
-					entityArray[i]->setTransform(transform);
 					entityState = State::RUNNING;
 					notifyObservers(entityArray[i], EntityEvent::MOVE_LEFT);
 				}
 				else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
 
 					transform.velocity.x = -mAcceleration;
-					entityArray[i]->setTransform(transform);
 					entityState = State::RUNNING;
 					notifyObservers(entityArray[i], EntityEvent::MOVE_RIGHT);
 				}
 
+				entityArray[i]->setTransform(transform);
 			}
 			else {
 
 				std::shared_ptr<Creature> creature = std::dynamic_pointer_cast<Creature>(entityArray[i]);
 				if (creature) {
-					setFollowPath(creature, dt);
+					updateFollowPath(creature, dt);
 					creature->update();
 				}
 			}
@@ -62,7 +59,7 @@ void MovementSystem::update(float& dt) {
 	}
 }
 
-void MovementSystem::setFollowPath(std::shared_ptr<Creature>& creature, const float& dt) {
+void MovementSystem::updateFollowPath(std::shared_ptr<Creature>& creature, const float& dt) {
 
 	std::shared_ptr<FollowBehaviour> followBehaviour = creature->getFollowBehaviour();
 	Transform& transform = creature->getTransform();
@@ -100,32 +97,28 @@ void MovementSystem::setFollowPath(std::shared_ptr<Creature>& creature, const fl
 		const std::shared_ptr<Node>& node = followBehaviour->path[followBehaviour->currentStep];
 
 		sf::Vector2f targetPos{ static_cast<float>(node->x * TILE_SIZE.x), static_cast<float>(node->y * TILE_SIZE.y) };
-
 		sf::Vector2f direction = targetPos - transform.position;
 		float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
 
 		if (distance > 0.1f) { // Still moving toward node
 			transform.velocity = direction / distance;
 			transform.position += transform.velocity * dt * transform.speed;
-			creature->setTransform(transform);
 
 			// Optional: clamp to prevent overshoot
 			if (std::abs(transform.position.x - targetPos.x) < 1.0f &&
 				std::abs(transform.position.y - targetPos.y) < 1.0f) {
 				transform.position = targetPos;
 				followBehaviour->currentStep++;
-				creature->setTransform(transform);
-				creature->setFollowBehaviour(followBehaviour);
 			}
 		}
 		else {
 			// Reached target node
 			transform.position = targetPos;
-			creature->setTransform(transform);
-			followBehaviour->currentStep++;
-			creature->setFollowBehaviour(followBehaviour);
+			followBehaviour->currentStep++;	
 		}
 
+		creature->setTransform(transform);
+		creature->setFollowBehaviour(followBehaviour);
 	}
 	else {
 		followBehaviour->hasPath = false;
@@ -135,49 +128,6 @@ void MovementSystem::setFollowPath(std::shared_ptr<Creature>& creature, const fl
 	
 	
 }
-
-
-
-//void MovementSystem::followToNode(std::shared_ptr<Creature>& creature, const float& dt) {
-//
-//	for (auto i = followArray.begin(); i != followArray.end(); i++) {
-//
-//		if (!i->second->isFollowActive || !i->second->hasPath || i->second->path.empty()) continue;
-//
-//		if (i->second->currentStep < i->second->path.size() - 1) {
-//
-//			auto entityActor = componentRegistry.GetComponentOfType<Transform>(i->first);
-//			auto entityDest = componentRegistry.GetComponentOfType<Transform>(i->second->entity);
-//			const std::shared_ptr<Node>& node = i->second->path[i->second->currentStep];
-//
-//			sf::Vector2f targetPos{ static_cast<float>(node->x * TILE_SIZE.x), static_cast<float>(node->y * TILE_SIZE.y) };
-//
-//			sf::Vector2f direction = targetPos - entityActor->position;
-//			float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-//
-//			if (distance > 0.1f) { // Still moving toward node
-//				entityActor->velocity = direction / distance;
-//				entityActor->position += entityActor->velocity * dt * entityActor->speed;
-//
-//				// Optional: clamp to prevent overshoot
-//				if (std::abs(entityActor->position.x - targetPos.x) < 1.0f &&
-//					std::abs(entityActor->position.y - targetPos.y) < 1.0f) {
-//					entityActor->position = targetPos;
-//					i->second->currentStep++;
-//				}
-//			}
-//			else {
-//				// Reached target node
-//				entityActor->position = targetPos;
-//				i->second->currentStep++;
-//			}
-//		}
-//		else {
-//			i->second->hasPath = false;
-//			i->second->currentStep = 0;
-//		}
-//	}
-//}
 
 
 void MovementSystem::addObserver(IGameObserver* observer) {

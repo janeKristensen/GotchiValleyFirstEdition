@@ -26,6 +26,6 @@ namespace GotchiValley {
 		std::unordered_set<IGameObserver*> mObservers;
 		GameWorld& mGameWorld;
 		const float mAcceleration = 1.f;
-		void setFollowPath(std::shared_ptr<Creature>& creature, const float& dt);
+		void updateFollowPath(std::shared_ptr<Creature>& creature, const float& dt);
 	};
 }

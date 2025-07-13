@@ -1,8 +1,8 @@
 #pragma once
 #include "Components.h"
 #include "Entity.h"
-#pragma once
 #include "Interfaces.h"
+#include "nlohmann/json.hpp"
 
 
 namespace GotchiValley {
