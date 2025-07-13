@@ -1,17 +1,19 @@
 #include "AnimationSystem.h"
+#include "GameWorld.h"
 
 using namespace GotchiValley;
 
 
 void AnimationSystem::update(float dt) {
 
-	auto entityArray = mGameWorld.getEntities();
+	std::array<std::shared_ptr<Entity>, MAX_ENTITIES>& entityArray = mGameWorld.getEntities();
 
 	for (auto i = 0; i < entityArray.size(); i++) {
 
 		if (entityArray[i] == nullptr) break;
-		auto animation = std::dynamic_pointer_cast<Drawable>(entityArray[i])->getAnimation();
-		auto spriteComponent = std::dynamic_pointer_cast<Drawable>(entityArray[i])->getSprite();
+
+		Animation& animation = std::dynamic_pointer_cast<Drawable>(entityArray[i])->getAnimation();
+		sf::Sprite& spriteComponent = std::dynamic_pointer_cast<Drawable>(entityArray[i])->getSprite();
 		auto entityState = entityArray[i]->getState();
 		
 		animation.frameTime += dt;
@@ -28,7 +30,7 @@ void AnimationSystem::update(float dt) {
 		}
 		
 		uint8_t imageNum = animation.startFrame + animation.frameNum;
-		spriteComponent.sprite.setTextureRect(animation.frames[animation.animName].sprites[imageNum]);
+		spriteComponent.setTextureRect(animation.frames[animation.animName].sprites[imageNum]);
 		animation.frameTime = fmod(animation.frameTime, (1 / animation.frames[animation.animName].animFPS));
 	}	
 }

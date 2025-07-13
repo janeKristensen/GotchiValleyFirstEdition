@@ -9,9 +9,19 @@ void Entity::setTransform(Transform transform) {
 	mTransform = transform;
 }
 
-Transform Entity::getTransform() {
+Transform& Entity::getTransform() {
 
 	return mTransform;
+}
+
+void Entity::setPosition(sf::Vector2f newPosition) {
+
+	mTransform.position = newPosition;
+}
+
+void Entity::setVelocity(sf::Vector2f newVelocity) {
+
+	mTransform.velocity = newVelocity;
 }
 
 State& Entity::getState() {

@@ -17,12 +17,6 @@ namespace GotchiValley {
 		bool hasCollided = false;
 	};
 
-	struct Sprite {
-		std::shared_ptr<sf::Texture> texture;
-		sf::Sprite sprite = sf::Sprite(*texture);
-		size_t drawOrder = 0;
-	};
-
 	struct AnimationData {
 		uint8_t numFrames = 1;
 		std::vector<sf::IntRect> sprites;
@@ -37,36 +31,12 @@ namespace GotchiValley {
 		AnimationName animName = AnimationName::IDLE;
 	};
 
-	struct Level {
-		Level() {};
-		Level(uint32_t levelId, sf::VertexArray vertices,
-		std::shared_ptr<sf::Texture> texture,
-		std::vector<std::shared_ptr<Collider>> colliders) {
-			this->levelId = levelId;
-			this->vertices = vertices;
-			this->texture = texture;
-			this->colliders = colliders;
-		};
-
-		Level(const Level& level) {
-			this->levelId = level.levelId;
-			this->vertices = level.vertices;
-			this->texture = level.texture;
-			this->colliders = level.colliders;
-		};
-
-		uint32_t levelId;
-		sf::VertexArray vertices;
-		std::shared_ptr<sf::Texture> texture;
-		std::vector<std::shared_ptr<Collider>> colliders;
-	};
-
-	struct RoamBehaviour {
-		std::vector<std::shared_ptr<Node>> path;
-		size_t currentStep = 0;
-		bool hasPath = false;
-		bool isRoamActive = false;
-	};
+	//struct RoamBehaviour {
+	//	std::vector<std::shared_ptr<Node>> path;
+	//	size_t currentStep = 0;
+	//	bool hasPath = false;
+	//	bool isRoamActive = false;
+	//};
 
 	class Entity;
 

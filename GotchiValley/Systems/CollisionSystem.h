@@ -1,7 +1,6 @@
 #pragma once
 #include <unordered_set>
 #include <iostream>
-#include "GameWorld.h"
 #include "IObserver.h"
 #include "Components.h"
 #include "Player.h"
@@ -15,6 +14,8 @@ namespace GotchiValley{
 		std::shared_ptr<Entity> other;
 		Collider& otherCollider;
 	};
+
+	class GameWorld;
 
 	class CollisionSystem : public IGameSubject {
 	public:

@@ -8,7 +8,8 @@ using namespace GotchiValley;
 		auto window = std::make_shared<sf::RenderWindow>(sf::RenderWindow(sf::VideoMode({ SCREEN_SIZE.x, SCREEN_SIZE.y }), "Gotchi Valley"));
 		window->setFramerateLimit(60);
 		
-		GameWorld gameWorld;
+		LevelManager levelManager = LevelManager(std::make_shared<sf::Texture>(std::move<sf::Texture>(sf::Texture{ "bg_sprite_small.png" })));
+		GameWorld gameWorld{ levelManager };
 		
 		UISystem uiSystem;
 		RenderSystem renderSystem(gameWorld);
@@ -19,6 +20,7 @@ using namespace GotchiValley;
 		
 
 		sf::Clock clock;
+		gameWorld.initialize();
 
 		while (window->isOpen()) {
 

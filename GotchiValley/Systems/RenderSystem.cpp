@@ -1,6 +1,8 @@
 
 #include "RenderSystem.h"
-
+#include "Level.h"
+#include "Creature.h"
+#include "GameWorld.h"
 
 using namespace GotchiValley;
 
@@ -8,32 +10,26 @@ using namespace GotchiValley;
 void RenderSystem::update(sf::RenderWindow& window) {
 
 	std::shared_ptr<Level> level = mGameWorld.getCurrentLevel();
-	auto entityArray = mGameWorld.getEntities();
+	std::array<std::shared_ptr<Entity>, MAX_ENTITIES>& entityArray = mGameWorld.getEntities();
 	
+	// Draw level tiles
+	window.draw(level->getVertices(), level->getTexture().get());
+
 	// Draw bounding boxes for the colliders of the level objects
 #ifndef NDEBUG
-	for (auto i = level->colliders.begin(); i != level->colliders.end(); i++) {
+	//for (auto i = level->colliders.begin(); i != level->colliders.end(); i++) {
 
-		sf::RectangleShape box{ {(float)TILE_SIZE.x, (float)TILE_SIZE.y} };
-		box.setPosition(i->get()->boundingBox.position);
-		window.draw(box);
-	}
+	//	sf::RectangleShape box{ {(float)TILE_SIZE.x, (float)TILE_SIZE.y} };
+	//	box.setPosition(i->get()->boundingBox.position);
+	//	window.draw(box);
+	//}
 #endif
-
-	sf::RenderStates states;
-	states.texture = level->texture.get();
-	window.draw(level->vertices, states);	
 	
 	for (auto i = 0; i < entityArray.size(); i++) {
 	
-		if (entityArray[i] && entityArray[i]->isEntityAlive()) {
+		if (entityArray[i] == nullptr) break;
 
-			auto drawable = std::dynamic_pointer_cast<Drawable>(entityArray[i]);
-			if (drawable) {
-
-				window.draw(drawable->getSprite().sprite);
-			}
-			
+		if (entityArray[i]->isEntityAlive()) {
 
 #ifndef NDEBUG
 
@@ -60,7 +56,7 @@ void RenderSystem::update(sf::RenderWindow& window) {
 					window.draw(nodeShape);
 				}
 
-				const RoamBehaviour& roamBehaviour = creature->getRoamBehaviour();
+				/*const RoamBehaviour& roamBehaviour = creature->getRoamBehaviour();
 				for (const std::shared_ptr<Node>& node : roamBehaviour.path) {
 
 					sf::CircleShape nodeShape{ 5.f };
@@ -68,7 +64,14 @@ void RenderSystem::update(sf::RenderWindow& window) {
 					nodeShape.setPosition(position);
 					nodeShape.setFillColor(sf::Color::Blue);
 					window.draw(nodeShape);
-				}
+				}*/
+			}
+
+			// draw the entity sprite
+			auto drawable = std::dynamic_pointer_cast<Drawable>(entityArray[i]);
+			if (drawable) {
+
+				window.draw(drawable->getSprite());
 			}
 		}
 	}
@@ -88,7 +91,7 @@ void RenderSystem::attachTexture(std::shared_ptr<Entity>& entity, const std::str
 	auto drawable = std::dynamic_pointer_cast<Drawable>(entity);
 	if (drawable) {
 
-		drawable->getSprite().texture = std::move(texture);
+		drawable->getSprite().setTexture(*texture);
 	}
 }
 

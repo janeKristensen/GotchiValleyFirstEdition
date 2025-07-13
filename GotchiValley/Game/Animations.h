@@ -1,9 +1,12 @@
 #pragma once
 #include "GlobalVariables.h"
-#include "Components.h"
+//#include "Components.h"
 #include "SFML/Graphics.hpp"
 
 namespace GotchiValley {
+
+	struct AnimationData;
+	struct Animation;
 
 	auto animEgg = AnimationData
 	(

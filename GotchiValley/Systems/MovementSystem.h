@@ -2,7 +2,6 @@
 #include <unordered_set>
 #include <random>
 #include "IObserver.h"
-#include "GameWorld.h"
 #include "Entity.h"
 #include "Creature.h"
 #include "Player.h"
@@ -12,6 +11,8 @@
 #include "Pathfinder.h"
 
 namespace GotchiValley {
+
+	class GameWorld;
 
 	class MovementSystem : public IGameSubject {
 	public:
@@ -23,7 +24,7 @@ namespace GotchiValley {
 		void notifyObservers(std::shared_ptr<Entity>& entity, const EntityEvent& eventMessage) const override;
 	private:
 		std::unordered_set<IGameObserver*> mObservers;
-		GameWorld mGameWorld;
+		GameWorld& mGameWorld;
 		const float mAcceleration = 1.f;
 		void setFollowPath(std::shared_ptr<Creature>& creature, const float& dt);
 	};

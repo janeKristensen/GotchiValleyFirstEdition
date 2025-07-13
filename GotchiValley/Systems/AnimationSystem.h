@@ -1,6 +1,5 @@
 #pragma once
 #include <unordered_set>
-#include "GameWorld.h"
 #include "Entity.h"
 #include "IObserver.h"
 #include "Interfaces.h"
@@ -8,6 +7,8 @@
 
 
 namespace GotchiValley {
+
+	class GameWorld;
 
 	class AnimationSystem : public IGameObserver {
 	public:

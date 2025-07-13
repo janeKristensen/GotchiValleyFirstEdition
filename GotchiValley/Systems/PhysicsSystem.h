@@ -4,11 +4,12 @@
 #include "Components.h"
 #include "Entity.h"
 #include "Interfaces.h"
-#include "GameWorld.h"
 #include "GlobalVariables.h"
 #include "SFML/Graphics.hpp"
 
 namespace GotchiValley {
+
+	class GameWorld;
 
 	class PhysicsSystem : public IGameObserver {
 	public:

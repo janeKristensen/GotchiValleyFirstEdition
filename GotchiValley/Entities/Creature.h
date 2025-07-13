@@ -1,6 +1,7 @@
 #pragma once
 #include "Components.h"
 #include "Entity.h"
+#pragma once
 #include "Interfaces.h"
 
 
@@ -11,40 +12,31 @@ namespace GotchiValley {
 	public:
 		Creature(
 			const uint32_t& id,
-			Transform& transform,
-			Sprite& sprite,
+			Transform transform,
 			Animation& animation,
+			std::shared_ptr<sf::Texture> texture,
 			std::shared_ptr<FollowBehaviour>& followBehaviour,
-			RoamBehaviour& roamBehaviour,
+			/*const RoamBehaviour& roamBehaviour,*/
 			bool interactable = false,
 			bool moveable = false)
-			: Entity(id, transform, interactable, moveable), Drawable(sprite, animation)
+			: Entity(id, transform, interactable, moveable), Drawable(animation, texture), Collidable(transform)
 		{
-			//mSprite = sprite;
 			mFollowBehaviour = followBehaviour;
-			mRoamBehaviour = roamBehaviour;
-			mCollider = Collider({ sf::FloatRect({transform.position.x , transform.position.y  }, { TILE_SIZE.x , TILE_SIZE.y  }) });
+			/*mRoamBehaviour = roamBehaviour;*/
 		};
 
-		/*void setAnimation(Animation& animation);*/
-		//Animation getAnimation() override;
-	/*	void setSprite(Sprite& sprite) override;
-		Sprite& getSprite() override;*/
-		Collider getCollider() override;
 		std::shared_ptr<FollowBehaviour> getFollowBehaviour();
-		void setFollowBehaviour(std::shared_ptr<FollowBehaviour>& behaviour);
-		void setRoamBehaviour(RoamBehaviour& behaviour);
-		RoamBehaviour getRoamBehaviour();
+		void setFollowBehaviour(std::shared_ptr<FollowBehaviour> behaviour);
+		void setFollowPath(std::vector<std::shared_ptr<Node>> newPath);
+		/*void setRoamBehaviour(RoamBehaviour& behaviour);*/
+		/*RoamBehaviour getRoamBehaviour();*/
 		void onClick() override;
-
+		void initialize() override;
+		void update() override;
 
 	private:
-
-		/*Animation mAnimation;*/
-		/*Sprite mSprite;*/
-		Collider mCollider;
 		std::shared_ptr<FollowBehaviour> mFollowBehaviour;
-		RoamBehaviour mRoamBehaviour;
+		/*RoamBehaviour mRoamBehaviour;*/
 			
 	};
 }
