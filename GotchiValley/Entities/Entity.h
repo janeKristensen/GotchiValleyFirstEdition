@@ -1,6 +1,8 @@
 #pragma once
 #include "Components.h"
+#include <unordered_map>
 #include "iostream"
+#include <SFML/Audio.hpp>
 
 namespace GotchiValley {
 
@@ -21,6 +23,8 @@ namespace GotchiValley {
 		virtual void onClick();
 		bool isInteractive();
 		void setInteractive(bool value);
+		std::string getSound(EntityEvent event);
+		void setSounds(std::string filename);
 
 	protected:
 		const uint32_t mId;
@@ -29,5 +33,6 @@ namespace GotchiValley {
 		bool mInteractable;
 		bool mMoveable;
 		bool isAlive = true;
+		std::unordered_map<EntityEvent, std::string> entitySounds;
 	};
 }

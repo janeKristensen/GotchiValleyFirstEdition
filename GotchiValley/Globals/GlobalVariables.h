@@ -22,6 +22,16 @@ namespace GotchiValley {
 		IDLE,
 	};
 
+	inline EntityEvent stringToEntityEvent(const std::string& str) {
+		if (str == "EntityEvent::COLLISION") return EntityEvent::COLLISION;
+		else if (str == "EntityEvent::INTERACTION") return EntityEvent::INTERACTION;
+		else if (str == "EntityEvent::IDLE") return EntityEvent::IDLE;
+		else if (str == "EntityEvent::MOVE_LEFT") return EntityEvent::MOVE_LEFT;
+		else if (str == "EntityEvent::MOVE_RIGHT") return EntityEvent::MOVE_RIGHT;
+		else if (str == "EntityEvent::MOVE_UP") return EntityEvent::MOVE_UP;
+		else if (str == "EntityEvent::MOVE_DOWN") return EntityEvent::MOVE_DOWN;
+	}
+
 	enum class State { 
 		INITIAL,
 		IDLE, 

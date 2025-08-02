@@ -40,6 +40,8 @@ add_executable (GotchiValley
     "Systems/UISystem.cpp"
     "Systems/Pathfinder.h"
     "Systems/Pathfinder.cpp"
+    "Systems/AudioSystem.h"
+    "Systems/AudioSystem.cpp"
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
@@ -70,12 +72,14 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_link_libraries(GotchiValley PUBLIC
     ${SFML_DIR}/lib/sfml-system-d.lib
     ${SFML_DIR}/lib/sfml-window-d.lib
+    ${SFML_DIR}/lib/sfml-audio-d.lib
     ${SFML_DIR}/lib/sfml-graphics-d.lib
     )
 else()
     target_link_libraries(GotchiValley PUBLIC
     ${SFML_DIR}/lib/sfml-system.lib
     ${SFML_DIR}/lib/sfml-window.lib
+    ${SFML_DIR}/lib/sfml-audio.lib
     ${SFML_DIR}/lib/sfml-graphics.lib
 )
 endif()
@@ -91,7 +95,35 @@ foreach(IMAGE_FILE ${IMAGE_FILES})
         TARGET GotchiValley POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
             ${IMAGE_FILE}
-            ${CMAKE_BINARY_DIR}/GotchiValley/${FILE_NAME}
+            ${CMAKE_BINARY_DIR}/GotchiValley/resources/${FILE_NAME}
+    )
+endforeach()
+
+# Get all sound files in the resources directory
+file(GLOB SOUND_FILES ${CMAKE_SOURCE_DIR}/resources/sounds/*.wav)
+
+# Add a custom command for each file
+foreach(SOUND_FILE ${SOUND_FILES})
+    get_filename_component(FILE_NAME ${SOUND_FILE} NAME)
+    add_custom_command(
+        TARGET GotchiValley POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${SOUND_FILE}
+            ${CMAKE_BINARY_DIR}/GotchiValley/resources/${FILE_NAME}
+    )
+endforeach()
+
+# Get all sound files in the resources directory
+file(GLOB JSON_FILES ${CMAKE_SOURCE_DIR}/resources/*.json)
+
+# Add a custom command for each file
+foreach(JSON_FILE ${JSON_FILES})
+    get_filename_component(FILE_NAME ${JSON_FILE} NAME)
+    add_custom_command(
+        TARGET GotchiValley POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${JSON_FILE}
+            ${CMAKE_BINARY_DIR}/GotchiValley/resources/${FILE_NAME}
     )
 endforeach()
 

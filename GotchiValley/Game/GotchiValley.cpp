@@ -1,6 +1,6 @@
 ﻿
 #include "GotchiValley.h"
-
+#include "SFML/Audio.hpp"
 using namespace GotchiValley;
 
 	int main()
@@ -8,7 +8,7 @@ using namespace GotchiValley;
 		auto window = std::make_shared<sf::RenderWindow>(sf::RenderWindow(sf::VideoMode({ SCREEN_SIZE.x, SCREEN_SIZE.y }), "Gotchi Valley"));
 		window->setFramerateLimit(60);
 		
-		LevelManager levelManager = LevelManager(std::make_shared<sf::Texture>(std::move<sf::Texture>(sf::Texture{ "bg_sprite_small.png" })));
+		LevelManager levelManager = LevelManager(std::make_shared<sf::Texture>(std::move<sf::Texture>(sf::Texture{ "resources\\bg_sprite_small.png" })));
 		GameWorld gameWorld{ levelManager };
 		
 		UISystem uiSystem;
@@ -17,7 +17,7 @@ using namespace GotchiValley;
 		MovementSystem movementSystem(gameWorld);
 		PhysicsSystem physicsSystem{gameWorld, &collisionSystem, &movementSystem };
 		AnimationSystem animationSystem{gameWorld, &collisionSystem, &movementSystem, &uiSystem, &gameWorld };
-		
+		AudioSystem audioSystem(gameWorld, &collisionSystem);
 
 		sf::Clock clock;
 		gameWorld.initialize();
@@ -35,8 +35,8 @@ using namespace GotchiValley;
 
 			window->clear();
 			renderSystem.update(*window);
+			audioSystem.update(dt);
 			window->display();
-
 		}
 
 		return 0;

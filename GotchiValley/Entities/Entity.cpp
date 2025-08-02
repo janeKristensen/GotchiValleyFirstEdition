@@ -1,5 +1,6 @@
 #include "Entity.h"
-
+#include <fstream>
+#include <nlohmann/json.hpp>
 
 using namespace GotchiValley;
 
@@ -57,4 +58,31 @@ void Entity::setInteractive(bool value) {
 bool Entity::isMoveable() {
 
 	return mMoveable;
+}
+
+std::string Entity::getSound(EntityEvent event) {
+
+	return entitySounds[event];
+}
+
+void Entity::setSounds(std::string filename){
+
+	std::ifstream file(filename);
+
+	if (!file.is_open()) {
+		throw std::runtime_error("File not found");
+	}
+	else {
+
+		nlohmann::json data = nlohmann::json::parse(file);
+		if (data.is_object()) {
+
+			for (auto& [key, value] : data.items()) {
+
+				EntityEvent event = stringToEntityEvent(key);
+				std::string file = value.get<std::string>();
+				entitySounds.insert(std::make_pair(event, file));
+			}
+		}
+	}	
 }

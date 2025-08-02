@@ -12,19 +12,21 @@ using namespace GotchiValley;
 
 void GameWorld::initialize() {
 
-	auto birdTexture = std::make_shared<sf::Texture>(std::move(sf::Texture("egg_sprite_sheet.png")));
-	auto playerTexture = std::make_shared<sf::Texture>(std::move(sf::Texture("sprite_sheet.png")));
-	auto BigEgg = std::make_shared<sf::Texture>(std::move(sf::Texture("egg_big.png")));
+	auto birdTexture = std::make_shared<sf::Texture>(std::move(sf::Texture("resources\\egg_sprite_sheet.png")));
+	auto playerTexture = std::make_shared<sf::Texture>(std::move(sf::Texture("resources\\sprite_sheet.png")));
+	auto BigEgg = std::make_shared<sf::Texture>(std::move(sf::Texture("resources\\egg_big.png")));
 
 	setLevel(1);
-	mPlayer = std::make_shared<Player>(Player(mCurrentArrayIndex, Transform{ {100.0f, 100.0f }, {0.0f, 0.0f}, 100.0f }, playerAnimation, playerTexture, true, true));
+	mPlayer = std::make_shared<Player>(Player(mCurrentArrayIndex, Transform{ {100.0f, 100.0f }, {0.0f, 0.0f}, 200.0f }, playerAnimation, playerTexture, true, true));
 	addEntity(std::dynamic_pointer_cast<Entity>(mPlayer));
 	mPlayer->initialize();
+	mPlayer->setSounds("resources\\playerSound.json");
 
 	auto creatureBehaviour = std::make_shared<FollowBehaviour>(mPlayer, std::vector<std::shared_ptr<Node>>{});
-	auto creature = std::make_shared<Creature>(mCurrentArrayIndex, Transform{ {200.0f, 200.0f }, {0.0f, 0.0f}, 100.0f }, eggAnimation, birdTexture, creatureBehaviour, true, true);
+	auto creature = std::make_shared<Creature>(mCurrentArrayIndex, Transform{ {200.0f, 200.0f }, {0.0f, 0.0f}, 50.0f }, eggAnimation, birdTexture, creatureBehaviour, true, true);
 	addEntity(std::dynamic_pointer_cast<Entity>(creature));
 	creature->initialize();
+	creature->setSounds("resources\\playerSound.json");
 }
 
 std::array<std::shared_ptr<Entity>, MAX_ENTITIES>& GameWorld::getEntities() {

@@ -30,6 +30,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     Entities
     ${SFML_DIR}/lib/sfml-system-d.lib
     ${SFML_DIR}/lib/sfml-window-d.lib
+    ${SFML_DIR}/lib/sfml-audio-d.lib
     ${SFML_DIR}/lib/sfml-graphics-d.lib
     )
 else()
@@ -37,6 +38,7 @@ else()
     Entities
     ${SFML_DIR}/lib/sfml-system.lib
     ${SFML_DIR}/lib/sfml-window.lib
+     ${SFML_DIR}/lib/sfml-audio.lib
     ${SFML_DIR}/lib/sfml-graphics.lib
 )
 endif()

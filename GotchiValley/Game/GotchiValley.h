@@ -8,6 +8,7 @@
 #include "AnimationSystem.h"
 #include "PhysicsSystem.h"
 #include "RenderSystem.h"
+#include "AudioSystem.h"
 #include "Components.h"
 #include "UISystem.h"
 
