@@ -14,66 +14,54 @@ void RenderSystem::update(sf::RenderWindow& window) {
 	
 	// Draw level tiles
 	window.draw(level->getVertices(), level->getTexture().get());
-
-	// Draw bounding boxes for the colliders of the level objects
-#ifndef NDEBUG
-	//for (auto i = level->colliders.begin(); i != level->colliders.end(); i++) {
-
-	//	sf::RectangleShape box{ {(float)TILE_SIZE.x, (float)TILE_SIZE.y} };
-	//	box.setPosition(i->get()->boundingBox.position);
-	//	window.draw(box);
-	//}
-#endif
 	
 	for (auto i = 0; i < entityArray.size(); i++) {
 	
-		if (entityArray[i] == nullptr) break;
-
-		if (entityArray[i]->isEntityAlive()) {
+		if (entityArray[i] == nullptr || !entityArray[i]->isEntityAlive()) break;
 
 #ifndef NDEBUG
 
-			// Draws the bounding boxes for the game objects
-			auto obj = std::dynamic_pointer_cast<Collidable>(entityArray[i]);
-			if (obj) {
-				auto collider = obj->getCollider();
-				sf::RectangleShape box{ {(float)TILE_SIZE.x, (float)TILE_SIZE.y} };
-				box.setPosition(collider.boundingBox.position);
-				window.draw(box);
-			}
-
-			// Draws pathfinder paths
-			auto creature = std::dynamic_pointer_cast<Creature>(entityArray[i]);
-			if (creature) {
-
-				std::shared_ptr<FollowBehaviour> followBehaviour = creature->getFollowBehaviour();
-				for (const std::shared_ptr<Node>& node : followBehaviour->path) {
-
-					sf::CircleShape nodeShape{ 5.f };
-					sf::Vector2f position = { (float)node->x * TILE_SIZE.x, (float)node->y * TILE_SIZE.y };
-					nodeShape.setPosition(position);
-					nodeShape.setFillColor(sf::Color::Red);
-					window.draw(nodeShape);
-				}
-
-				/*const RoamBehaviour& roamBehaviour = creature->getRoamBehaviour();
-				for (const std::shared_ptr<Node>& node : roamBehaviour.path) {
-
-					sf::CircleShape nodeShape{ 5.f };
-					sf::Vector2f position = { (float)node->x * TILE_SIZE.x, (float)node->y * TILE_SIZE.y };
-					nodeShape.setPosition(position);
-					nodeShape.setFillColor(sf::Color::Blue);
-					window.draw(nodeShape);
-				}*/
-			}
-
-			// draw the entity sprite
-			auto drawable = std::dynamic_pointer_cast<Drawable>(entityArray[i]);
-			if (drawable) {
-
-				window.draw(drawable->getSprite());
-			}
+		// Draws the bounding boxes for the game objects
+		auto obj = std::dynamic_pointer_cast<Collidable>(entityArray[i]);
+		if (obj) {
+			auto collider = obj->getCollider();
+			sf::RectangleShape box{ {(float)TILE_SIZE.x, (float)TILE_SIZE.y} };
+			box.setPosition(collider.boundingBox.position);
+			window.draw(box);
 		}
+
+		// Draws pathfinder paths
+		auto creature = std::dynamic_pointer_cast<Creature>(entityArray[i]);
+		if (creature) {
+
+			std::shared_ptr<FollowBehaviour> followBehaviour = creature->getFollowBehaviour();
+			for (const std::shared_ptr<Node>& node : followBehaviour->path) {
+
+				sf::CircleShape nodeShape{ 5.f };
+				sf::Vector2f position = { (float)node->x * TILE_SIZE.x, (float)node->y * TILE_SIZE.y };
+				nodeShape.setPosition(position);
+				nodeShape.setFillColor(sf::Color::Red);
+				window.draw(nodeShape);
+			}
+
+			/*const RoamBehaviour& roamBehaviour = creature->getRoamBehaviour();
+			for (const std::shared_ptr<Node>& node : roamBehaviour.path) {
+
+				sf::CircleShape nodeShape{ 5.f };
+				sf::Vector2f position = { (float)node->x * TILE_SIZE.x, (float)node->y * TILE_SIZE.y };
+				nodeShape.setPosition(position);
+				nodeShape.setFillColor(sf::Color::Blue);
+				window.draw(nodeShape);
+			}*/
+		}
+
+		// draw the entity sprite
+		auto drawable = std::dynamic_pointer_cast<Drawable>(entityArray[i]);
+		if (drawable) {
+
+			window.draw(drawable->getSprite());
+		}
+		
 	}
 #endif
 

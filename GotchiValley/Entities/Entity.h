@@ -30,8 +30,8 @@ namespace GotchiValley {
 		const uint32_t mId;
 		Transform mTransform;
 		State mEntityState{State::INITIAL};
-		bool mInteractable;
-		bool mMoveable;
+		bool mInteractable = false;
+		bool mMoveable = false;
 		bool isAlive = true;
 		std::unordered_map<EntityEvent, std::string> entitySounds;
 	};

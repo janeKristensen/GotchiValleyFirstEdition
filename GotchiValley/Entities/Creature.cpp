@@ -42,5 +42,6 @@ void Creature::setFollowPath(std::vector<std::shared_ptr<Node>> newPath) {
 void Creature::onClick(){
 
 	std::cout << "Creature clicked" << std::endl;
+	mFollowBehaviour->isFollowActive ? mFollowBehaviour->isFollowActive = false : mFollowBehaviour->isFollowActive = true;
 }
 

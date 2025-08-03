@@ -92,8 +92,8 @@ void CollisionSystem::resolveCollision(std::vector<CollisionData>& collisions)  
 			i->entityCollider.boundingBox.size.y * 3
 		};
 		sf::Vector2f position = {
-			static_cast<float>(i->entityCollider.boundingBox.position.x - size.x / 3),
-			static_cast<float>(i->entityCollider.boundingBox.position.y - size.y / 3)
+			static_cast<float>(i->entityCollider.boundingBox.position.x - size.x/3),
+			static_cast<float>(i->entityCollider.boundingBox.position.y - size.y/3)
 		};
 		sf::FloatRect interactionArea = { position, size };
 		

@@ -1,41 +1,40 @@
 
 #include "UISystem.h"
+#include "GameWorld.h"
+#include "Interfaces.h"
 
 using namespace GotchiValley;
 
 
 void UISystem::update(std::shared_ptr<sf::RenderWindow> window) {
 
-	while (const std::optional event = window->pollEvent()) {
+	while (const std::optional uiEvent = window->pollEvent()) {
 
-		if (event->is<sf::Event::Closed>()) {
+		if (uiEvent->is<sf::Event::Closed>()) {
 			window->close();
 		}
-		else if (event->is<sf::Event::KeyPressed>()) {
+		else if (uiEvent->is<sf::Event::KeyPressed>()) {
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
 				window->close();
 			}
 		}
-		else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+		else if (uiEvent->is<sf::Event::MouseButtonReleased>() && 
+			uiEvent->getIf<sf::Event::MouseButtonReleased>()->button == sf::Mouse::Button::Left) {
 
-			/*auto button = componentRegistry.GetComponentArray<Button>();
+			std::array<std::shared_ptr<Entity>, MAX_ENTITIES>& entityArray = mGameWorld.getEntities();
+			for (auto i = 0; i < entityArray.size(); i++) {
 
-			for (auto i = button.begin(); i != button.end(); i++) {
+				if (entityArray[i] == nullptr) break;
+				if (!entityArray[i]->isEntityAlive() || !entityArray[i]->isInteractive()) continue;
 
-				auto collider = componentRegistry.GetComponentOfType<Collider>(i->first);
+				auto entity = std::dynamic_pointer_cast<Collidable>(entityArray[i]);
+				sf::Vector2f mousePos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(*window));
+				if (entity->getCollider().boundingBox.contains(mousePos)){
 
-				if (collider->boundingBox.contains(static_cast<sf::Vector2f>(sf::Mouse::getPosition(*window)))) {
-
-					auto interactable = componentRegistry.GetComponentOfType<Interactable>(i->first);
-					
-					if (interactable->interactionActive) {
-
-						i->second->OnClick();
-						interactable->interactionActive = false;
-					}
+					entityArray[i]->onClick();
 				}
-			}*/
+			}
 		}
 	}
 }

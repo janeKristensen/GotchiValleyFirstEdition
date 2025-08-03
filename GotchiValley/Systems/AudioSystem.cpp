@@ -37,7 +37,7 @@ void AudioSystem::loadSound(std::string filename){
 	
 	sf::Sound sound(mSoundBuffers.find(filename)->second);
 	mSoundQueue.push(std::move(sound));
-	mSoundQueue.back().play();
+	//mSoundQueue.back().play();
 }
 
 void AudioSystem::onNotify(std::shared_ptr<Entity>& entity, const EntityEvent& eventMessage) {

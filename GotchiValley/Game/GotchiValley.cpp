@@ -11,7 +11,7 @@ using namespace GotchiValley;
 		LevelManager levelManager = LevelManager(std::make_shared<sf::Texture>(std::move<sf::Texture>(sf::Texture{ "resources\\bg_sprite_small.png" })));
 		GameWorld gameWorld{ levelManager };
 		
-		UISystem uiSystem;
+		UISystem uiSystem(gameWorld);
 		RenderSystem renderSystem(gameWorld);
 		CollisionSystem collisionSystem(gameWorld);
 		MovementSystem movementSystem(gameWorld);
