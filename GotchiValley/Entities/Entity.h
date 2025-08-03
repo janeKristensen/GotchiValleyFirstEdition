@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include "iostream"
 #include <SFML/Audio.hpp>
+#include <mutex>
 
 namespace GotchiValley {
 
@@ -20,6 +21,7 @@ namespace GotchiValley {
 		State& getState();
 		bool isEntityAlive();
 		bool isMoveable();
+		void setMoveable(bool value);
 		virtual void onClick();
 		bool isInteractive();
 		void setInteractive(bool value);
@@ -29,10 +31,12 @@ namespace GotchiValley {
 	protected:
 		const uint32_t mId;
 		Transform mTransform;
-		State mEntityState{State::INITIAL};
 		bool mInteractable = false;
 		bool mMoveable = false;
 		bool isAlive = true;
 		std::unordered_map<EntityEvent, std::string> entitySounds;
+
+	private:
+		State mEntityState{ State::INITIAL };
 	};
 }

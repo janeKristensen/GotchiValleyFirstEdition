@@ -1,6 +1,7 @@
 #include "CollisionSystem.h"
 #include "Level.h"
 #include "GameWorld.h"
+#include <thread>
 
 
 using namespace GotchiValley;
@@ -79,9 +80,10 @@ void CollisionSystem::update() {
 void CollisionSystem::resolveCollision(std::vector<CollisionData>& collisions)  {
 
 	for (auto i = collisions.begin(); i != collisions.end(); i++) {
-
+		
 		notifyObservers(i->entity, EntityEvent::COLLISION);
-		i->entity->setState(State::IDLE);
+		
+		//i->entity->setState(State::IDLE);
 
 		// only player can interact with objects
 		auto player = std::dynamic_pointer_cast<Player>(i->entity);
@@ -117,8 +119,20 @@ void CollisionSystem::removeObserver(IGameObserver* observer) {
 }
 
 void CollisionSystem::notifyObservers(std::shared_ptr<Entity>& entity, const EntityEvent& eventMessage) const {
+	
+	/*std::vector<std::thread> threads;*/
 
-	for (auto observer : mObservers) {
+	for (auto& observer : mObservers) {
+
 		observer->onNotify(entity, eventMessage);
+		/*threads.emplace_back([observer, &entity, eventMessage]() {
+			observer->onNotify(entity, eventMessage);
+			}
+		);*/
 	}
+
+	/*for (auto& t : threads) {
+		
+		t.join();
+	}*/
 }

@@ -22,6 +22,9 @@ namespace GotchiValley {
 		void setSprite(sf::Sprite& sprite);
 		sf::Sprite& getSprite() { return mSprite; };
 		Animation& getAnimation() { return mAnimation; };
+		void setAnimation(Animation& animation) { mAnimation = animation; };
+		void setAnimationName(const AnimationName& name) { mAnimation.animName = name; };
+
 	protected:
 		std::shared_ptr<sf::Texture> mTexture = nullptr;
 		sf::Sprite mSprite = sf::Sprite{ *mTexture };

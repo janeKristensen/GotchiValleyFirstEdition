@@ -42,6 +42,6 @@ void AudioSystem::loadSound(std::string filename){
 
 void AudioSystem::onNotify(std::shared_ptr<Entity>& entity, const EntityEvent& eventMessage) {
 
-		std::string filename = entity->getSound(eventMessage);
-		loadSound(filename);
+	std::string filename = entity->getSound(eventMessage);
+	loadSound(filename);
 }

@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <cstdint>
 #include <cstddef>
+#include <mutex>
 
 
 namespace GotchiValley {
@@ -39,6 +40,9 @@ namespace GotchiValley {
 		COLLIDING,
 		ATTACKING, 
 		INTERACTING,
+	};
+
+	enum class CreaturePhase {
 		EVOLVING,
 		UNEVOLVED,
 		EVOLVED,
