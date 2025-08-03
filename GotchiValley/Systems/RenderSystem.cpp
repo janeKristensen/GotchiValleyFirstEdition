@@ -1,98 +1,87 @@
 
 #include "RenderSystem.h"
-
+#include "Level.h"
+#include "Creature.h"
+#include "GameWorld.h"
 
 using namespace GotchiValley;
 
 
-void RenderSystem::Update(sf::RenderWindow& window) {
+void RenderSystem::update(sf::RenderWindow& window) {
 
-	auto levelVertexArray = componentRegistry.GetComponentArray<Level>();
-	for (auto i = levelVertexArray.begin(); i != levelVertexArray.end(); i++) {
+	std::shared_ptr<Level> level = mGameWorld.getCurrentLevel();
+	std::array<std::shared_ptr<Entity>, MAX_ENTITIES>& entityArray = mGameWorld.getEntities();
+	
+	// Draw level tiles
+	window.draw(level->getVertices(), level->getTexture().get());
+	
+	for (auto i = 0; i < entityArray.size(); i++) {
+	
+		if (entityArray[i] == nullptr || !entityArray[i]->isEntityAlive()) break;
 
-		// Draw bounding boxes for the colliders of the level objects
 #ifndef NDEBUG
-		for (auto j = i->second->colliders.begin(); j != i->second->colliders.end(); j++) {
 
-			Collider* collider = j->get();
+		// Draws the bounding boxes for the game objects
+		auto obj = std::dynamic_pointer_cast<Collidable>(entityArray[i]);
+		if (obj) {
+			auto collider = obj->getCollider();
 			sf::RectangleShape box{ {(float)TILE_SIZE.x, (float)TILE_SIZE.y} };
-			box.setPosition(collider->boundingBox.position);
+			box.setPosition(collider.boundingBox.position);
 			window.draw(box);
 		}
-#endif
-		sf::RenderStates states;
-		states.texture = i->second->texture.get();
-		window.draw(i->second->vertices, states);	
-	}
 
-	// Draws the bounding boxes for the game objects
-#ifndef NDEBUG
-	auto colliderArray = componentRegistry.GetComponentArray<Collider>();
-	for (auto i = colliderArray.begin(); i != colliderArray.end(); i++) {
+		// Draws pathfinder paths
+		auto creature = std::dynamic_pointer_cast<Creature>(entityArray[i]);
+		if (creature) {
 
-		sf::RectangleShape box{ {(float)TILE_SIZE.x, (float)TILE_SIZE.y} };
-		box.setPosition(i->second->boundingBox.position);
-		window.draw(box);
-	}
-#endif
+			std::shared_ptr<FollowBehaviour> followBehaviour = creature->getFollowBehaviour();
+			for (const std::shared_ptr<Node>& node : followBehaviour->path) {
 
-	// Draw pathfinder paths
-#ifndef NDEBUG
-	auto followArray = componentRegistry.GetComponentArray<FollowBehaviour>();
-	for (auto i = followArray.begin(); i != followArray.end(); i++) {
+				sf::CircleShape nodeShape{ 5.f };
+				sf::Vector2f position = { (float)node->x * TILE_SIZE.x, (float)node->y * TILE_SIZE.y };
+				nodeShape.setPosition(position);
+				nodeShape.setFillColor(sf::Color::Red);
+				window.draw(nodeShape);
+			}
 
-		for (const std::shared_ptr<Node>& node : i->second->path) {
+			/*const RoamBehaviour& roamBehaviour = creature->getRoamBehaviour();
+			for (const std::shared_ptr<Node>& node : roamBehaviour.path) {
 
-			sf::CircleShape nodeShape{5.f};
-			sf::Vector2f position = { (float)node->x * TILE_SIZE.x, (float)node->y * TILE_SIZE.y};
-			nodeShape.setPosition(position);
-			nodeShape.setFillColor(sf::Color::Red);
-			window.draw(nodeShape);
+				sf::CircleShape nodeShape{ 5.f };
+				sf::Vector2f position = { (float)node->x * TILE_SIZE.x, (float)node->y * TILE_SIZE.y };
+				nodeShape.setPosition(position);
+				nodeShape.setFillColor(sf::Color::Blue);
+				window.draw(nodeShape);
+			}*/
 		}
-	}
 
-	auto roamArray = componentRegistry.GetComponentArray<RoamBehaviour>();
-	for (auto i = roamArray.begin(); i != roamArray.end(); i++) {
+		// draw the entity sprite
+		auto drawable = std::dynamic_pointer_cast<Drawable>(entityArray[i]);
+		if (drawable) {
 
-		for (const std::shared_ptr<Node>& node : i->second->path) {
-
-			sf::CircleShape nodeShape{ 5.f };
-			sf::Vector2f position = { (float)node->x * TILE_SIZE.x, (float)node->y * TILE_SIZE.y };
-			nodeShape.setPosition(position);
-			nodeShape.setFillColor(sf::Color::Blue);
-			window.draw(nodeShape);
+			window.draw(drawable->getSprite());
 		}
+		
 	}
 #endif
 
 
-	auto spriteArray = componentRegistry.GetComponentArray<Sprite>();
-	for (auto i = spriteArray.begin(); i != spriteArray.end(); i++) {
-
-		window.draw(i->second->sprite);
-	}
 }
 
-void RenderSystem::AttachTexture(Entity& entity, const std::string& filename) {
+void RenderSystem::attachTexture(std::shared_ptr<Entity>& entity, const std::string& filename) {
 
-	auto spriteComponent = componentRegistry.GetComponentOfType<Sprite>(entity);
 	auto texture = std::make_unique<sf::Texture>();
 	
 	if (!texture->loadFromFile(std::filesystem::absolute(filename).string()))
 	{
 		throw std::runtime_error("Could not load image.png");
 	}
-	spriteComponent->sprite.setTexture(*texture);
-	spriteComponent->texture = std::move(texture);
+	auto drawable = std::dynamic_pointer_cast<Drawable>(entity);
+	if (drawable) {
+
+		drawable->getSprite().setTexture(*texture);
+	}
 }
 
-//sf::Texture& RenderSystem::LoadTexture(const std::string& filename) {
-//
-//	sf::Texture texture;
-//	if (!texture.loadFromFile(std::filesystem::absolute(filename).string()))
-//	{
-//		throw std::runtime_error("Could not load image.png");
-//	}
-//	return texture;
-//}
+
 

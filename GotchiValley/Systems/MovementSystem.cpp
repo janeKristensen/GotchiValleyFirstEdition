@@ -1,198 +1,135 @@
 #include "MovementSystem.h"
-#include <random>
+#include "GameWorld.h"
 
 
 using namespace GotchiValley;
 
-void MovementSystem::Update(float& dt) {
+void MovementSystem::update(float& dt) {
+
+	std::array<std::shared_ptr<Entity>, MAX_ENTITIES>& entityArray = mGameWorld.getEntities();
 	
-	auto controlArray = componentRegistry.GetComponentArray<Controlable>();
-	auto followArray = componentRegistry.GetComponentArray<FollowBehaviour>();
-	auto roamArray = componentRegistry.GetComponentArray<RoamBehaviour>();
-	
-	for (auto i = controlArray.begin(); i != controlArray.end(); i++) {
+	for (auto i = 0; i < entityArray.size(); i++) {
 
-		auto entityTransform = componentRegistry.GetComponentOfType<Transform>(i->first);
-		auto entityState = componentRegistry.GetComponentOfType<EntityState>(i->first);
+		if (entityArray[i] == nullptr) break;
+		if(!entityArray[i]->isEntityAlive()) continue;
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+		std::shared_ptr<Player> player = std::dynamic_pointer_cast<Player>(entityArray[i]);
+		if (player && player->isMoveable()) {
 
-			entityTransform->velocity.y = -mAcceleration;
-			entityState->state = State::RUNNING;
-			NotifyObservers(i->first, EntityEvent::MOVE_UP);
+			Transform& transform = entityArray[i]->getTransform();
+			State& entityState = entityArray[i]->getState();
+
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+
+				transform.velocity.y = -mAcceleration;
+				entityState = State::RUNNING;
+				notifyObservers(entityArray[i], EntityEvent::MOVE_UP);
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+
+				transform.velocity.y = mAcceleration;
+				entityState = State::RUNNING;
+				notifyObservers(entityArray[i], EntityEvent::MOVE_DOWN);
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+
+				transform.velocity.x = mAcceleration;
+				entityState = State::RUNNING;
+				notifyObservers(entityArray[i], EntityEvent::MOVE_LEFT);
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+
+				transform.velocity.x = -mAcceleration;
+				entityState = State::RUNNING;
+				notifyObservers(entityArray[i], EntityEvent::MOVE_RIGHT);
+			}
+
+			entityArray[i]->setTransform(transform);
 		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+		else {
 
-			entityTransform->velocity.y = mAcceleration;
-			entityState->state = State::RUNNING;
-			NotifyObservers(i->first, EntityEvent::MOVE_DOWN);
+			std::shared_ptr<Creature> creature = std::dynamic_pointer_cast<Creature>(entityArray[i]);
+			if (creature) {
+				updateFollowPath(creature, dt);
+				creature->update();
+			}
 		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-
-			entityTransform->velocity.x = mAcceleration;
-			entityState->state = State::RUNNING;
-			NotifyObservers(i->first, EntityEvent::MOVE_LEFT);
-		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-
-			entityTransform->velocity.x = -mAcceleration;
-			entityState->state = State::RUNNING;
-			NotifyObservers(i->first, EntityEvent::MOVE_RIGHT);
-		}
-	}
-
-	
-	SetFollowPath(followArray);
-	FollowToNode(followArray, dt);
-
-	SetRoamPath(roamArray);
-	RoamToNode(roamArray, dt);
-}
-
-void MovementSystem::SetFollowPath(const std::unordered_map<Entity, std::shared_ptr<FollowBehaviour>>& followArray) {
-
-	for (auto i = followArray.begin(); i != followArray.end(); i++) {
-
-		if (!i->second->isFollowActive) continue;
-
-		auto entityActor = componentRegistry.GetComponentOfType<Transform>(i->first);
-		auto entityDest = componentRegistry.GetComponentOfType<Transform>(i->second->entity);
-
-		Node actor;
-		actor.x = (entityActor->position.x + TILE_SIZE.x / 2) / TILE_SIZE.x;
-		actor.y = (entityActor->position.y + TILE_SIZE.y / 2) / TILE_SIZE.y;
-
-		Node destination;
-		destination.x = (entityDest->position.x + TILE_SIZE.x / 2) / TILE_SIZE.x;
-		destination.y = (entityDest->position.y + TILE_SIZE.y / 2) / TILE_SIZE.y;
-
-		i->second->path = Pathfinder::FindPath(actor, destination);
-		i->second->hasPath = true;
+		
 	}
 }
 
-void MovementSystem::SetRoamPath(const std::unordered_map<Entity, std::shared_ptr<RoamBehaviour>>& roamArray) {
+void MovementSystem::updateFollowPath(std::shared_ptr<Creature>& creature, const float& dt) {
 
-	std::random_device rd;
-	std::mt19937 e2(rd());
-	std::uniform_real_distribution<> dist(0, 25);
+	std::shared_ptr<FollowBehaviour> followBehaviour = creature->getFollowBehaviour();
+	Transform& transform = creature->getTransform();
 
-	for (auto i = roamArray.begin(); i != roamArray.end(); i++) {
+	Node actor;
+	Node destination;
+	actor.x = (transform.position.x + TILE_SIZE.x / 2) / TILE_SIZE.x;
+	actor.y = (transform.position.y + TILE_SIZE.y / 2) / TILE_SIZE.y;
 
-		if (!i->second->isRoamActive || (i->second->hasPath && !i->second->path.empty())) continue;
+	if (followBehaviour->isFollowActive) {
+		destination.x = (followBehaviour->entity->getTransform().position.x + TILE_SIZE.x / 2) / TILE_SIZE.x;
+		destination.y = (followBehaviour->entity->getTransform().position.y + TILE_SIZE.y / 2) / TILE_SIZE.y;
 
-		auto entityActor = componentRegistry.GetComponentOfType<Transform>(i->first);
+		creature->setFollowPath(Pathfinder::findPath(actor, destination));
+	}
+	else if(followBehaviour->path.empty() || followBehaviour->hasPath == false) {
 
-		Node actor;
-		actor.x = (entityActor->position.x + TILE_SIZE.x / 2) / TILE_SIZE.x;
-		actor.y = (entityActor->position.y + TILE_SIZE.y / 2) / TILE_SIZE.y;
+		std::random_device rd;
+		std::mt19937 e2(rd());
+		std::uniform_real_distribution<> dist(0, 25);
 
-		Node destination;
 		uint32_t randomX = std::floor(dist(e2));
 		uint32_t randomY = std::floor(dist(e2));
 		destination.x = randomX;
 		destination.y = randomY;
 		std::cout << randomX << " " << randomY << std::endl;
 
-		i->second->path = Pathfinder::FindPath(actor, destination);
-		i->second->hasPath = true;
+		creature->setFollowPath(Pathfinder::findPath(actor, destination));
 	}
-}
 
-void MovementSystem::FollowToNode(const std::unordered_map<Entity, std::shared_ptr<FollowBehaviour>>& followArray, const float& dt) {
+	if (followBehaviour->currentStep < followBehaviour->path.size() - 2) {
 
-	for (auto i = followArray.begin(); i != followArray.end(); i++) {
+			const std::shared_ptr<Node>& node = followBehaviour->path[followBehaviour->currentStep];
 
-		if (!i->second->isFollowActive || !i->second->hasPath || i->second->path.empty()) continue;
-
-		if (i->second->currentStep < i->second->path.size() - 1) {
-
-			auto entityActor = componentRegistry.GetComponentOfType<Transform>(i->first);
-			auto entityDest = componentRegistry.GetComponentOfType<Transform>(i->second->entity);
-			const std::shared_ptr<Node>& node = i->second->path[i->second->currentStep];
-
-			sf::Vector2f targetPos{ static_cast<float>(node->x * TILE_SIZE.x), static_cast<float>(node->y * TILE_SIZE.y) };
-
-			sf::Vector2f direction = targetPos - entityActor->position;
+			sf::Vector2f targetPos{ static_cast<float>(node->x * TILE_SIZE.x), static_cast<float>(node->y * TILE_SIZE.y)};
+			sf::Vector2f direction = targetPos - transform.position;
 			float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
 
-			if (distance > 0.1f) { // Still moving toward node
-				entityActor->velocity = direction / distance;
-				entityActor->position += entityActor->velocity * dt * entityActor->speed;
-
-				// Optional: clamp to prevent overshoot
-				if (std::abs(entityActor->position.x - targetPos.x) < 1.0f &&
-					std::abs(entityActor->position.y - targetPos.y) < 1.0f) {
-					entityActor->position = targetPos;
-					i->second->currentStep++;
-				}
+			if (distance > 25.f) { // Still moving toward node
+				transform.velocity = direction / distance;
+				transform.position += transform.velocity * dt * transform.speed;
 			}
 			else {
-				// Reached target node
-				entityActor->position = targetPos;
-				i->second->currentStep++;
+
+				followBehaviour->currentStep++;
 			}
-		}
-		else {
-			i->second->hasPath = false;
-			i->second->currentStep = 0;
-		}
+
+			creature->setTransform(transform);
+			creature->setFollowBehaviour(followBehaviour);
+	}
+	else {
+		followBehaviour->hasPath = false;
+		followBehaviour->currentStep = 0;
+		creature->setFollowBehaviour(followBehaviour);
 	}
 }
 
-void MovementSystem::RoamToNode(const std::unordered_map<Entity, std::shared_ptr<RoamBehaviour>>& roamArray, const float& dt) {
 
-	for (auto i = roamArray.begin(); i != roamArray.end(); i++) {
-
-		if (!i->second->isRoamActive || !i->second->hasPath || i->second->path.empty()) continue;
-
-		if (i->second->currentStep < i->second->path.size() - 1) {
-
-			auto entityActor = componentRegistry.GetComponentOfType<Transform>(i->first);
-			const std::shared_ptr<Node>& node = i->second->path[i->second->currentStep];
-
-			sf::Vector2f targetPos{ static_cast<float>(node->x * TILE_SIZE.x), static_cast<float>(node->y * TILE_SIZE.y) };
-
-			sf::Vector2f direction = targetPos - entityActor->position;
-			float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-
-			if (distance > 0.1f) { // Still moving toward node
-				entityActor->velocity = direction / distance;
-				entityActor->position += entityActor->velocity * dt * entityActor->speed;
-
-				// Optional: clamp to prevent overshoot
-				if (std::abs(entityActor->position.x - targetPos.x) < 1.0f &&
-					std::abs(entityActor->position.y - targetPos.y) < 1.0f) {
-					entityActor->position = targetPos;
-					i->second->currentStep++;
-				}
-			}
-			else {
-				// Reached target node
-				entityActor->position = targetPos;
-				i->second->currentStep++;
-			}
-		}
-		else {
-			i->second->hasPath = false;
-			i->second->currentStep = 0;
-		}
-	}
-}
-
-void MovementSystem::AddObserver(IGameObserver* observer) {
+void MovementSystem::addObserver(IGameObserver* observer) {
 
 	mObservers.emplace(observer);
 }
 
-void MovementSystem::RemoveObserver(IGameObserver* observer) {
+void MovementSystem::removeObserver(IGameObserver* observer) {
 
 	mObservers.erase(observer);
 }
 
-void MovementSystem::NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) const{
+void MovementSystem::notifyObservers(std::shared_ptr<Entity>& entity, const EntityEvent& eventMessage) const{
 
 	for (auto observer : mObservers) {
-		observer->OnNotify(entity, eventMessage);
+		observer->onNotify(entity, eventMessage);
 	}
 }

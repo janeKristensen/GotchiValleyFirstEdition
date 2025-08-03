@@ -1,53 +1,45 @@
 
 #include "PhysicsSystem.h"
+#include "GameWorld.h"
 
 using namespace GotchiValley;
 
 
-void PhysicsSystem::Update(float& dt) {
+void PhysicsSystem::update(float& dt) {
 
-	auto transformArray = componentRegistry.GetComponentArray<Transform>();
+	std::array<std::shared_ptr<Entity>, MAX_ENTITIES>& entityArray = mGameWorld.getEntities();
 
-	for (auto i = transformArray.begin(); i != transformArray.end(); i++) {
+	for (int i = 0; i < entityArray.size(); i++) {
 
-		auto transform = i->second;
+		if (entityArray[i] == nullptr) break;
 
-		transform->position += transform->velocity * dt * transform->speed;
+		if (entityArray[i] && entityArray[i]->isEntityAlive()) {
 
-		auto spriteComponent = componentRegistry.GetComponentOfType<Sprite>(i->first);
-		if (!spriteComponent) continue;
-		spriteComponent->sprite.setPosition(transform->position);
+			Transform& transform = entityArray[i]->getTransform();
+			transform.position += transform.velocity * dt * transform.speed;
+			entityArray[i]->setTransform(transform);
+			entityArray[i]->update();
+			
+			auto collider = std::dynamic_pointer_cast<Collidable>(entityArray[i]);
+			if (!collider) continue;
+			collider->getCollider().boundingBox.position = transform.position;
 
-		auto collider = componentRegistry.GetComponentOfType<Collider>(i->first);
-		if (!collider) continue;
-		collider->boundingBox.position = transform->position;
-
-		transform->velocity = .95f * transform->velocity;	
+			transform.velocity = .95f * transform.velocity;
+			entityArray[i]->setTransform(transform);
+		}	
 	}
 }
 
-
-void PhysicsSystem::SetPosition(Entity& entity, sf::Vector2f& position) {
-
-	auto transform = componentRegistry.GetComponentOfType<Transform>(entity);
-	if (!transform) return;
-	transform->position = position;
-	
-
-	auto spriteComponent = componentRegistry.GetComponentOfType<Sprite>(entity);
-	if (!spriteComponent) return;
-	spriteComponent->sprite.setPosition(transform->position);
-	
-}
-
-
-void PhysicsSystem::OnNotify(const Entity& entity, const EntityEvent& eventMessage) {
+void PhysicsSystem::onNotify(std::shared_ptr<Entity>& entity, const EntityEvent& eventMessage) {
 
 	if (eventMessage == EntityEvent::COLLISION &&
-		componentRegistry.HasComponent<Moveable>(entity)) {
+		entity->isEntityAlive()) {
 		
-		auto transform = componentRegistry.GetComponentOfType<Transform>(entity);
-		transform->velocity *= -1.f;
+		
+		Transform& transform = entity->getTransform();
+		transform.velocity *= -1.f;
+		entity->setTransform(transform);
+		entity->update();
 	}
 }
 

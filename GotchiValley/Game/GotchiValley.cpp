@@ -1,41 +1,42 @@
 ﻿
 #include "GotchiValley.h"
-
+#include "SFML/Audio.hpp"
 using namespace GotchiValley;
 
 	int main()
 	{
 		auto window = std::make_shared<sf::RenderWindow>(sf::RenderWindow(sf::VideoMode({ SCREEN_SIZE.x, SCREEN_SIZE.y }), "Gotchi Valley"));
 		window->setFramerateLimit(60);
-
 		
-		UISystem uiSystem;
-		RenderSystem renderSystem;
-		CollisionSystem collisionSystem;
-		MovementSystem movementSystem;
-		GameWorld gameWorld;
-		PhysicsSystem physicsSystem{ &collisionSystem, &movementSystem };
-		AnimationSystem animationSystem{ &collisionSystem, &movementSystem, &uiSystem, &gameWorld };
+		LevelManager levelManager = LevelManager(std::make_shared<sf::Texture>(std::move<sf::Texture>(sf::Texture{ "resources\\bg_sprite_small.png" })));
+		GameWorld gameWorld{ levelManager };
 		
-		gameWorld.Initialize();
+		UISystem uiSystem(gameWorld);
+		RenderSystem renderSystem(gameWorld);
+		CollisionSystem collisionSystem(gameWorld);
+		MovementSystem movementSystem(gameWorld);
+		PhysicsSystem physicsSystem{gameWorld, &collisionSystem, &movementSystem };
+		AnimationSystem animationSystem{gameWorld, &collisionSystem, &movementSystem, &uiSystem, &gameWorld };
+		AudioSystem audioSystem(gameWorld, &collisionSystem);
 
 		sf::Clock clock;
+		gameWorld.initialize();
 
 		while (window->isOpen()) {
 
 			float dt = clock.restart().asSeconds();
 
-			uiSystem.PollEvents(window);
+			uiSystem.update(window);
 
-			movementSystem.Update(dt);
-			collisionSystem.Update();
-			physicsSystem.Update(dt);
-			animationSystem.Update(dt);
+			movementSystem.update(dt);
+			collisionSystem.update();
+			physicsSystem.update(dt);
+			animationSystem.update(dt);
 
 			window->clear();
-			renderSystem.Update(*window);
+			renderSystem.update(*window);
+			audioSystem.update(dt);
 			window->display();
-
 		}
 
 		return 0;

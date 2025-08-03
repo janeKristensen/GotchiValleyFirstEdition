@@ -6,7 +6,6 @@
 
 namespace GotchiValley {
 
-	using Entity = uint32_t;
 	constexpr sf::Vector2i SCREEN_SIZE{ 750, 750 };
 	constexpr std::size_t MAX_ENTITIES{ 1000 };
 	constexpr sf::Vector2i TILE_SET_SIZE{ 3, 3 };
@@ -22,6 +21,16 @@ namespace GotchiValley {
 		INTERACTION,
 		IDLE,
 	};
+
+	inline EntityEvent stringToEntityEvent(const std::string& str) {
+		if (str == "EntityEvent::COLLISION") return EntityEvent::COLLISION;
+		else if (str == "EntityEvent::INTERACTION") return EntityEvent::INTERACTION;
+		else if (str == "EntityEvent::IDLE") return EntityEvent::IDLE;
+		else if (str == "EntityEvent::MOVE_LEFT") return EntityEvent::MOVE_LEFT;
+		else if (str == "EntityEvent::MOVE_RIGHT") return EntityEvent::MOVE_RIGHT;
+		else if (str == "EntityEvent::MOVE_UP") return EntityEvent::MOVE_UP;
+		else if (str == "EntityEvent::MOVE_DOWN") return EntityEvent::MOVE_DOWN;
+	}
 
 	enum class State { 
 		INITIAL,
@@ -63,4 +72,5 @@ namespace GotchiValley {
 
 	extern std::array<std::array<std::shared_ptr<Node>, (SCREEN_SIZE.y / TILE_SIZE.y)>, (SCREEN_SIZE.x / TILE_SIZE.x)> allMap;
 
+	
 }

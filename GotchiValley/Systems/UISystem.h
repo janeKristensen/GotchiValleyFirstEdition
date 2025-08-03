@@ -2,19 +2,23 @@
 #include <unordered_set>
 #include "IObserver.h"
 #include "Components.h"
-#include "SharedObjects.h"
+#include <iostream>
+
 
 namespace GotchiValley {
 
+	class GameWorld;
+
 	class UISystem : public IGameSubject {
 	public:
-		void Update();
-		void PollEvents(std::shared_ptr<sf::RenderWindow> window);
-		void AddObserver(IGameObserver* observer) override;
-		void RemoveObserver(IGameObserver* observer) override;
-		void NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) const override;
+		UISystem(GameWorld& gameWorld) : mGameWorld(gameWorld) {};
+		void update(std::shared_ptr<sf::RenderWindow> window);
+		void addObserver(IGameObserver* observer) override;
+		void removeObserver(IGameObserver* observer) override;
+		void notifyObservers(std::shared_ptr<Entity>& entity, const EntityEvent& eventMessage) const override;
 	private:
 		std::unordered_set<IGameObserver*> mObservers;
+		GameWorld& mGameWorld;
 	};
 
 }

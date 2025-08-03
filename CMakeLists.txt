@@ -12,8 +12,8 @@ endif()
 project ("GotchiValley")
 
 # Include sub-projects.
-add_subdirectory ("GotchiValley")
 add_subdirectory ("external")
+add_subdirectory ("GotchiValley")
 add_subdirectory ("resources")
 
 install(TARGETS GotchiValley DESTINATION /usr/local/bin)

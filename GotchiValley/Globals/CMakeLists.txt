@@ -13,6 +13,7 @@ endif()
 
 target_include_directories(Globals PUBLIC 
     ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/GotchiValley/Entities
 )
 
 # Set the SFML path
@@ -26,16 +27,18 @@ include_directories(
 # Link SFML libraries
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_link_libraries(Globals 
-    Managers
+    Entities
     ${SFML_DIR}/lib/sfml-system-d.lib
     ${SFML_DIR}/lib/sfml-window-d.lib
+    ${SFML_DIR}/lib/sfml-audio-d.lib
     ${SFML_DIR}/lib/sfml-graphics-d.lib
     )
 else()
     target_link_libraries(Globals
-    Managers
+    Entities
     ${SFML_DIR}/lib/sfml-system.lib
     ${SFML_DIR}/lib/sfml-window.lib
+     ${SFML_DIR}/lib/sfml-audio.lib
     ${SFML_DIR}/lib/sfml-graphics.lib
 )
 endif()

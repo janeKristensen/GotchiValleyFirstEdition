@@ -1,7 +1,7 @@
 #pragma once
 #include "GlobalVariables.h"
+#include "Level.h"
 #include "Components.h"
-#include "Factory.h"
 #include "SFML/Graphics.hpp"
 #include <map>
 #include <array>
@@ -13,10 +13,10 @@ namespace GotchiValley {
 	class LevelManager {
 
 	public:
-		
+		LevelManager();
 		LevelManager(std::shared_ptr<sf::Texture> spritesheet);
-		Level LoadLevel(uint32_t id);
-		uint32_t GetNumberOfLevels();
+		Level loadLevel(uint32_t id);
+		uint32_t getNumberOfLevels();
 
 
 	private:
@@ -25,7 +25,7 @@ namespace GotchiValley {
 		std::shared_ptr<sf::Texture> mSpriteSheet;
 		std::map<uint32_t, Matrix> mLevels;
 		std::array<std::array<TileNode, (SCREEN_SIZE.y / TILE_SIZE.y)>, (SCREEN_SIZE.x / TILE_SIZE.x)> mColliderMap; 
-		void LoadLevelFiles(std::filesystem::path filename);
+		void loadLevelFiles(std::filesystem::path filename);
 	};
 
 }

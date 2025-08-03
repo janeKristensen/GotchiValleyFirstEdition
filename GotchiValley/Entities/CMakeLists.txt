@@ -3,22 +3,15 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
+file(GLOB ENT_SRC CMAKE_CONFIGURE_DEPENDS "*.cpp")
 
-file(GLOB MANAGERS_SRC CMAKE_CONFIGURE_DEPENDS "*.cpp")
-
-add_library(Managers ${MANAGERS_SRC})
+add_library (Entities ${ENT_SRC})
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET Managers PROPERTY CXX_STANDARD 20)
+  set_property(TARGET Entities PROPERTY CXX_STANDARD 20)
 endif()
 
-target_include_directories(Managers PUBLIC 
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
-target_link_libraries(Managers 
-    Globals
-    Game)
-
+target_include_directories(Entities PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Set the SFML path
 set(SFML_DIR ${CMAKE_SOURCE_DIR}/external/SFML-3.0.0)
@@ -26,26 +19,42 @@ set(SFML_DIR ${CMAKE_SOURCE_DIR}/external/SFML-3.0.0)
 # Add the include directory
 include_directories(
     ${SFML_DIR}/include
+    ${CMAKE_SOURCE_DIR}/external
+    ${CMAKE_SOURCE_DIR}/GotchiValley/Globals
+    ${CMAKE_SOURCE_DIR}/GotchiValley/Systems
+    ${CMAKE_SOURCE_DIR}/GotchiValley/Game
 )
 
 # Link SFML libraries
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_link_libraries(Managers
+    target_link_libraries(Entities PUBLIC
     Globals
     Game
+    Systems
+    nlohmann_json
     ${SFML_DIR}/lib/sfml-system-d.lib
     ${SFML_DIR}/lib/sfml-window-d.lib
+     ${SFML_DIR}/lib/sfml-audio-d.lib
     ${SFML_DIR}/lib/sfml-graphics-d.lib
     )
 else()
-    target_link_libraries(Managers
+    target_link_libraries(Entities PUBLIC
     Globals
     Game
+    Systems
+    nlohmann_json
     ${SFML_DIR}/lib/sfml-system.lib
     ${SFML_DIR}/lib/sfml-window.lib
+     ${SFML_DIR}/lib/sfml-audio.lib
     ${SFML_DIR}/lib/sfml-graphics.lib
 )
 endif()
+
+
+
+
+
+
 
 
 

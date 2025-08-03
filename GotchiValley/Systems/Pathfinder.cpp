@@ -1,5 +1,5 @@
 #include "Pathfinder.h"
-#include "GlobalVariables.h"
+
 
 
 /* Implementation stolen from https://dev.to/jansonsa/a-star-a-path-finding-c-4a4h
@@ -8,18 +8,18 @@ Modified to optimize memory usage*/
 using namespace GotchiValley;
 
 
-bool Pathfinder::IsDestination(const int32_t& x, const int32_t& y, const Node& dest) {
+bool Pathfinder::isDestination(const int32_t& x, const int32_t& y, const Node& dest) {
 
 	return x == dest.x && y == dest.y;
 }
 
-double Pathfinder::CalculateH(const int32_t& x, const int32_t& y, const Node& dest) {
+double Pathfinder::calculateH(const int32_t& x, const int32_t& y, const Node& dest) {
 	double H = (sqrt((x - dest.x) * (x - dest.x)
 		+ (y - dest.y) * (y - dest.y)));
 	return H;
 }
 
-std::vector<std::shared_ptr<Node>> Pathfinder::MakePath(const Node& dest) {
+std::vector<std::shared_ptr<Node>> Pathfinder::makePath(const Node& dest) {
 
 	try {
 		auto x = dest.x;
@@ -53,7 +53,7 @@ std::vector<std::shared_ptr<Node>> Pathfinder::MakePath(const Node& dest) {
 	}
 }
 
-std::vector<std::shared_ptr<Node>> Pathfinder::FindPath(const Node& actor, const Node& dest) {
+std::vector<std::shared_ptr<Node>> Pathfinder::findPath(const Node& actor, const Node& dest) {
 
 	std::vector<std::shared_ptr<Node>> empty;
 
@@ -65,7 +65,7 @@ std::vector<std::shared_ptr<Node>> Pathfinder::FindPath(const Node& actor, const
 		std::cout << "Invalid destination for pathfinding.";
 		return empty;
 	}
-	if (IsDestination(actor.x, actor.y, dest)) {
+	if (isDestination(actor.x, actor.y, dest)) {
 
 		std::cout << "Destination of path is the same as origin.";
 		return empty;
@@ -145,12 +145,12 @@ std::vector<std::shared_ptr<Node>> Pathfinder::FindPath(const Node& actor, const
 					y + newY >= SCREEN_SIZE.y / TILE_SIZE.y) continue;
 
 				// Early return. Make path if this is the destination.
-				if (IsDestination(x + newX, y + newY, dest)) {
+				if (isDestination(x + newX, y + newY, dest)) {
 
 					allMap[x + newX][y + newY]->parentX = x;
 					allMap[x + newX][y + newY]->parentY = y;
 
-					 return MakePath(dest);
+					 return makePath(dest);
 				}
 
 				// If this is not walkable or has already been visited continue to next node.
@@ -159,7 +159,7 @@ std::vector<std::shared_ptr<Node>> Pathfinder::FindPath(const Node& actor, const
 
 				// Calculate new value for node. Based on distance between node and destination.
 				gNew = node->gCost + 1.0f;
-				hNew = CalculateH(x + newX, y + newY, dest);
+				hNew = calculateH(x + newX, y + newY, dest);
 				fNew = gNew + hNew;
 
 				// Add the new values to node map.

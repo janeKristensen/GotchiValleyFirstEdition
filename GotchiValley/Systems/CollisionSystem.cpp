@@ -1,122 +1,124 @@
 #include "CollisionSystem.h"
-#include <iostream>
+#include "Level.h"
+#include "GameWorld.h"
 
 
 using namespace GotchiValley;
 
-void CollisionSystem::Update() {
+void CollisionSystem::update() {
 
-	std::vector<CollisionData> collisions;
+	std::array<std::shared_ptr<Entity>, MAX_ENTITIES>& entityArray = mGameWorld.getEntities();
+	mCollisions = std::vector<CollisionData>();
 
-	auto colliderArray = componentRegistry.GetComponentArray<Collider>();
+	for (auto i = 0; i < entityArray.size(); i++) {
 
-	for (auto i = colliderArray.begin(); i != colliderArray.end(); i++) {
+		if (entityArray[i] == nullptr) break;
 
-		auto entityState = componentRegistry.GetComponentOfType<EntityState>(i->first);
+		if (entityArray[i]->isEntityAlive() && entityArray[i]->getState() != State::COLLIDING) {
 
-		if (entityState && entityState->state != State::COLLIDING) {
-			if (componentRegistry.HasComponent<Moveable>(i->first)) {
+			auto entity = std::dynamic_pointer_cast<Collidable>(entityArray[i]);
+			if (entity) {
 
-				// Chack if entity is colliding with the walls.
-				if (i->second->boundingBox.position.x < 0 ||
-					i->second->boundingBox.position.y < 0 ||
-					i->second->boundingBox.position.x > SCREEN_SIZE.x - i->second->boundingBox.size.x ||
-					i->second->boundingBox.position.y > SCREEN_SIZE.y - i->second->boundingBox.size.y) {
+				Collider& collider = entity->getCollider();
+				// Check if entity is colliding with the walls.
+				if (collider.boundingBox.position.x < 0 ||
+					collider.boundingBox.position.y < 0 ||
+					collider.boundingBox.position.x > SCREEN_SIZE.x - collider.boundingBox.size.x ||
+					collider.boundingBox.position.y > SCREEN_SIZE.y - collider.boundingBox.size.y) {
 
-					NotifyObservers(i->first, EntityEvent::COLLISION);
-					//entityState->state = State::IDLE;
-					entityState->state = State::COLLIDING;
+					notifyObservers(entityArray[i], EntityEvent::COLLISION);
+					entityArray[i]->setState(State::COLLIDING);
 				}
 
 				// Check for collision with other entities.
-				for (auto j = colliderArray.begin(); j != colliderArray.end(); j++) {
+				for (auto j = 0; j < entityArray.size(); j++) {
 
+					if (entityArray[j] == nullptr) break;
 					if (i == j) continue;
 
-					if (i->second->boundingBox.findIntersection(j->second->boundingBox))
-					{
-						collisions.push_back(CollisionData{ i->first, i->second, j->first, j->second });
-						entityState->state = State::COLLIDING;
-					}
-				}
+					auto other = std::dynamic_pointer_cast<Collidable>(entityArray[j]);
+					if (other) {
 
-				/* Check for collision with map components. 
-				
-					TODO: this should only check for collisions with currently loaded map!
-				*/
-				auto levelArray = componentRegistry.GetComponentArray<Level>();
+						Collider& otherCollider = other->getCollider();
 
-				for (auto k = levelArray.begin(); k != levelArray.end(); k++) {
-
-					for (auto l = k->second->colliders.begin(); l != k->second->colliders.end(); l++) {
-
-						Collider* collider = l->get();
-
-
-						if (i->second->boundingBox.findIntersection(collider->boundingBox)) {
-
-							collisions.push_back(CollisionData{ i->first, i->second, k->first, *l });
-							entityState->state = State::COLLIDING;
-							break;
+						if (collider.boundingBox.findIntersection(otherCollider.boundingBox))
+						{
+							mCollisions.push_back(CollisionData{ entityArray[i], collider, entityArray[j], otherCollider});
+							entityArray[i]->setState(State::COLLIDING);
 						}
-
 					}
 				}
+
+				// Check for collision with map components.
+
+				std::shared_ptr<Level> level = mGameWorld.getCurrentLevel();
+				std::vector<std::shared_ptr<Collider>>& colliders = level->getColliderArray();
+
+				for (auto l = colliders.begin(); l != colliders.end(); l++) {
+
+					if (collider.boundingBox.findIntersection(l->get()->boundingBox)) {
+
+						Collider& otherCollider = *l->get();
+						/* 
+						Player entity passed in twice as sub for other entity.
+						Needs a proper fix 
+						*/
+						mCollisions.push_back(CollisionData{ entityArray[i], collider, entityArray[i], otherCollider});
+						entityArray[i]->setState(State::COLLIDING);
+						break;
+					}
+				}
+				
 			}
 		}
 	}
 
-	ResolveCollision(collisions);
+	resolveCollision(mCollisions);
 }
 
-void CollisionSystem::ResolveCollision(const std::vector<CollisionData>& collisions) const {
+void CollisionSystem::resolveCollision(std::vector<CollisionData>& collisions)  {
 
 	for (auto i = collisions.begin(); i != collisions.end(); i++) {
 
-		ResolveInteractions(i->entity, i->entityCollider, i->other, i->otherCollider);
+		notifyObservers(i->entity, EntityEvent::COLLISION);
+		i->entity->setState(State::IDLE);
 
-		NotifyObservers(i->entity, EntityEvent::COLLISION);
+		// only player can interact with objects
+		auto player = std::dynamic_pointer_cast<Player>(i->entity);
+		if (!player) continue;
+		
+		sf::Vector2f size = {
+			i->entityCollider.boundingBox.size.x * 3,
+			i->entityCollider.boundingBox.size.y * 3
+		};
+		sf::Vector2f position = {
+			static_cast<float>(i->entityCollider.boundingBox.position.x - size.x/3),
+			static_cast<float>(i->entityCollider.boundingBox.position.y - size.y/3)
+		};
+		sf::FloatRect interactionArea = { position, size };
+		
+		auto otherEntity = std::dynamic_pointer_cast<Creature>(i->other);
+		if (otherEntity) {
 
-		auto entityState = componentRegistry.GetComponentOfType<EntityState>(i->entity);
-		entityState->state = State::IDLE;
-
+			interactionArea.findIntersection(i->otherCollider.boundingBox) ? otherEntity->setInteractive(true) : otherEntity->setInteractive(false);
+		}	
 	}
 }
 
-void CollisionSystem::ResolveInteractions(const Entity& entity, const std::shared_ptr<Collider>& entityCollider, const Entity& other, const std::shared_ptr<Collider>& otherCollider) const {
 
-	// only player can interact with objects
-	auto player = componentRegistry.GetComponentOfType<Controlable>(entity);
-	if (!player) return;
-
-	auto interactable = componentRegistry.GetComponentOfType<Interactable>(other);
-	if (!interactable) return;
-
-	sf::Vector2f size = {
-		entityCollider->boundingBox.size.x * 3,
-		entityCollider->boundingBox.size.y * 3
-	};
-	sf::Vector2f position = {
-		static_cast<float>(entityCollider->boundingBox.position.x - size.x / 3),
-		static_cast<float>(entityCollider->boundingBox.position.y - size.y / 3)
-	};
-	sf::FloatRect activeArea = { position, size };
-	activeArea.findIntersection(otherCollider->boundingBox) ? interactable->interactionActive = true : interactable->interactionActive = false;
-}
-
-void CollisionSystem::AddObserver(IGameObserver* observer) {
+void CollisionSystem::addObserver(IGameObserver* observer) {
 
 	mObservers.emplace(observer);
 }
 
-void CollisionSystem::RemoveObserver(IGameObserver* observer) {
+void CollisionSystem::removeObserver(IGameObserver* observer) {
 
 	mObservers.erase(observer);
 }
 
-void CollisionSystem::NotifyObservers(const Entity& entity, const EntityEvent& eventMessage) const {
+void CollisionSystem::notifyObservers(std::shared_ptr<Entity>& entity, const EntityEvent& eventMessage) const {
 
 	for (auto observer : mObservers) {
-		observer->OnNotify(entity, eventMessage);
+		observer->onNotify(entity, eventMessage);
 	}
 }
