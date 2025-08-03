@@ -27,7 +27,6 @@ namespace GotchiValley{
 		void removeObserver(IGameObserver* observer) override;
 		void notifyObservers(std::shared_ptr<Entity>& entity, const EntityEvent& eventMessage) const override;
 	private:
-
 		std::unordered_set<IGameObserver*> mObservers;
 		GameWorld& mGameWorld;
 		std::vector<CollisionData> mCollisions;

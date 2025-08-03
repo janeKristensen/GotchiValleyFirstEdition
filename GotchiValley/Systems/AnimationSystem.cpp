@@ -1,5 +1,6 @@
 #include "AnimationSystem.h"
 #include "GameWorld.h"
+#include "Creature.h"
 
 using namespace GotchiValley;
 
@@ -14,7 +15,6 @@ void AnimationSystem::update(float dt) {
 
 		Animation& animation = std::dynamic_pointer_cast<Drawable>(entityArray[i])->getAnimation();
 		sf::Sprite& spriteComponent = std::dynamic_pointer_cast<Drawable>(entityArray[i])->getSprite();
-		auto entityState = entityArray[i]->getState();
 		
 		animation.frameTime += dt;
 
@@ -24,7 +24,23 @@ void AnimationSystem::update(float dt) {
 
 			if (animation.frameNum >= animation.frames[animation.animName].numFrames) {
 
-				animation.animName = AnimationName::IDLE;
+				auto creature = std::dynamic_pointer_cast<Creature>(entityArray[i]);
+				if (creature) {
+
+					if (creature->getPhase() == CreaturePhase::UNEVOLVED) {
+
+						animation.animName = AnimationName::INITIAL;
+					}
+					else if (creature && creature->getPhase() == CreaturePhase::EVOLVING) {
+
+						creature->setPhase(CreaturePhase::EVOLVED);
+						animation.animName = AnimationName::IDLE;
+					}
+				}
+				else {
+					animation.animName = AnimationName::IDLE;
+				}
+				
 				animation.frameNum = animation.frameNum % animation.frames[animation.animName].numFrames;
 			}
 		}
@@ -42,36 +58,51 @@ void AnimationSystem::onNotify(std::shared_ptr<Entity>& entity, const EntityEven
 
 	if (drawable) {
 
-		auto animation = drawable->getAnimation();
+		Animation& animation = drawable->getAnimation();
+		auto creature = std::dynamic_pointer_cast<Creature>(entity);
 
-		if (eventMessage == EntityEvent::COLLISION) {
+		switch (eventMessage) {
 
-			animation.frameNum = 0;
-			animation.animName = AnimationName::COLLIDING;
-		}
-		else if (eventMessage == EntityEvent::INTERACTION) {
+			case EntityEvent::COLLISION:
+				animation.frameNum = 0;
+				if (creature && creature->getPhase() == CreaturePhase::UNEVOLVED) {
 
-			if (entity->getState() == State::EVOLVING) {
+					animation.animName = AnimationName::INITIAL;
+				}
+				else {
 
-				animation.animName = AnimationName::EVOLVING;
-			}
-			else {
-				animation.animName = AnimationName::INTERACTING;
-			}
+					animation.animName = AnimationName::COLLIDING;
+				}
+				break;
+
+			case EntityEvent::INTERACTION:
+
+				if (creature && creature->getPhase() == CreaturePhase::EVOLVING) {
+
+					animation.animName = AnimationName::EVOLVING;
+				}
+				else {
+					animation.animName = AnimationName::INTERACTING;
+				}
 				animation.frameNum = 0;
 				entity->setInteractive(false);
 				entity->setState(State::IDLE);
-		}
-		else if (eventMessage == EntityEvent::MOVE_LEFT) {
+				break;
 
-			if (animation.animName != AnimationName::RUNNING) {
+			case EntityEvent::MOVE_LEFT:
 
-				animation.animName = AnimationName::RUNNING;
-				animation.frameNum = 0;
-			}
-		}
-		else if (eventMessage == EntityEvent::IDLE) {
-			animation.animName = AnimationName::IDLE;
+				if (animation.animName != AnimationName::RUNNING) {
+
+					animation.animName = AnimationName::RUNNING;
+					animation.frameNum = 0;
+				}
+				break;
+
+			case EntityEvent::IDLE:
+				animation.animName = AnimationName::IDLE;
+				break;
 		}
 	}
 }
+		
+	

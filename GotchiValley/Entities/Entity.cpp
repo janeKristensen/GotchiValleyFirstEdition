@@ -60,6 +60,11 @@ bool Entity::isMoveable() {
 	return mMoveable;
 }
 
+void Entity::setMoveable(bool value) {
+
+	mMoveable = value;
+}
+
 std::string Entity::getSound(EntityEvent event) {
 
 	return entitySounds[event];

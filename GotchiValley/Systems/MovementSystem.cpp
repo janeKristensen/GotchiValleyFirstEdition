@@ -49,7 +49,8 @@ void MovementSystem::update(float& dt) {
 		else {
 
 			std::shared_ptr<Creature> creature = std::dynamic_pointer_cast<Creature>(entityArray[i]);
-			if (creature) {
+			if (creature && creature->getPhase() == CreaturePhase::EVOLVED) {
+				creature->setMoveable(true);
 				updateFollowPath(creature, dt);
 				creature->update();
 			}
@@ -89,7 +90,7 @@ void MovementSystem::updateFollowPath(std::shared_ptr<Creature>& creature, const
 		creature->setFollowPath(Pathfinder::findPath(actor, destination));
 	}
 
-	if (followBehaviour->currentStep < followBehaviour->path.size() - 2) {
+	if (!followBehaviour->path.empty() && followBehaviour->currentStep < followBehaviour->path.size() - 2) {
 
 			const std::shared_ptr<Node>& node = followBehaviour->path[followBehaviour->currentStep];
 

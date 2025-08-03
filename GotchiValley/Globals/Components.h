@@ -28,7 +28,7 @@ namespace GotchiValley {
 		uint8_t startFrame = 0;
 		uint8_t frameNum = 0;
 		float frameTime	= 0.f;
-		AnimationName animName = AnimationName::IDLE;
+		AnimationName animName = AnimationName::INITIAL;
 	};
 
 	//struct RoamBehaviour {

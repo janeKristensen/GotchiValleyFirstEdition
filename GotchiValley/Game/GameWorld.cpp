@@ -23,7 +23,7 @@ void GameWorld::initialize() {
 	mPlayer->setSounds("resources\\playerSound.json");
 
 	auto creatureBehaviour = std::make_shared<FollowBehaviour>(mPlayer, std::vector<std::shared_ptr<Node>>{});
-	auto creature = std::make_shared<Creature>(mCurrentArrayIndex, Transform{ {200.0f, 200.0f }, {0.0f, 0.0f}, 50.0f }, eggAnimation, birdTexture, creatureBehaviour, false, true);
+	auto creature = std::make_shared<Creature>(mCurrentArrayIndex, Transform{ {200.0f, 200.0f }, {0.0f, 0.0f}, 50.0f }, birdAnimation, birdTexture, creatureBehaviour);
 	addEntity(std::dynamic_pointer_cast<Entity>(creature));
 	creature->initialize();
 	creature->setSounds("resources\\playerSound.json");

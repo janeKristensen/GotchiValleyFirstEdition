@@ -33,6 +33,7 @@ void UISystem::update(std::shared_ptr<sf::RenderWindow> window) {
 				if (entity->getCollider().boundingBox.contains(mousePos)){
 
 					entityArray[i]->onClick();
+					notifyObservers(entityArray[i], EntityEvent::INTERACTION);
 				}
 			}
 		}

@@ -42,30 +42,26 @@ namespace GotchiValley {
 		2.f
 	);
 
-	auto eggAnimation = Animation
-	(
-		{
-			//{AnimationName::INITIAL, animEgg},
-			{AnimationName::IDLE, animEgg},
-			{AnimationName::COLLIDING, animEgg},
-			{AnimationName::INTERACTING, animEgg},
-		},
-		0, 0, 0, 
-		AnimationName::IDLE
-	);
+	//auto eggAnimation = Animation
+	//(
+	//	{
+	//		//{AnimationName::EVOLVING, animEgg},
+	//		{AnimationName::IDLE, animEgg},
+	//		{AnimationName::COLLIDING, animEgg},
+	//		{AnimationName::INTERACTING, animEgg},
+	//	}
+	//);
 
 	auto birdAnimation = Animation
 	(
 		{
-			//{AnimationName::INITIAL, animEgg},
+			{AnimationName::INITIAL, animEgg},
 			{AnimationName::IDLE, animBird},
 			{AnimationName::COLLIDING, animBird},
 			{AnimationName::EVOLVING, animCollision},
 			{AnimationName::INTERACTING, animBird},
-		},
-		0, 0, 0,
-		AnimationName::IDLE
-		);
+		}
+	);
 
 
 	auto animStanding = AnimationData
@@ -125,8 +121,6 @@ namespace GotchiValley {
 			{AnimationName::RUNNING, animRunning},
 			{AnimationName::COLLIDING, animColliding},
 			{AnimationName::INTERACTING, animStanding }
-		}, 
-		0, 0, 0, 
-		AnimationName::IDLE
+		}
 	);
 }
